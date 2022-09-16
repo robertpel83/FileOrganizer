@@ -80,7 +80,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -95,7 +95,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,7 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -188,6 +188,34 @@
     <ClCompile Include="libs\hash-library-master\sha1.cpp" />
     <ClCompile Include="libs\hash-library-master\sha256.cpp" />
     <ClCompile Include="libs\hash-library-master\sha3.cpp" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\apple\exif-mnote-data-apple.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\apple\mnote-apple-entry.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\apple\mnote-apple-tag.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\canon\exif-mnote-data-canon.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\canon\mnote-canon-entry.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\canon\mnote-canon-tag.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-byte-order.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-content.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-data.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-entry.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-format.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-gps-ifd.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-ifd.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-loader.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-log.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-mem.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-mnote-data.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-tag.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-utils.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\exif-mnote-data-fuji.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-entry.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-tag.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\exif-mnote-data-olympus.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\mnote-olympus-entry.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\mnote-olympus-tag.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\exif-mnote-data-pentax.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-entry.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-tag.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\dirent-1.23.2\include\dirent.h" />
@@ -284,6 +312,7 @@
     <ClInclude Include="libs\hash-library-master\sha1.h" />
     <ClInclude Include="libs\hash-library-master\sha256.h" />
     <ClInclude Include="libs\hash-library-master\sha3.h" />
+    <ClInclude Include="libs\libexif-0.6.24\config.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

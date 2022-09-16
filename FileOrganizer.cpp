@@ -71,7 +71,8 @@ using std::wstring;
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
-
+#include "libexif/exif-data.h"
+#include "libexif/exif-system.h"
 
 
 
@@ -670,6 +671,35 @@ void getFileCreatedModifiedDateWStat(FileDataEntry *f)
 #include <sstream>
 #include <cstdint>
 
+
+
+
+
+
+/** Callback function handling an ExifEntry. */
+static void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
+{
+    char buf[2000];
+    exif_entry_get_value(entry, buf, sizeof(buf));
+    std::wcout << convertUtf8ToWide(exif_tag_get_name(entry->tag)) << L" " <<
+        convertUtf8ToWide(exif_format_get_name(entry->format)) << L" " <<
+        entry->size << L" " <<
+        (int)(entry->components) << L" " <<
+        convertUtf8ToWide(exif_entry_get_value(entry, buf, sizeof(buf))) << std::endl;
+}
+
+
+/** Callback function handling an ExifContent (corresponds 1:1 to an IFD). */
+static void data_foreach_func(ExifContent* content, void* callback_data)
+{
+    static unsigned content_count;
+    std::wcout << exif_content_get_ifd(content) << std::endl;
+    exif_content_foreach_entry(content, content_foreach_func, callback_data);
+    ++content_count;
+}
+
+
+
 #define DB_LOCATION L"locate.db"
 static FILE* db = NULL;
 
@@ -694,7 +724,7 @@ int main(int argc, char* argv[])
     //}
 
 
-    wstring startpath = L"C:\\Program Files\\Blender Foundation\\";
+    wstring startpath = L"C:\\Program Files\\";
     _int64 filecount = 0;
     LARGE_INTEGER li;
 
@@ -1042,154 +1072,139 @@ int main(int argc, char* argv[])
 
 
 
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 
 
 
-    //get date from filename, detect year, detect date format, extract and convert
 
-
-    //yyyy-mm-dd
-    //yyyy mm dd
-    //yyyy_mm_dd
-    //yyyy.mm.dd  
-    //yyyymmdd
-
-    //yyyy cannot be 3xxx 1xxx 23xx 29xx 17xx
-    //mm cannot be 00 13 2x
-    //dd cannot be 00 33 4x
-    std::regex yyyymmdd(R"([12][098]\d{2}[ yY_.-]?[01]\d{1}[ mM_.-]?[0123]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
-
-
-    //yyyy-mm-d?
-
-
-
-
-    //mm-dd-yy
-    //mm dd yy
-    //mm/dd/yy
-    //mm_dd_yy
-    //mm.dd.yy  
-    //mmddyy 
-    std::regex mmddyy(R"([01]\d{1}[ mM_.-][0123]\d{1}[ dD_.-][01289]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
-    //mm cannot be 00 13 2x
-    //dd cannot be 00 33 4x
-    //yy can be anything but most likely 8x 9x 0x 1x 2x, cannot be higher than current year 23 24 25
-
-
-
-    //mm-d-yy?
-
-
-
-    //Dayname Monthname/Mon Day/Dayth, YYYY
-    //Month/Mon Day/Dayth YYYY
-    //Day/Dayth Month/Mon YYYY
-    //YYYY Month Day
-    //YYYY Day Month
-    //first look for YYYY, if exists then look for monthname, mon, day, 8th, etc
-
-    std::regex yyyy(R"([12][098]\d{2})");// \d{2}:\d{2}:\d{2}.\d{3}
-    //if found
-
-    //month/mon dayth/day
-    std::regex monthmondaythday(R"((January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[ _.-]([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9][^0-9]))");
-
-    //dayth/day month/mon
-    std::regex daythdaymonthmon(R"(([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9])[ _.-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))");
-
-    string strs[] = { 
-        "2018-08-09 09:30:34.118", 
-        "2018 01 01", 
-        "2018_12_20", 
-        "2018.02.02", 
-        "20180111",
-        "01-30-99",
-        "01.30.02", 
-        "January 1, 1990", 
-        "8 February 2000", 
-        "04 Feb 2016",
-        "12th August, 2011", 
-        "September 02 2022", 
-        "December 4th, 1997" ,
-        "2017 Mar 4"
-    
-    };
-
-    for (auto& i : strs)
+    for (int i = 0; i < fileDataEntries.size(); i++)
     {
-        std::smatch m;
-        std::regex_search(i, m, yyyymmdd);
-        //int n = 0;
+        FileDataEntry* f = &(fileDataEntries[i]);
 
-        if (!m.empty())
+
+        //get date from filename, detect year, detect date format, extract and convert
+
+
+        //yyyy-mm-dd
+        //yyyy mm dd
+        //yyyy_mm_dd
+        //yyyy.mm.dd  
+        //yyyymmdd
+
+        //yyyy cannot be 3xxx 1xxx 23xx 29xx 17xx
+        //mm cannot be 00 13 2x
+        //dd cannot be 00 33 4x
+        std::regex yyyymmdd(R"([12][098]\d{2}[ yY_.-]?[01]\d{1}[ mM_.-]?[0123]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
+
+
+        //yyyy-mm-d?
+
+
+
+
+        //mm-dd-yy
+        //mm dd yy
+        //mm/dd/yy
+        //mm_dd_yy
+        //mm.dd.yy  
+        //mmddyy 
+        std::regex mmddyy(R"([01]\d{1}[ mM_.-][0123]\d{1}[ dD_.-][01289]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
+        //mm cannot be 00 13 2x
+        //dd cannot be 00 33 4x
+        //yy can be anything but most likely 8x 9x 0x 1x 2x, cannot be higher than current year 23 24 25
+
+
+
+        //mm-d-yy?
+
+
+
+        //Dayname Monthname/Mon Day/Dayth, YYYY
+        //Month/Mon Day/Dayth YYYY
+        //Day/Dayth Month/Mon YYYY
+        //YYYY Month Day
+        //YYYY Day Month
+        //first look for YYYY, if exists then look for monthname, mon, day, 8th, etc
+
+        std::regex yyyy(R"([12][098]\d{2})");// \d{2}:\d{2}:\d{2}.\d{3}
+        //if found
+
+        //month/mon dayth/day
+        std::regex monthmondaythday(R"((January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[ _.-]([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9][^0-9]))");
+
+        //dayth/day month/mon
+        std::regex daythdaymonthmon(R"(([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9])[ _.-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))");
+
+        string strs[] = {
+            "2018-08-09 09:30:34.118",
+            "2018 01 01",
+            "2018_12_20",
+            "2018.02.02",
+            "20180111",
+            "01-30-99",
+            "01.30.02",
+            "January 1, 1990",
+            "8 February 2000",
+            "04 Feb 2016",
+            "12th August, 2011",
+            "September 02 2022",
+            "December 4th, 1997" ,
+            "2017 Mar 4"
+
+        };
+
+        if(false)
+        for (auto& i : strs)
         {
-            for (int n = 0; n < m.size(); n++)
-                std::wcout << L"yyyymmdd " << convertUtf8ToWide(m[n].str()) << std::endl;
-        }
-        else
-        {
-            std::regex_search(i, m, mmddyy);
+            std::smatch m;
+            std::regex_search(i, m, yyyymmdd);
+            //int n = 0;
+
             if (!m.empty())
             {
                 for (int n = 0; n < m.size(); n++)
-                    std::wcout << L"mmddyy " << convertUtf8ToWide(m[n].str()) << std::endl;
+                    std::wcout << L"yyyymmdd " << convertUtf8ToWide(m[n].str()) << std::endl;
             }
             else
             {
-                std::regex_search(i, m, yyyy);
+                std::regex_search(i, m, mmddyy);
                 if (!m.empty())
                 {
                     for (int n = 0; n < m.size(); n++)
-                        std::wcout << L"yyyy " << convertUtf8ToWide(m[n].str()) << std::endl;
-
-                    std::smatch md;
-
-                    std::regex_search(i, md, monthmondaythday);
-                    if (!md.empty())
+                        std::wcout << L"mmddyy " << convertUtf8ToWide(m[n].str()) << std::endl;
+                }
+                else
+                {
+                    std::regex_search(i, m, yyyy);
+                    if (!m.empty())
                     {
-                        for (int n = 0; n < md.size(); n++)
-                            std::wcout << L"monthmondaythday " << convertUtf8ToWide(md[n].str()) << std::endl;
-                    }
-                    else
-                    {
-                        std::smatch dm;
-                        std::regex_search(i, dm, daythdaymonthmon);
-                        if (!dm.empty())
+                        for (int n = 0; n < m.size(); n++)
+                            std::wcout << L"yyyy " << convertUtf8ToWide(m[n].str()) << std::endl;
+
+                        std::smatch md;
+
+                        std::regex_search(i, md, monthmondaythday);
+                        if (!md.empty())
                         {
-                            for (int n = 0; n < dm.size(); n++)
-                                std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(dm[n].str()) << std::endl;
+                            for (int n = 0; n < md.size(); n++)
+                                std::wcout << L"monthmondaythday " << convertUtf8ToWide(md[n].str()) << std::endl;
+                        }
+                        else
+                        {
+                            std::smatch dm;
+                            std::regex_search(i, dm, daythdaymonthmon);
+                            if (!dm.empty())
+                            {
+                                for (int n = 0; n < dm.size(); n++)
+                                    std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(dm[n].str()) << std::endl;
+                            }
                         }
                     }
-
                 }
             }
-        }
 
+        }
     }
 
 
@@ -1197,7 +1212,88 @@ int main(int argc, char* argv[])
     //if file is an image get exif data, timestamps
     //look at all possible timestamp values in exif
 
+    for (int i = 0; i < fileDataEntries.size(); i++)
+    {
+        FileDataEntry* f = &(fileDataEntries[i]);
 
+
+        if (f->name.find(L".jpg") != std::wstring::npos || f->name.find(L".jpeg") != std::wstring::npos || f->name.find(L".JPG") != std::wstring::npos)
+        {
+            ExifData* d;
+            d = exif_data_new_from_file(convertWideToUtf8(f->nameAndPath).c_str());
+            if (!d)
+            {
+                std::wcout << L"Could not load data from " << f->name << std::endl;
+            }
+            else
+            {
+                void* callback_data = NULL;
+
+                exif_data_foreach_content(d, data_foreach_func, callback_data);
+
+                ExifMnoteData* mn = exif_data_get_mnote_data(d);
+                if (mn) {
+                    char buf[2000];
+                    int i;
+                    int num = exif_mnote_data_count(mn);
+                    std::wcout << L"  MakerNote" << std::endl;
+                    for (i = 0; i < num; ++i) {
+                        if (exif_mnote_data_get_value(mn, i, buf, sizeof(buf))) {
+                            const char* name = exif_mnote_data_get_name(mn, i);
+                            unsigned int id = exif_mnote_data_get_id(mn, i);
+                            if (!name)
+                                name = "(unknown)";
+                            std::wcout << convertUtf8ToWide(name) << L" " << convertUtf8ToWide(buf) << std::endl;
+                        }
+                    }
+                }
+
+                exif_data_unref(d);
+            }
+        }
+    }
+
+    //DateTime
+    //DateTimeOriginal
+
+    
+
+
+
+
+
+
+
+    //sort by file size
+
+    //compare hash
+
+    //match comparisons run full hash and byte comparison
+
+
+    //use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
+
+
+
+    //keep all filenames and dates, compare with filename date, exif dates, determine most correct timestamp for image and duplicates
+
+    
+
+    //keep higher quality version, optionally delete others
+
+    //rename files with most accurate date, optionally reset timestamps
+    //store all filenames and dates etc in metadata
+
+
+    //ocr
+
+    //ai image object detection
+
+
+    //file renamer
+
+
+    //gui
 
 
 
@@ -1208,30 +1304,15 @@ int main(int argc, char* argv[])
 
 
 
+        
 
+        
 
 
 
         
 
-        //use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
-        //first filename compare
-        //simple size compare
-        //hash compare
-        //exact data compare
 
-
-        //keep all filenames and dates, compare with filename date, exif dates, determine most correct timestamp for image and duplicates
-
-        //keep higher quality version, optionally delete others
-
-        //rename files with most accurate date, optionally reset timestamps
-        //store all filenames and dates etc in metadata
-
-
-        //ocr
-
-        //ai image object detection
 
 
 
