@@ -33,6 +33,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <regex>
 
 
 using std::runtime_error;
@@ -86,6 +87,7 @@ public:
     __int64 modifiedTime = 0;
     wstring createdDateString;
     wstring modifiedDateString;
+    wstring fileNameDateString;
     wstring crc32;
     wstring md5;
     wstring sha1;
@@ -472,7 +474,9 @@ BY_HANDLE_FILE_INFORMATION getFileInformationByHandleWindows(wstring fileNameAnd
 __int64 getFileSizeFromHandleFileInformationWindows(FileDataEntry* f)//wstring fileNameAndPath)
 {
     BY_HANDLE_FILE_INFORMATION info = getFileInformationByHandleWindows(f->nameAndPath);
-    __int64 size = (info.nFileSizeHigh * (MAXDWORD + 1)) + info.nFileSizeLow;
+    __int64 max = MAXDWORD;
+    max+=1;
+    __int64 size = (info.nFileSizeHigh * (max)) + info.nFileSizeLow;
     f->size = size;
     return size;
 }
@@ -505,7 +509,9 @@ WIN32_FILE_ATTRIBUTE_DATA getFileAttributesWindows(wstring fileNameAndPath)
 __int64 getFileSizeFromFileAttributesWindows(FileDataEntry* f)//wstring fileNameAndPath)
 {
     WIN32_FILE_ATTRIBUTE_DATA info = getFileAttributesWindows(f->nameAndPath);
-    __int64 size = (info.nFileSizeHigh * (MAXDWORD + 1)) + info.nFileSizeLow;
+    __int64 max = MAXDWORD;
+        max += 1;
+    __int64 size = (info.nFileSizeHigh * (max)) + info.nFileSizeLow;
     f->size = size;
     return size;
 }
@@ -861,7 +867,7 @@ int main(int argc, char* argv[])
     //This is very quick for large files, and it helps eliminate the vast majority of potential duplicates very quickly, as
     //most files will have different samples. Most other duplicate finders omit this step, but it really speeds things up.
 
-
+    if(false)
     for (int i = 0; i < fileDataEntries.size(); i++)
     {
         FileDataEntry* f = &(fileDataEntries[i]);
@@ -894,32 +900,45 @@ int main(int argc, char* argv[])
                 {
                     is.exceptions(is.failbit);
 
+                    std::size_t numBytesRead = 0;
+
                     is.seekg((f->size/5) * 0);
                     is.exceptions(is.failbit);
                     is.read(&buffer[chunkSize * 0], chunkSize);
                     is.exceptions(is.failbit);
+
+                    numBytesRead += size_t(is.gcount());
 
                     is.seekg((f->size / 5) * 1);
                     is.exceptions(is.failbit);
                     is.read(&buffer[chunkSize * 1], chunkSize);
                     is.exceptions(is.failbit);
 
+                    numBytesRead += size_t(is.gcount());
+
                     is.seekg((f->size / 5) * 2);
                     is.exceptions(is.failbit);
                     is.read(&buffer[chunkSize * 2], chunkSize);
                     is.exceptions(is.failbit);
+
+                    numBytesRead += size_t(is.gcount());
 
                     is.seekg((f->size / 5) * 3);
                     is.exceptions(is.failbit);
                     is.read(&buffer[chunkSize * 3], chunkSize);
                     is.exceptions(is.failbit);
 
+                    numBytesRead += size_t(is.gcount());
+
                     is.seekg((f->size - chunkSize));
                     is.exceptions(is.failbit);
                     is.read(&buffer[chunkSize * 4], chunkSize);
                     is.exceptions(is.failbit);
 
-                    std::size_t numBytesRead = size_t(is.gcount());
+                    numBytesRead += size_t(is.gcount());
+
+                    //std::wcout << L"Buffer size " << bufferSize << std::endl;
+                    //std::wcout << L"numBytesRead " << numBytesRead << std::endl;
 
                     is.close();
 
@@ -958,6 +977,9 @@ int main(int argc, char* argv[])
 
                     std::size_t numBytesRead = size_t(is.gcount());
 
+                    //std::wcout << L"File size " << f->size << std::endl;
+                    //std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+
                     is.close();
 
                     if (computeCrc32)   digestCrc32.add(buffer, numBytesRead);
@@ -978,12 +1000,12 @@ int main(int argc, char* argv[])
         }
 
         //show results
-        if (computeCrc32) std::wcout << L"CRC32:      " << convertUtf8ToWide(digestCrc32.getHash()) << std::endl;
-        if (computeMd5)   std::wcout << L"MD5:        " << convertUtf8ToWide(digestMd5.getHash()) << std::endl;
-        if (computeSha1)  std::wcout << L"SHA1:       " << convertUtf8ToWide(digestSha1.getHash()) << std::endl;
-        if (computeSha2)  std::wcout << L"SHA2/256:   " << convertUtf8ToWide(digestSha2.getHash()) << std::endl;
-        if (computeKeccak)std::wcout << L"Keccak/256: " << convertUtf8ToWide(digestKeccak.getHash()) << std::endl;
-        if (computeSha3)  std::wcout << L"SHA3/256:   " << convertUtf8ToWide(digestSha3.getHash()) << std::endl;
+        //if (computeCrc32) std::wcout << L"CRC32:      " << convertUtf8ToWide(digestCrc32.getHash()) << std::endl;
+        //if (computeMd5)   std::wcout << L"MD5:        " << convertUtf8ToWide(digestMd5.getHash()) << std::endl;
+        //if (computeSha1)  std::wcout << L"SHA1:       " << convertUtf8ToWide(digestSha1.getHash()) << std::endl;
+        //if (computeSha2)  std::wcout << L"SHA2/256:   " << convertUtf8ToWide(digestSha2.getHash()) << std::endl;
+        //if (computeKeccak)std::wcout << L"Keccak/256: " << convertUtf8ToWide(digestKeccak.getHash()) << std::endl;
+        //if (computeSha3)  std::wcout << L"SHA3/256:   " << convertUtf8ToWide(digestSha3.getHash()) << std::endl;
 
         //f->size = size;
         f->crc32 = convertUtf8ToWide(digestCrc32.getHash());
@@ -1018,36 +1040,179 @@ int main(int argc, char* argv[])
         //    exit(EXIT_FAILURE);
         //}
 
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
+
+    //get date from filename, detect year, detect date format, extract and convert
+
+
+    //yyyy-mm-dd
+    //yyyy mm dd
+    //yyyy_mm_dd
+    //yyyy.mm.dd  
+    //yyyymmdd
+
+    //yyyy cannot be 3xxx 1xxx 23xx 29xx 17xx
+    //mm cannot be 00 13 2x
+    //dd cannot be 00 33 4x
+    std::regex yyyymmdd(R"([12][098]\d{2}[ yY_.-]?[01]\d{1}[ mM_.-]?[0123]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
+
+
+    //yyyy-mm-d?
+
+
+
+
+    //mm-dd-yy
+    //mm dd yy
+    //mm/dd/yy
+    //mm_dd_yy
+    //mm.dd.yy  
+    //mmddyy 
+    std::regex mmddyy(R"([01]\d{1}[ mM_.-][0123]\d{1}[ dD_.-][01289]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
+    //mm cannot be 00 13 2x
+    //dd cannot be 00 33 4x
+    //yy can be anything but most likely 8x 9x 0x 1x 2x, cannot be higher than current year 23 24 25
+
+
+
+    //mm-d-yy?
+
+
+
+    //Dayname Monthname/Mon Day/Dayth, YYYY
+    //Month/Mon Day/Dayth YYYY
+    //Day/Dayth Month/Mon YYYY
+    //YYYY Month Day
+    //YYYY Day Month
+    //first look for YYYY, if exists then look for monthname, mon, day, 8th, etc
+
+    std::regex yyyy(R"([12][098]\d{2})");// \d{2}:\d{2}:\d{2}.\d{3}
+    //if found
+
+    //month/mon dayth/day
+    std::regex monthmondaythday(R"((January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[ _.-]([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9][^0-9]))");
+
+    //dayth/day month/mon
+    std::regex daythdaymonthmon(R"(([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9])[ _.-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))");
+
+    string strs[] = { 
+        "2018-08-09 09:30:34.118", 
+        "2018 01 01", 
+        "2018_12_20", 
+        "2018.02.02", 
+        "20180111",
+        "01-30-99",
+        "01.30.02", 
+        "January 1, 1990", 
+        "8 February 2000", 
+        "04 Feb 2016",
+        "12th August, 2011", 
+        "September 02 2022", 
+        "December 4th, 1997" ,
+        "2017 Mar 4"
+    
+    };
+
+    for (auto& i : strs)
+    {
+        std::smatch m;
+        std::regex_search(i, m, yyyymmdd);
+        //int n = 0;
+
+        if (!m.empty())
+        {
+            for (int n = 0; n < m.size(); n++)
+                std::wcout << L"yyyymmdd " << convertUtf8ToWide(m[n].str()) << std::endl;
+        }
+        else
+        {
+            std::regex_search(i, m, mmddyy);
+            if (!m.empty())
+            {
+                for (int n = 0; n < m.size(); n++)
+                    std::wcout << L"mmddyy " << convertUtf8ToWide(m[n].str()) << std::endl;
+            }
+            else
+            {
+                std::regex_search(i, m, yyyy);
+                if (!m.empty())
+                {
+                    for (int n = 0; n < m.size(); n++)
+                        std::wcout << L"yyyy " << convertUtf8ToWide(m[n].str()) << std::endl;
+
+                    std::smatch md;
+
+                    std::regex_search(i, md, monthmondaythday);
+                    if (!md.empty())
+                    {
+                        for (int n = 0; n < md.size(); n++)
+                            std::wcout << L"monthmondaythday " << convertUtf8ToWide(md[n].str()) << std::endl;
+                    }
+                    else
+                    {
+                        std::smatch dm;
+                        std::regex_search(i, dm, daythdaymonthmon);
+                        if (!dm.empty())
+                        {
+                            for (int n = 0; n < dm.size(); n++)
+                                std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(dm[n].str()) << std::endl;
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+
+
+
+    //if file is an image get exif data, timestamps
+    //look at all possible timestamp values in exif
+
+
+
+
+
 }
 
 
 
 
 
-        //get date from filename, detect year, detect date format, extract and convert
-        //yyyy-mm-dd
-        //yyyy mm dd
-        //yyyy_mm_dd
-        //yyyy.mm.dd  
-        //yyyymmdd
-        //mm-dd-yy
-        //mm dd yy
-        //mm/dd/yy
-        //mm_dd_yy
-        //mm.dd.yy  
-        //mmddyy 
-        //Dayname Monthname Day, Year
-        //Day Month Year
-        //Month Day Year
-        //Year Month Day
-        //Year Day Month
 
 
 
-        //if file is an image get exif data, timestamps
-        //look at all possible timestamp values in exif
-        //original filenames?
+
+
+        
 
         //use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
         //first filename compare

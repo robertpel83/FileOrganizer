@@ -80,6 +80,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -94,6 +95,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -109,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,12 +137,153 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FileOrganizer.cpp" />
-    <ClCompile Include="include\crc32.cpp" />
-    <ClCompile Include="include\keccak.cpp" />
-    <ClCompile Include="include\md5.cpp" />
-    <ClCompile Include="include\sha1.cpp" />
-    <ClCompile Include="include\sha256.cpp" />
-    <ClCompile Include="include\sha3.cpp" />
+    <ClCompile Include="libs\fstlib-develop\ext\gtest\src\gtest-all.cc" />
+    <ClCompile Include="libs\fstlib-develop\ext\lz4\lz4.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\debug.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\entropy_common.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\error_private.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\fse_decompress.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\pool.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\threading.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\xxhash.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\common\zstd_common.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\fse_compress.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\hist.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\huf_compress.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstdmt_compress.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress_literals.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress_sequences.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress_superblock.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_double_fast.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_fast.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_lazy.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_ldm.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\compress\zstd_opt.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\decompress\huf_decompress.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\decompress\zstd_ddict.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\decompress\zstd_decompress.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\decompress\zstd_decompress_block.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\dictBuilder\cover.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\dictBuilder\divsufsort.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\dictBuilder\fastcover.c" />
+    <ClCompile Include="libs\fstlib-develop\ext\zstd\dictBuilder\zdict.c" />
+    <ClCompile Include="libs\fstlib-develop\lib\fsttable\fsttable.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\blockstreamer\blockstreamer_v2.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\byteblock\byteblock_v13.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\byte\byte_v12.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\character\character_v6.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\compression\compression.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\compression\compressor.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\double\double_v9.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\factor\factor_v7.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\integer64\integer64_v11.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\integer\integer_v8.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\interface\fststore.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\interface\openmphelper.cpp" />
+    <ClCompile Include="libs\fstlib-develop\lib\fst\logical\logical_v10.cpp" />
+    <ClCompile Include="libs\hash-library-master\crc32.cpp" />
+    <ClCompile Include="libs\hash-library-master\keccak.cpp" />
+    <ClCompile Include="libs\hash-library-master\md5.cpp" />
+    <ClCompile Include="libs\hash-library-master\sha1.cpp" />
+    <ClCompile Include="libs\hash-library-master\sha256.cpp" />
+    <ClCompile Include="libs\hash-library-master\sha3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="libs\dirent-1.23.2\include\dirent.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest-death-test.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest-message.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest-param-test.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest-printers.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest-spi.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest-test-part.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest-typed-test.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest_pred_impl.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\gtest_prod.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\custom\gtest-port.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\custom\gtest-printers.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\custom\gtest.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-death-test-internal.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-filepath.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-internal.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-linked_ptr.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-param-util-generated.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-param-util.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-port-arch.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-port.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-string.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-tuple.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\gtest\include\gtest\internal\gtest-type-util.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\lz4\lz4.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\bitstream.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\compiler.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\cpu.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\debug.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\error_private.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\fse.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\huf.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\mem.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\pool.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\threading.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\xxhash.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\zstd_errors.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\common\zstd_internal.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\hist.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstdmt_compress.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress_internal.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress_literals.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress_sequences.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_compress_superblock.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_cwksp.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_double_fast.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_fast.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_lazy.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_ldm.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\compress\zstd_opt.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\decompress\zstd_ddict.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\decompress\zstd_decompress_block.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\decompress\zstd_decompress_internal.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\dictBuilder\cover.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\dictBuilder\divsufsort.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\dictBuilder\zdict.h" />
+    <ClInclude Include="libs\fstlib-develop\ext\zstd\zstd.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fsttable\columnfactory.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fsttable\fsttable.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fsttable\IntegerMethods.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fsttable\typefactory.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\blockstreamer\blockstreamer_v2.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\byteblock\byteblock_v13.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\byte\byte_v12.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\character\character_v6.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\compression\compression.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\compression\compressor.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\double\double_v9.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\factor\factor_v7.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\integer64\integer64_v11.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\integer\integer_v8.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\fstcompressor.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\fstdefines.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\fsthash.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\fststore.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\fststreamer.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\fst_db.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\ibyteblockcolumn.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\icolumnfactory.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\ifstcolumn.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\ifsttable.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\istringwriter.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\itypefactory.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\interface\openmphelper.h" />
+    <ClInclude Include="libs\fstlib-develop\lib\fst\logical\logical_v10.h" />
+    <ClInclude Include="libs\hash-library-master\crc32.h" />
+    <ClInclude Include="libs\hash-library-master\hash.h" />
+    <ClInclude Include="libs\hash-library-master\hmac.h" />
+    <ClInclude Include="libs\hash-library-master\keccak.h" />
+    <ClInclude Include="libs\hash-library-master\md5.h" />
+    <ClInclude Include="libs\hash-library-master\sha1.h" />
+    <ClInclude Include="libs\hash-library-master\sha256.h" />
+    <ClInclude Include="libs\hash-library-master\sha3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
