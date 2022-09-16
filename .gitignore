@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/libs/unsorted/_ai
+/libs/unsorted/_ddc
+/libs/unsorted/_deduplicate
+/libs/unsorted/_exif
+/libs/unsorted/_ocr
+/libs/unsorted/_renamer
+/libs/unsorted
