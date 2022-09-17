@@ -6,7 +6,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
-
+#include <fstream>
+#include <string>
+#include <limits>
+#include <stdexcept>
+#include <vector>
+#include <memory>
+#include <regex>
+#include <sstream>
+#include <ctime>
+#include <string>
+#include <filesystem>
+#include <chrono>
+#include <unordered_set>
+#include <stack>
+#include <vector>
 
 #include "atlbase.h"
 #include "atlstr.h"
@@ -24,16 +38,6 @@
 #include "keccak.h"
 #include "sha3.h"
 
-#include <fstream>
-#include <string>
-
-#include <limits>
-#include <stdexcept>
-#include <vector>
-#include <windows.h>
-
-#include <memory>
-#include <regex>
 
 
 using std::runtime_error;
@@ -51,12 +55,7 @@ using std::wstring;
 #include <io.h>     // _setmode
 #include <fcntl.h>  // _O_U16TEXT
 
-#include <string>
-#include <filesystem>
-#include <chrono>
-#include <unordered_set>
-#include <stack>
-#include <vector>
+
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -74,7 +73,7 @@ using std::wstring;
 #include "libexif/exif-data.h"
 #include "libexif/exif-system.h"
 
-
+#include "TinyEXIF.h"
 
 
 class FileDataEntry
@@ -700,6 +699,44 @@ static void data_foreach_func(ExifContent* content, void* callback_data)
 
 
 
+// function expects the string in format dd/mm/yyyy:
+bool extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int& y) 
+{
+    std::istringstream is(s);
+    char delimiter;
+    if (is >> m >> delimiter >> d >> delimiter >> y) {
+
+        if (y < 1900)
+        {
+            if (y > 70)y += 1900;
+            if (y < 50)y += 2000;
+        }
+
+        struct tm t = { 0 };
+        t.tm_mday = d;
+        t.tm_mon = m - 1;
+        t.tm_year = y - 1900;
+        t.tm_isdst = -1;
+
+        // normalize:
+        time_t when = mktime(&t);
+        const struct tm* norm = localtime(&when);
+        // the actual date would be:
+        // m = norm->tm_mon + 1;
+        // d = norm->tm_mday;
+        // y = norm->tm_year;
+        // e.g. 29/02/2013 would become 01/03/2013
+
+        // validate (is the normalized date still the same?):
+        return (norm->tm_mday == d &&
+            norm->tm_mon == m - 1 &&
+            norm->tm_year == y - 1900);
+    }
+    return false;
+}
+
+
+
 #define DB_LOCATION L"locate.db"
 static FILE* db = NULL;
 
@@ -724,7 +761,7 @@ int main(int argc, char* argv[])
     //}
 
 
-    wstring startpath = L"C:\\Program Files\\";
+    wstring startpath = L"C:\\";
     _int64 filecount = 0;
     LARGE_INTEGER li;
 
@@ -1095,8 +1132,67 @@ int main(int argc, char* argv[])
         //yyyy cannot be 3xxx 1xxx 23xx 29xx 17xx
         //mm cannot be 00 13 2x
         //dd cannot be 00 33 4x
-        std::regex yyyymmdd(R"([12][098]\d{2}[ yY_.-]?[01]\d{1}[ mM_.-]?[0123]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
+        //(?!2[3-9])not 3xxx    [12][09]\d{2}1900-2099 [^0-9a-zA-Z]any separator (?!00)(?!1[3-9])[01]\d{1}month cant be 00 or 13 [^0-9a-zA-Z]any separator (?!00)(?!3[3-9])[0123]\d{1}day cant be 00 or 33
 
+
+        std::string regex_yyyy_mm_dd =
+            "(?!1[0-8])"//not 10xx-18xx
+            "(?!19[0-7])"//not 190x-197x
+            "(?!2[3-9])"//not 23xx
+            "[12][09][0-9][0-9]"//1000-2999
+            "[_. ,mMyY-]"//any separator including m M y Y
+            "(?!00)"//month cannot be 00
+            "(?!1[3-9])"//month cannot be 13-19
+            "[01][0-9]"//month only begins with 0 or 1
+            "[_. ,mMdD-]"//any separator including m M d D
+            "(?!00)"//day cannot be 00
+            "(?!3[3-9])"//day cannot be 33-39
+            "[0123][0-9]"//day only begins with 0 1 2 3
+            ;
+
+        std::string syyyy_mm_dd =
+            "^"//beginning of file
+            "("
+            +regex_yyyy_mm_dd+
+            ")"
+            "|"//or
+            "[^0-9]"//not a number
+            "("
+            + regex_yyyy_mm_dd+
+            ")"
+            ;
+
+
+        std::string regex_yyyymmdd =
+            "(?!1[0-8])"//not 10xx-18xx
+            "(?!19[0-7])"//not 190x-197x
+            "(?!2[3-9])"//not 23xx
+            "[12][09][0-9][0-9]"//1000-2999
+            "(?!00)"//month cannot be 00
+            "(?!1[3-9])"//month cannot be 13-19
+            "[01][0-9]"//month only begins with 0 or 1
+            "(?!00)"//day cannot be 00
+            "(?!3[3-9])"//day cannot be 33-39
+            "[0123][0-9]"//day only begins with 0 1 2 3
+            ;
+            
+
+        std::string syyyymmdd = 
+            "^"//beginning of file
+            "("
+            + regex_yyyymmdd +
+            ")"
+            "|"//or
+            "[^0-9]"//not a number
+            "("
+            + regex_yyyymmdd +
+            ")"
+            ;
+
+
+
+        std::regex yyyy_mm_dd(syyyy_mm_dd);
+        std::regex yyyymmdd(syyyymmdd);
 
         //yyyy-mm-d?
 
@@ -1109,10 +1205,34 @@ int main(int argc, char* argv[])
         //mm_dd_yy
         //mm.dd.yy  
         //mmddyy 
-        std::regex mmddyy(R"([01]\d{1}[ mM_.-][0123]\d{1}[ dD_.-][01289]\d{1})");// \d{2}:\d{2}:\d{2}.\d{3}
         //mm cannot be 00 13 2x
         //dd cannot be 00 33 4x
         //yy can be anything but most likely 8x 9x 0x 1x 2x, cannot be higher than current year 23 24 25
+        std::string regex_mm_dd_yy =
+            "(?!00)"//month cannot be 00
+            "(?!1[3-9])"//month cannot be 13-19
+            "[01][0-9]"//month only begins with 0 or 1
+            "[_. ,mMdD-]"//any separator including m M d D
+            "(?!00)"//day cannot be 00
+            "(?!3[3-9])"//day cannot be 33-39
+            "[0123][0-9]"//day only begins with 0 1 2 3
+            "[_. ,dDyY-]"//any separator including d D y Y
+            "[12]?[90]?[012789][0-9]"//year [19-20]70-29
+            ;
+        std::string smm_dd_yy = 
+            "^"//beginning of file
+            "("
+            + regex_mm_dd_yy +
+            ")"
+            "|"//or
+            "[_. ,mM-]"//any separator including m M
+            "("
+            + regex_mm_dd_yy +
+            ")"
+            ;
+
+        std::regex mm_dd_yy(smm_dd_yy);// \d{2}:\d{2}:\d{2}.\d{3}
+
 
 
 
@@ -1127,14 +1247,74 @@ int main(int argc, char* argv[])
         //YYYY Day Month
         //first look for YYYY, if exists then look for monthname, mon, day, 8th, etc
 
-        std::regex yyyy(R"([12][098]\d{2})");// \d{2}:\d{2}:\d{2}.\d{3}
+        std::string regex_yyyy =
+            "(?!2[3-9])"//not 23xx
+            "(?!1[0-8])"//not 10xx-18xx
+            "(?!19[0-7])"//not 190x-197x
+            "[12][09][0-9][0-9]"//1000-2999
+            ;
+
+        std::string syyyy =
+            "^"
+            "("
+            + regex_yyyy + //beginning of string
+            ")"
+            "[^0-9]"
+            "|"
+            "[^0-9]"
+            "("
+            + regex_yyyy + //in the middle surrounded by non numbers
+            ")"
+            "[^0-9]"
+            "|"
+            "[^0-9]"
+            "("
+            + regex_yyyy + //at the end beginning with non number
+            ")"
+            "$"
+            ;
+
+        std::regex yyyy(syyyy);// \d{2}:\d{2}:\d{2}.\d{3}
         //if found
 
         //month/mon dayth/day
-        std::regex monthmondaythday(R"((January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[ _.-]([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9][^0-9]))");
+        std::string monthmon("(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)");
+        std::string spacer("[^0-9][^0-9]?");
+
+        std::string regexdaythday =
+            "[0123]?1st"//01st 1st or 21st or 31st
+            "|"
+            "[0123]?2nd"//02nd 2nd 22nd 32nd
+            "|"
+            "(?!33)"//not 33rd
+            "[0123]?3rd"//03rd 3rd 23rd
+            "|"
+            "(?!3[4-9])"//not 34-39th
+            "[0123]?[0-9]th"//04th 9th 11th 24th 29th
+            "|"
+            "(?!00)"//not 00
+            "(?!3[3-9])"//not 33-39
+            "[0123]?[0-9]"//01-32
+            ;
+
+        std::string sdaythday =
+            //"("
+            //+ regexdaythday +
+            //")"
+            //"[^0-9]"
+            //"|"
+            "("
+            + regexdaythday +
+            ")"
+            //"$"
+            ;
+
+        
+
+        std::regex monthmondaythday(monthmon + spacer + sdaythday);
 
         //dayth/day month/mon
-        std::regex daythdaymonthmon(R"(([0123]?1st|[0123]?2nd|[0123]?3rd|[0123]?[0-9]th|[0123]?[0-9])[ _.-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))");
+        std::regex daythdaymonthmon(sdaythday + monthmon);
 
         string strs[] = {
             "2018-08-09 09:30:34.118",
@@ -1154,64 +1334,244 @@ int main(int argc, char* argv[])
 
         };
 
-        if(false)
-        for (auto& i : strs)
+
+        string s(convertWideToUtf8(f->name));
+        //if(false)
+        //for (auto& s : strs)
+        
         {
-            std::smatch m;
-            std::regex_search(i, m, yyyymmdd);
+            std::smatch matches;
+            std::regex_search(s, matches, yyyy_mm_dd);
             //int n = 0;
 
-            if (!m.empty())
+            int y = 0;
+            int m = 0;
+            int d = 0;
+
+            if (!matches.empty())
             {
-                for (int n = 0; n < m.size(); n++)
-                    std::wcout << L"yyyymmdd " << convertUtf8ToWide(m[n].str()) << std::endl;
+                for (int n = 0; n < matches.size(); n++)
+                    std::wcout << L"yyyy_mm_dd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+                
+                int n = matches[0].str().find_first_of("0123456789");
+                
+                std::istringstream is(matches[0].str().substr(n, 4));
+                if (is >> y)
+                {
+                    if (y < 1900)
+                    {
+                        if (y > 70)y += 1900;
+                        if (y < 50)y += 2000;
+                    }
+                }
+                
+                {
+                    std::istringstream is(matches[0].str().substr(n+5, 2));
+                    if (is >> m);
+                }
+                {
+                    std::istringstream is(matches[0].str().substr(n+8, 2));
+                    if (is >> d);
+                }
+                
+                std::wcout << y << L" " << m << L" " << d << std::endl;
+                
+
             }
             else
             {
-                std::regex_search(i, m, mmddyy);
-                if (!m.empty())
+
+                std::regex_search(s, matches, yyyymmdd);
+                if (!matches.empty())
                 {
-                    for (int n = 0; n < m.size(); n++)
-                        std::wcout << L"mmddyy " << convertUtf8ToWide(m[n].str()) << std::endl;
+                    for (int n = 0; n < matches.size(); n++)
+                        std::wcout << L"yyyymmdd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+                    int n = matches[0].str().find_first_of("0123456789");
+
+                    
+                    std::istringstream is(matches[0].str().substr(n, 4));
+                    if (is >> y)
+                    {
+                        if (y < 1900)
+                        {
+                            if (y > 70)y += 1900;
+                            if (y < 50)y += 2000;
+                        }
+                    }
+                    
+                    {
+                        std::istringstream is(matches[0].str().substr(n+4, 2));
+                        if (is >> m);
+                    }
+                    {
+                        std::istringstream is(matches[0].str().substr(n+6, 2));
+                        if (is >> d);
+                    }
+                    
+                    std::wcout << y << L" " << m << L" " << d << std::endl;
+
                 }
                 else
                 {
-                    std::regex_search(i, m, yyyy);
-                    if (!m.empty())
+                    std::regex_search(s, matches, mm_dd_yy);
+                    if (!matches.empty())
                     {
-                        for (int n = 0; n < m.size(); n++)
-                            std::wcout << L"yyyy " << convertUtf8ToWide(m[n].str()) << std::endl;
+                        for (int n = 0; n < matches.size(); n++)
+                            std::wcout << L"mm dd [yy]yy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                        std::smatch md;
+                        int n = matches[0].str().find_first_of("0123456789");
 
-                        std::regex_search(i, md, monthmondaythday);
-                        if (!md.empty())
                         {
-                            for (int n = 0; n < md.size(); n++)
-                                std::wcout << L"monthmondaythday " << convertUtf8ToWide(md[n].str()) << std::endl;
+                            std::istringstream is(matches[0].str().substr(n, 2));
+                            if (is >> m);
+                        }
+
+                        {
+                            std::istringstream is(matches[0].str().substr(n+3, 2));
+                            if (is >> d);
+                        }
+
+                        if (matches[0].str().substr(n+6, 2) == "19" || matches[0].str().substr(n+6, 2) == "20")
+                        {
+                            std::istringstream is(matches[0].str().substr(n+6, 4));
+                            if (is >> y);
                         }
                         else
                         {
-                            std::smatch dm;
-                            std::regex_search(i, dm, daythdaymonthmon);
-                            if (!dm.empty())
+                            std::istringstream is(matches[0].str().substr(n+6, 2));
+                            if (is >> y)
                             {
-                                for (int n = 0; n < dm.size(); n++)
-                                    std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(dm[n].str()) << std::endl;
+                                if (y < 1900)
+                                {
+                                    if (y > 70)y += 1900;
+                                    if (y < 50)y += 2000;
+                                }
+                            }
+                        }
+                        
+                        std::wcout << y << L" " << m << L" " << d << std::endl;
+
+                    }
+                    else
+                    {
+                        std::regex_search(s, matches, yyyy);
+                        if (!matches.empty())
+                        {
+                            //for (int n = 0; n < matches.size(); n++)
+                                //std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+                            int n = matches[0].str().find_first_of("0123456789");
+
+                            if (matches[0].str().substr(n, 1) != "1" && matches[0].str().substr(n, 1) != "2")
+                            {
+                                if (matches[0].str().substr(n + 1, 1) != "1" && matches[0].str().substr(n + 1, 1) != "2")
+                                {
+                                    //can't parse?
+                                }
+                                else
+                                {
+                                    std::istringstream is(matches[0].str().substr(n + 1, 4));
+                                    if (is >> y);
+                                }
+                            }
+                            else
+                            {
+                                std::istringstream is(matches[0].str().substr(n, 4));
+                                if (is >> y);
+                            }
+
+                            std::regex_search(s, matches, monthmondaythday);
+                            if (!matches.empty())
+                            {
+                                for (int n = 0; n < matches.size(); n++)
+                                    std::wcout << L"monthmondaythday " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+                                if (matches[0].str().find("Jan") != string::npos)m = 1;
+                                if (matches[0].str().find("Feb") != string::npos)m = 2;
+                                if (matches[0].str().find("Mar") != string::npos)m = 3;
+                                if (matches[0].str().find("Apr") != string::npos)m = 4;
+                                if (matches[0].str().find("May") != string::npos)m = 5;
+                                if (matches[0].str().find("Jun") != string::npos)m = 6;
+                                if (matches[0].str().find("Jul") != string::npos)m = 7;
+                                if (matches[0].str().find("Aug") != string::npos)m = 8;
+                                if (matches[0].str().find("Sep") != string::npos)m = 9;
+                                if (matches[0].str().find("Oct") != string::npos)m = 10;
+                                if (matches[0].str().find("Nov") != string::npos)m = 11;
+                                if (matches[0].str().find("Dec") != string::npos)m = 12;
+
+                                int n = matches[0].str().find_first_of("0123456789");
+                                {
+                                    if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
+                                    {
+                                        std::istringstream is(matches[0].str().substr(n, 2));
+                                        if (is >> d);
+                                    }
+                                    else
+                                    {
+                                        std::istringstream is(matches[0].str().substr(n, 1));
+                                        if (is >> d);
+                                    }
+                                }
+
+                                std::wcout << y << L" " << m << L" " << d << std::endl;
+                            }
+
+                            
+                        }
+                        else
+                        {
+
+                            std::regex_search(s, matches, daythdaymonthmon);
+                            if (!matches.empty())
+                            {
+                                for (int n = 0; n < matches.size(); n++)
+                                    std::wcout << L"daythdaymonthmon " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+                                int n = matches[0].str().find_first_of("0123456789");
+
+                                if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
+                                {
+                                    std::istringstream is(matches[0].str().substr(n, 2));
+                                    if (is >> d);
+                                }
+                                else
+                                {
+                                    std::istringstream is(matches[0].str().substr(n, 1));
+                                    if (is >> d);
+                                }
+
+                                if (matches[0].str().find("Jan") != string::npos)m = 1;
+                                if (matches[0].str().find("Feb") != string::npos)m = 2;
+                                if (matches[0].str().find("Mar") != string::npos)m = 3;
+                                if (matches[0].str().find("Apr") != string::npos)m = 4;
+                                if (matches[0].str().find("May") != string::npos)m = 5;
+                                if (matches[0].str().find("Jun") != string::npos)m = 6;
+                                if (matches[0].str().find("Jul") != string::npos)m = 7;
+                                if (matches[0].str().find("Aug") != string::npos)m = 8;
+                                if (matches[0].str().find("Sep") != string::npos)m = 9;
+                                if (matches[0].str().find("Oct") != string::npos)m = 10;
+                                if (matches[0].str().find("Nov") != string::npos)m = 11;
+                                if (matches[0].str().find("Dec") != string::npos)m = 12;
+
+                                std::wcout << y << L" " << m << L" " << d << std::endl;
                             }
                         }
                     }
                 }
             }
-
         }
     }
+
+        
+    
 
 
 
     //if file is an image get exif data, timestamps
     //look at all possible timestamp values in exif
-
+    if(false)
     for (int i = 0; i < fileDataEntries.size(); i++)
     {
         FileDataEntry* f = &(fileDataEntries[i]);
@@ -1255,9 +1615,11 @@ int main(int argc, char* argv[])
 
     //DateTime
     //DateTimeOriginal
-
-    
-
+    //DateTimeDigitized
+    //Date
+    //Time
+    //GPSDateStamp
+    //GPSTimeStamp
 
 
 

@@ -80,7 +80,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -95,7 +95,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,7 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -216,6 +216,8 @@
     <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\exif-mnote-data-pentax.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-entry.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-tag.c" />
+    <ClCompile Include="libs\TinyEXIF-master\TinyEXIF.cpp" />
+    <ClCompile Include="libs\tinyxml2-master\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\dirent-1.23.2\include\dirent.h" />
