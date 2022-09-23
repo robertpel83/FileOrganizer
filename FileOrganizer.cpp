@@ -21,6 +21,16 @@
 #include <unordered_set>
 #include <stack>
 #include <vector>
+#include <iostream> // std::cout
+#include <fstream>  // std::ifstream
+#include <vector>   // std::vector
+#include <iomanip>  // std::setprecision
+#include <functional>
+
+
+#include <sstream>
+#include <cstdint>
+
 
 #include "atlbase.h"
 #include "atlstr.h"
@@ -76,6 +86,7 @@ using std::wstring;
 #include "TinyEXIF.h"
 
 
+
 class FileDataEntry
 {
 public:
@@ -95,10 +106,21 @@ public:
     wstring keccak;
     wstring sha3;
 
+
+
+    bool operator < (const FileDataEntry& f) const
+    {
+        return (size < f.size);
+    }
+    bool operator > (const FileDataEntry& f) const
+    {
+        return (size > f.size);
+    }
+    
 };
 vector<FileDataEntry> fileDataEntries;
 
-
+std::chrono::steady_clock::time_point start;
 
 
 
@@ -570,6 +592,100 @@ long long getFileSizeWithIfstream(wstring name)
     return length;
 }
 
+
+void getSizeForAllFiles()
+{
+    __int64 size = 0;
+
+    if (isWindows)
+    {
+        //Very slow 1863s 494k files
+        if (false)
+        {
+            std::wcout << L"getFileSizeWindows" << std::endl;
+            start = std::chrono::steady_clock::now();
+            for (int i = 0; i < fileDataEntries.size(); i++)
+            {
+                FileDataEntry* f = &(fileDataEntries[i]);
+                size += getFileSizeWindows(f);
+            }
+            std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+            std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+        }
+
+        //22s 494k files
+        if (false)
+        {
+            std::wcout << L"getFileSizeFromHandleFileInformationWindows" << std::endl;
+            start = std::chrono::steady_clock::now();
+            size = 0;
+            for (int i = 0; i < fileDataEntries.size(); i++)
+            {
+                FileDataEntry* f = &(fileDataEntries[i]);
+                size += getFileSizeFromHandleFileInformationWindows(f);
+            }
+            std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+            std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+        }
+
+        //5.1s 494k files
+        //if (false)
+        {
+            std::wcout << L"getFileSizeFromFileAttributesWindows" << std::endl;
+            start = std::chrono::steady_clock::now();
+            size = 0;
+            for (int i = 0; i < fileDataEntries.size(); i++)
+            {
+                FileDataEntry* f = &(fileDataEntries[i]);
+                size += getFileSizeFromFileAttributesWindows(f);
+            }
+            std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+            std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+        }
+
+
+    }
+
+
+    if (isWindows == false)
+    {
+        //17s 494k files
+        if (false)
+        {
+            std::wcout << L"getFileSizeWStat" << std::endl;
+            start = std::chrono::steady_clock::now();
+            size = 0;
+            for (int i = 0; i < fileDataEntries.size(); i++)
+            {
+                FileDataEntry* f = &(fileDataEntries[i]);
+                size += getFileSizeWStat(f);
+            }
+            std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+            std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+        }
+
+
+        //5.4s 494k files
+        //if (false)
+        {
+            std::wcout << L"getFileSizeFilesystem" << std::endl;
+            start = std::chrono::steady_clock::now();
+            size = 0;
+            for (int i = 0; i < fileDataEntries.size(); i++)
+            {
+                FileDataEntry* f = &(fileDataEntries[i]);
+                size += getFileSizeFilesystem(f);
+            }
+            std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+            std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+        }
+    }
+
+    
+}
+
+
+
 void getFileCreatedModifiedDateWindows(FileDataEntry* f)
 {
     WIN32_FILE_ATTRIBUTE_DATA info = getFileAttributesWindows(f->nameAndPath);
@@ -662,250 +778,12 @@ void getFileCreatedModifiedDateWStat(FileDataEntry *f)
     }
 }
 
-
-
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <cstdint>
-
-
-
-
-
-
-/** Callback function handling an ExifEntry. */
-static void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
+//create and modify date
+void getCreatedAndLastModifiedDateForAllFiles()
 {
-    char buf[2000];
-    exif_entry_get_value(entry, buf, sizeof(buf));
-    std::wcout << convertUtf8ToWide(exif_tag_get_name(entry->tag)) << L" " <<
-        convertUtf8ToWide(exif_format_get_name(entry->format)) << L" " <<
-        entry->size << L" " <<
-        (int)(entry->components) << L" " <<
-        convertUtf8ToWide(exif_entry_get_value(entry, buf, sizeof(buf))) << std::endl;
-}
-
-
-/** Callback function handling an ExifContent (corresponds 1:1 to an IFD). */
-static void data_foreach_func(ExifContent* content, void* callback_data)
-{
-    static unsigned content_count;
-    std::wcout << exif_content_get_ifd(content) << std::endl;
-    exif_content_foreach_entry(content, content_foreach_func, callback_data);
-    ++content_count;
-}
-
-
-
-// function expects the string in format dd/mm/yyyy:
-bool extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int& y) 
-{
-    std::istringstream is(s);
-    char delimiter;
-    if (is >> m >> delimiter >> d >> delimiter >> y) {
-
-        if (y < 1900)
-        {
-            if (y > 70)y += 1900;
-            if (y < 50)y += 2000;
-        }
-
-        struct tm t = { 0 };
-        t.tm_mday = d;
-        t.tm_mon = m - 1;
-        t.tm_year = y - 1900;
-        t.tm_isdst = -1;
-
-        // normalize:
-        time_t when = mktime(&t);
-        const struct tm* norm = localtime(&when);
-        // the actual date would be:
-        // m = norm->tm_mon + 1;
-        // d = norm->tm_mday;
-        // y = norm->tm_year;
-        // e.g. 29/02/2013 would become 01/03/2013
-
-        // validate (is the normalized date still the same?):
-        return (norm->tm_mday == d &&
-            norm->tm_mon == m - 1 &&
-            norm->tm_year == y - 1900);
-    }
-    return false;
-}
-
-
-
-#define DB_LOCATION L"locate.db"
-static FILE* db = NULL;
-
-int main(int argc, char* argv[])
-{
-
-    //Code Page Identifiers
-    const char CP_UTF_16LE[] = ".1200";
-    setlocale(LC_ALL, CP_UTF_16LE);
-    //Prepare for unicode output 
-    int setmodestatus = _setmode(_fileno(stdout), _O_U16TEXT);
-
-    //if (db == NULL)
-    //{
-    //    errno_t error;
-    //    error = _wfopen_s(&db, DB_LOCATION, L"wt, ccs=UNICODE");
-    //    if (error)
-    //    {
-    //        wprintf(L"Cannot open %s\n", DB_LOCATION);
-    //        exit(EXIT_FAILURE);
-    //    }
-    //}
-
-
-    wstring startpath = L"C:\\";
-    _int64 filecount = 0;
-    LARGE_INTEGER li;
-
-    _int64 CounterStart = 0;
-    _int64 msPassed = 0;
-    std::chrono::steady_clock::time_point start;
-    QueryPerformanceFrequency(&li);
-    double PCFreq = double(li.QuadPart) / 1000.0;
-
-
-
-
-
-    //std::wcout << L"Start directoryIteratorRecursive" << std::endl;
-    //
-    //QueryPerformanceCounter(&li);
-    //CounterStart = li.QuadPart;
-    //start = std::chrono::steady_clock::now();
-    //filecount = 0;
-    //
-    //directoryIteratorRecursive(startpath, filecount);
-    //
-    //std::wcout << L"Files found: " << filecount << std::endl;
-    //
-    //QueryPerformanceCounter(&li);
-    //msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-    ////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-    //std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-    //std::wcout << L"Start dirent.h directory list" << std::endl;
-    //
-    //QueryPerformanceCounter(&li);
-    //CounterStart = li.QuadPart;
-    //start = std::chrono::steady_clock::now();
-    //filecount = 0;
-    //
-    //direntScanDirectory(startpath,filecount);
-    //
-    //std::wcout << L"Files found: " << filecount << std::endl;
-    //
-    //QueryPerformanceCounter(&li);
-    //msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-    ////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-    //std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-        
-
-    std::wcout << L"Start ListFilesWindowsFindFirstFile directory list" << std::endl;
-
-    QueryPerformanceCounter(&li);
-    CounterStart = li.QuadPart;
+    //12s 494k files
+    std::wcout << L"getFileCreatedModifiedDateWindows" << std::endl;
     start = std::chrono::steady_clock::now();
-    filecount = 0;
-
-    ListFilesWindowsFindFirstFile(startpath, filecount);
-
-    std::wcout << L"Files found: " << filecount << std::endl;
-
-    QueryPerformanceCounter(&li);
-    msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-    //std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-    std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-
-
-
-    __int64 size = 0;
-
-    //Very slow
-    //std::wcout << L"Start getFileSizeWindows" << std::endl;
-    //start = std::chrono::steady_clock::now();
-    //for (int i = 0; i < fileDataEntries.size(); i++)
-    //{
-    //    FileDataEntry* f = &(fileDataEntries[i]);
-    //    size += getFileSizeWindows(f);
-    //}
-    //std::wcout << "Size:" << size << std::endl;
-    //std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-
-    //std::wcout << L"Start getFileSizeWStat" << std::endl;
-    //start = std::chrono::steady_clock::now();
-    //size = 0;
-    //for (int i = 0; i < fileDataEntries.size(); i++)
-    //{
-    //    FileDataEntry* f = &(fileDataEntries[i]);
-    //    size += getFileSizeWStat(f);
-    //}
-    //std::wcout << "Size:" << size << std::endl;
-    //std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-
-    //Fastest
-    std::wcout << L"Start getFileSizeFilesystem" << std::endl;
-    start = std::chrono::steady_clock::now();
-    size = 0;
-    for (int i = 0; i < fileDataEntries.size(); i++)
-    {
-        FileDataEntry* f = &(fileDataEntries[i]);
-        size += getFileSizeFilesystem(f);
-    }
-    std::wcout << "Size:" << size << std::endl;
-    std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-
-    //std::wcout << L"Start getFileSizeFromHandleFileInformationWindows" << std::endl;
-    //start = std::chrono::steady_clock::now();
-    //size = 0;
-    //for (int i = 0; i < fileDataEntries.size(); i++)
-    //{
-    //    FileDataEntry* f = &(fileDataEntries[i]);
-    //    size += getFileSizeFromHandleFileInformationWindows(f);
-    //}
-    //std::wcout << "Size:" << size << std::endl;
-    //std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-
-    //2nd Fastest
-    std::wcout << L"Start getFileSizeFromFileAttributesWindows" << std::endl;
-    start = std::chrono::steady_clock::now();
-    size = 0;
-    for (int i = 0; i < fileDataEntries.size(); i++)
-    {
-        FileDataEntry* f = &(fileDataEntries[i]);
-        size += getFileSizeFromFileAttributesWindows(f);
-    }
-    std::wcout << "Size:" << size << std::endl;
-    std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-
-
-
-    //create and modify date
-
-    std::wcout << L"Start getFileCreatedModifiedDateWindows" << std::endl;
-    start = std::chrono::steady_clock::now();
-    size = 0;
     for (int i = 0; i < fileDataEntries.size(); i++)
     {
         FileDataEntry* f = &(fileDataEntries[i]);
@@ -916,25 +794,27 @@ int main(int argc, char* argv[])
 
 
     //both of these are pretty comparable
-    std::wcout << L"Start getFileCreatedModifiedDateWStat" << std::endl;
+    //23s 494k files
+    std::wcout << L"getFileCreatedModifiedDateWStat" << std::endl;
     start = std::chrono::steady_clock::now();
-    size = 0;
     for (int i = 0; i < fileDataEntries.size(); i++)
     {
         FileDataEntry* f = &(fileDataEntries[i]);
         getFileCreatedModifiedDateWStat(f);
     }
     std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+}
 
 
 
+void getFastHashForAllFiles()
+{
 
     //It makes an extra pass of the file list to create a 'fasthash'. The fasthash uses small samples of the file(16 kilobytes),
     //taken from the beginning, end, and three places in the middle; then does a duplicate check based on the hash of the samples.
     //This is very quick for large files, and it helps eliminate the vast majority of potential duplicates very quickly, as
     //most files will have different samples. Most other duplicate finders omit this step, but it really speeds things up.
 
-    if(false)
     for (int i = 0; i < fileDataEntries.size(); i++)
     {
         FileDataEntry* f = &(fileDataEntries[i]);
@@ -969,7 +849,7 @@ int main(int argc, char* argv[])
 
                     std::size_t numBytesRead = 0;
 
-                    is.seekg((f->size/5) * 0);
+                    is.seekg((f->size / 5) * 0);
                     is.exceptions(is.failbit);
                     is.read(&buffer[chunkSize * 0], chunkSize);
                     is.exceptions(is.failbit);
@@ -1016,7 +896,7 @@ int main(int argc, char* argv[])
                     if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
                     if (computeSha3)    digestSha3.add(buffer, numBytesRead);
 
-                    
+
                 }
             }
             catch (const std::ios_base::failure& e)
@@ -1055,7 +935,7 @@ int main(int argc, char* argv[])
                     if (computeSha2)    digestSha2.add(buffer, numBytesRead);
                     if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
                     if (computeSha3)    digestSha3.add(buffer, numBytesRead);
- 
+
                 }
             }
             catch (const std::ios_base::failure& e)
@@ -1107,14 +987,12 @@ int main(int argc, char* argv[])
         //    exit(EXIT_FAILURE);
         //}
 
-
-
     }
+}
 
 
-
-
-
+void getDateFromFilenameForAllFiles()
+{
     for (int i = 0; i < fileDataEntries.size(); i++)
     {
         FileDataEntry* f = &(fileDataEntries[i]);
@@ -1153,12 +1031,12 @@ int main(int argc, char* argv[])
         std::string syyyy_mm_dd =
             "^"//beginning of file
             "("
-            +regex_yyyy_mm_dd+
+            + regex_yyyy_mm_dd +
             ")"
             "|"//or
             "[^0-9]"//not a number
             "("
-            + regex_yyyy_mm_dd+
+            + regex_yyyy_mm_dd +
             ")"
             ;
 
@@ -1175,9 +1053,9 @@ int main(int argc, char* argv[])
             "(?!3[3-9])"//day cannot be 33-39
             "[0123][0-9]"//day only begins with 0 1 2 3
             ;
-            
 
-        std::string syyyymmdd = 
+
+        std::string syyyymmdd =
             "^"//beginning of file
             "("
             + regex_yyyymmdd +
@@ -1219,7 +1097,7 @@ int main(int argc, char* argv[])
             "[_. ,dDyY-]"//any separator including d D y Y
             "[12]?[90]?[012789][0-9]"//year [19-20]70-29
             ;
-        std::string smm_dd_yy = 
+        std::string smm_dd_yy =
             "^"//beginning of file
             "("
             + regex_mm_dd_yy +
@@ -1309,7 +1187,7 @@ int main(int argc, char* argv[])
             //"$"
             ;
 
-        
+
 
         std::regex monthmondaythday(monthmon + spacer + sdaythday);
 
@@ -1338,7 +1216,7 @@ int main(int argc, char* argv[])
         string s(convertWideToUtf8(f->name));
         //if(false)
         //for (auto& s : strs)
-        
+
         {
             std::smatch matches;
             std::regex_search(s, matches, yyyy_mm_dd);
@@ -1353,9 +1231,9 @@ int main(int argc, char* argv[])
                 for (int n = 0; n < matches.size(); n++)
                     std::wcout << L"yyyy_mm_dd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                
+
                 int n = matches[0].str().find_first_of("0123456789");
-                
+
                 std::istringstream is(matches[0].str().substr(n, 4));
                 if (is >> y)
                 {
@@ -1365,18 +1243,18 @@ int main(int argc, char* argv[])
                         if (y < 50)y += 2000;
                     }
                 }
-                
+
                 {
-                    std::istringstream is(matches[0].str().substr(n+5, 2));
+                    std::istringstream is(matches[0].str().substr(n + 5, 2));
                     if (is >> m);
                 }
                 {
-                    std::istringstream is(matches[0].str().substr(n+8, 2));
+                    std::istringstream is(matches[0].str().substr(n + 8, 2));
                     if (is >> d);
                 }
-                
+
                 std::wcout << y << L" " << m << L" " << d << std::endl;
-                
+
 
             }
             else
@@ -1390,7 +1268,7 @@ int main(int argc, char* argv[])
 
                     int n = matches[0].str().find_first_of("0123456789");
 
-                    
+
                     std::istringstream is(matches[0].str().substr(n, 4));
                     if (is >> y)
                     {
@@ -1400,16 +1278,16 @@ int main(int argc, char* argv[])
                             if (y < 50)y += 2000;
                         }
                     }
-                    
+
                     {
-                        std::istringstream is(matches[0].str().substr(n+4, 2));
+                        std::istringstream is(matches[0].str().substr(n + 4, 2));
                         if (is >> m);
                     }
                     {
-                        std::istringstream is(matches[0].str().substr(n+6, 2));
+                        std::istringstream is(matches[0].str().substr(n + 6, 2));
                         if (is >> d);
                     }
-                    
+
                     std::wcout << y << L" " << m << L" " << d << std::endl;
 
                 }
@@ -1429,18 +1307,18 @@ int main(int argc, char* argv[])
                         }
 
                         {
-                            std::istringstream is(matches[0].str().substr(n+3, 2));
+                            std::istringstream is(matches[0].str().substr(n + 3, 2));
                             if (is >> d);
                         }
 
-                        if (matches[0].str().substr(n+6, 2) == "19" || matches[0].str().substr(n+6, 2) == "20")
+                        if (matches[0].str().substr(n + 6, 2) == "19" || matches[0].str().substr(n + 6, 2) == "20")
                         {
-                            std::istringstream is(matches[0].str().substr(n+6, 4));
+                            std::istringstream is(matches[0].str().substr(n + 6, 4));
                             if (is >> y);
                         }
                         else
                         {
-                            std::istringstream is(matches[0].str().substr(n+6, 2));
+                            std::istringstream is(matches[0].str().substr(n + 6, 2));
                             if (is >> y)
                             {
                                 if (y < 1900)
@@ -1450,7 +1328,7 @@ int main(int argc, char* argv[])
                                 }
                             }
                         }
-                        
+
                         std::wcout << y << L" " << m << L" " << d << std::endl;
 
                     }
@@ -1517,62 +1395,120 @@ int main(int argc, char* argv[])
 
                                 std::wcout << y << L" " << m << L" " << d << std::endl;
                             }
-
-                            
-                        }
-                        else
-                        {
-
-                            std::regex_search(s, matches, daythdaymonthmon);
-                            if (!matches.empty())
+                            else
                             {
-                                for (int n = 0; n < matches.size(); n++)
-                                    std::wcout << L"daythdaymonthmon " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                                int n = matches[0].str().find_first_of("0123456789");
-
-                                if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
+                                std::regex_search(s, matches, daythdaymonthmon);
+                                if (!matches.empty())
                                 {
-                                    std::istringstream is(matches[0].str().substr(n, 2));
-                                    if (is >> d);
-                                }
-                                else
-                                {
-                                    std::istringstream is(matches[0].str().substr(n, 1));
-                                    if (is >> d);
-                                }
+                                    for (int n = 0; n < matches.size(); n++)
+                                        std::wcout << L"daythdaymonthmon " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                                if (matches[0].str().find("Jan") != string::npos)m = 1;
-                                if (matches[0].str().find("Feb") != string::npos)m = 2;
-                                if (matches[0].str().find("Mar") != string::npos)m = 3;
-                                if (matches[0].str().find("Apr") != string::npos)m = 4;
-                                if (matches[0].str().find("May") != string::npos)m = 5;
-                                if (matches[0].str().find("Jun") != string::npos)m = 6;
-                                if (matches[0].str().find("Jul") != string::npos)m = 7;
-                                if (matches[0].str().find("Aug") != string::npos)m = 8;
-                                if (matches[0].str().find("Sep") != string::npos)m = 9;
-                                if (matches[0].str().find("Oct") != string::npos)m = 10;
-                                if (matches[0].str().find("Nov") != string::npos)m = 11;
-                                if (matches[0].str().find("Dec") != string::npos)m = 12;
+                                    int n = matches[0].str().find_first_of("0123456789");
 
-                                std::wcout << y << L" " << m << L" " << d << std::endl;
+                                    if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
+                                    {
+                                        std::istringstream is(matches[0].str().substr(n, 2));
+                                        if (is >> d);
+                                    }
+                                    else
+                                    {
+                                        std::istringstream is(matches[0].str().substr(n, 1));
+                                        if (is >> d);
+                                    }
+
+                                    if (matches[0].str().find("Jan") != string::npos)m = 1;
+                                    if (matches[0].str().find("Feb") != string::npos)m = 2;
+                                    if (matches[0].str().find("Mar") != string::npos)m = 3;
+                                    if (matches[0].str().find("Apr") != string::npos)m = 4;
+                                    if (matches[0].str().find("May") != string::npos)m = 5;
+                                    if (matches[0].str().find("Jun") != string::npos)m = 6;
+                                    if (matches[0].str().find("Jul") != string::npos)m = 7;
+                                    if (matches[0].str().find("Aug") != string::npos)m = 8;
+                                    if (matches[0].str().find("Sep") != string::npos)m = 9;
+                                    if (matches[0].str().find("Oct") != string::npos)m = 10;
+                                    if (matches[0].str().find("Nov") != string::npos)m = 11;
+                                    if (matches[0].str().find("Dec") != string::npos)m = 12;
+
+                                    std::wcout << y << L" " << m << L" " << d << std::endl;
+                                }
                             }
                         }
-
                     }
                 }
             }
         }
     }
-
-        
-    
+}
 
 
+/** Callback function handling an ExifEntry. */
+static void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
+{
+    char buf[2000];
+    exif_entry_get_value(entry, buf, sizeof(buf));
+    std::wcout << convertUtf8ToWide(exif_tag_get_name(entry->tag)) << L" " <<
+        convertUtf8ToWide(exif_format_get_name(entry->format)) << L" " <<
+        entry->size << L" " <<
+        (int)(entry->components) << L" " <<
+        convertUtf8ToWide(exif_entry_get_value(entry, buf, sizeof(buf))) << std::endl;
+}
+
+
+/** Callback function handling an ExifContent (corresponds 1:1 to an IFD). */
+static void data_foreach_func(ExifContent* content, void* callback_data)
+{
+    static unsigned content_count;
+    std::wcout << exif_content_get_ifd(content) << std::endl;
+    exif_content_foreach_entry(content, content_foreach_func, callback_data);
+    ++content_count;
+}
+
+
+
+// function expects the string in format dd/mm/yyyy:
+bool extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int& y) 
+{
+    std::istringstream is(s);
+    char delimiter;
+    if (is >> m >> delimiter >> d >> delimiter >> y) {
+
+        if (y < 1900)
+        {
+            if (y > 70)y += 1900;
+            if (y < 50)y += 2000;
+        }
+
+        struct tm t = { 0 };
+        t.tm_mday = d;
+        t.tm_mon = m - 1;
+        t.tm_year = y - 1900;
+        t.tm_isdst = -1;
+
+        // normalize:
+        time_t when = mktime(&t);
+        const struct tm* norm = localtime(&when);
+        // the actual date would be:
+        // m = norm->tm_mon + 1;
+        // d = norm->tm_mday;
+        // y = norm->tm_year;
+        // e.g. 29/02/2013 would become 01/03/2013
+
+        // validate (is the normalized date still the same?):
+        return (norm->tm_mday == d &&
+            norm->tm_mon == m - 1 &&
+            norm->tm_year == y - 1900);
+    }
+    return false;
+}
+
+void getDatesFromEXIFDataForAllFiles()
+{
 
     //if file is an image get exif data, timestamps
     //look at all possible timestamp values in exif
-    if(false)
+
+    //libexif
     for (int i = 0; i < fileDataEntries.size(); i++)
     {
         FileDataEntry* f = &(fileDataEntries[i]);
@@ -1623,11 +1559,184 @@ int main(int argc, char* argv[])
     //GPSTimeStamp
 
 
+    //TinyEXIF
+    for (int i = 0; i < fileDataEntries.size(); i++)
+    {
+        FileDataEntry* f = &(fileDataEntries[i]);
+
+        if (f->name.find(L".jpg") != std::wstring::npos ||
+            f->name.find(L".jpeg") != std::wstring::npos ||
+            f->name.find(L".JPG") != std::wstring::npos ||
+            f->name.find(L".png") != std::wstring::npos ||
+            f->name.find(L".PNG") != std::wstring::npos
+            )
+        {
+            // open a stream to read just the necessary parts of the image file
+            std::ifstream stream(f->nameAndPath, std::ios::binary);
+            if (stream)
+            {
+                // parse image EXIF and XMP metadata
+                TinyEXIF::EXIFInfo imageEXIF(stream);
+                if (!imageEXIF.Fields)
+                {
+
+                }
+
+                if (!imageEXIF.DateTime.empty())
+                    std::wcout << L"DateTime " << convertUtf8ToWide(imageEXIF.DateTime) << std::endl;
+                if (!imageEXIF.DateTimeOriginal.empty())
+                    std::wcout << L"DateTimeOriginal " << convertUtf8ToWide(imageEXIF.DateTimeOriginal) << std::endl;
+                if (!imageEXIF.DateTimeDigitized.empty())
+                    std::wcout << L"DateTimeDigitized " << convertUtf8ToWide(imageEXIF.DateTimeDigitized) << std::endl;
+
+            }
+        }
+    }
+
+}
+
+
+
+#define DB_LOCATION L"locate.db"
+static FILE* db = NULL;
+
+
+
+bool isWindows = false;
 
 
 
 
-    //sort by file size
+int main(int argc, char* argv[])
+{
+
+#ifdef WIN32
+    isWindows = true;
+#else
+    isWindows = false;
+#endif
+
+    //Code Page Identifiers
+    const char CP_UTF_16LE[] = ".1200";
+    setlocale(LC_ALL, CP_UTF_16LE);
+    //Prepare for unicode output 
+    int setmodestatus = _setmode(_fileno(stdout), _O_U16TEXT);
+
+    //if (db == NULL)
+    //{
+    //    errno_t error;
+    //    error = _wfopen_s(&db, DB_LOCATION, L"wt, ccs=UNICODE");
+    //    if (error)
+    //    {
+    //        wprintf(L"Cannot open %s\n", DB_LOCATION);
+    //        exit(EXIT_FAILURE);
+    //    }
+    //}
+
+
+    wstring startpath = L"D:\\";
+    _int64 filecount = 0;
+    LARGE_INTEGER li;
+
+    _int64 CounterStart = 0;
+    _int64 msPassed = 0;
+    
+    QueryPerformanceFrequency(&li);
+    double PCFreq = double(li.QuadPart) / 1000.0;
+
+
+
+
+
+    //std::wcout << L"directoryIteratorRecursive" << std::endl;
+    //
+    //QueryPerformanceCounter(&li);
+    //CounterStart = li.QuadPart;
+    //start = std::chrono::steady_clock::now();
+    //filecount = 0;
+    //
+    //directoryIteratorRecursive(startpath, filecount);
+    //
+    //std::wcout << L"Files found: " << filecount << std::endl;
+    //
+    //QueryPerformanceCounter(&li);
+    //msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+    ////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+    //std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+    //std::wcout << L"direntScanDirectory" << std::endl;
+    //
+    //QueryPerformanceCounter(&li);
+    //CounterStart = li.QuadPart;
+    //start = std::chrono::steady_clock::now();
+    //filecount = 0;
+    //
+    //direntScanDirectory(startpath,filecount);
+    //
+    //std::wcout << L"Files found: " << filecount << std::endl;
+    //
+    //QueryPerformanceCounter(&li);
+    //msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+    ////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+    //std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+
+    std::wcout << L"ListFilesWindowsFindFirstFile" << std::endl;
+
+    QueryPerformanceCounter(&li);
+    CounterStart = li.QuadPart;
+    start = std::chrono::steady_clock::now();
+    filecount = 0;
+
+    ListFilesWindowsFindFirstFile(startpath, filecount);
+
+    std::wcout << L"Files found: " << filecount << std::endl;
+
+    QueryPerformanceCounter(&li);
+    msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+    //std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+    std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+
+
+
+
+    getSizeForAllFiles();
+    
+    getCreatedAndLastModifiedDateForAllFiles();
+
+    if(false)
+    getFastHashForAllFiles();
+
+    if(false)
+    getDateFromFilenameForAllFiles();
+
+    if (false)
+    getDatesFromEXIFDataForAllFiles();
+
+
+
+    //You can use std::swap to swap two values.
+    //And also you may want to compare to std::sort(which is typically an introsort : a quick sort + insertion sort for small sizes),
+    //std::stable_sort(typically a merge sort), and std::make_heap + std::sort_heap(heap sort)
+    {
+
+        //sort by file size
+
+        std::wcout << L"Start sort by size" << std::endl;
+        start = std::chrono::steady_clock::now();
+
+        std::sort(fileDataEntries.begin(), fileDataEntries.end());//56s 494k files
+        //std::stable_sort(fileDataEntries.begin(), fileDataEntries.end());//34s 494k files
+
+
+        std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+    }
+    
 
     //compare hash
 
@@ -1665,9 +1774,6 @@ int main(int argc, char* argv[])
 
 
 
-
-
-        
 
         
 
