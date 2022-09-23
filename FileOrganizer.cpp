@@ -1757,6 +1757,7 @@ int main(int argc, char* argv[])
         {
             __int64 size = fileDataEntries[i].size;
 
+            if(size>1024*1024)
             for (int j = i + 1; j < fileDataEntries.size(); j++)
             {
                 if (size == fileDataEntries[j].size)
@@ -1769,33 +1770,58 @@ int main(int argc, char* argv[])
 
                     //compare hash
                     if (
-                        (
-                            fileDataEntries[i].crc32.empty() == false &&
-                            fileDataEntries[i].md5.empty() == false &&
-                            fileDataEntries[i].sha1.empty() == false &&
-                            fileDataEntries[i].sha2.empty() == false &&
-                            fileDataEntries[i].keccak.empty() == false &&
-                            fileDataEntries[i].sha3.empty() == false &&
+                            (
+                                fileDataEntries[i].crc32.empty() == false &&
+                                fileDataEntries[i].md5.empty() == false &&
+                                fileDataEntries[i].sha1.empty() == false &&
+                                fileDataEntries[i].sha2.empty() == false &&
+                                fileDataEntries[i].keccak.empty() == false &&
+                                fileDataEntries[i].sha3.empty() == false &&
 
-                            fileDataEntries[j].crc32.empty() == false &&
-                            fileDataEntries[j].md5.empty() == false &&
-                            fileDataEntries[j].sha1.empty() == false &&
-                            fileDataEntries[j].sha2.empty() == false &&
-                            fileDataEntries[j].keccak.empty() == false &&
-                            fileDataEntries[j].sha3.empty() == false
+                                fileDataEntries[j].crc32.empty() == false &&
+                                fileDataEntries[j].md5.empty() == false &&
+                                fileDataEntries[j].sha1.empty() == false &&
+                                fileDataEntries[j].sha2.empty() == false &&
+                                fileDataEntries[j].keccak.empty() == false &&
+                                fileDataEntries[j].sha3.empty() == false
                             )
-                        &&
-                        (
-                            fileDataEntries[i].crc32 == fileDataEntries[j].crc32 ||
-                            fileDataEntries[i].md5 == fileDataEntries[j].md5 ||
-                            fileDataEntries[i].sha1 == fileDataEntries[j].sha1 ||
-                            fileDataEntries[i].sha2 == fileDataEntries[j].sha2 ||
-                            fileDataEntries[i].keccak == fileDataEntries[j].keccak ||
-                            fileDataEntries[i].sha3 == fileDataEntries[j].sha3
+                            &&
+                            (
+                                fileDataEntries[i].crc32 == fileDataEntries[j].crc32 ||
+                                fileDataEntries[i].md5 == fileDataEntries[j].md5 ||
+                                fileDataEntries[i].sha1 == fileDataEntries[j].sha1 ||
+                                fileDataEntries[i].sha2 == fileDataEntries[j].sha2 ||
+                                fileDataEntries[i].keccak == fileDataEntries[j].keccak ||
+                                fileDataEntries[i].sha3 == fileDataEntries[j].sha3
                             )
                         )
                     {
-                        std::wcout << L"Possible match: " << fileDataEntries[i].nameAndPath << L" " << fileDataEntries[j].nameAndPath << std::endl;
+                        //std::wcout << L"Possible match: " << fileDataEntries[i].nameAndPath << L" " << fileDataEntries[j].nameAndPath << L" " << fileDataEntries[i].size << std::endl;
+
+                        if (fileDataEntries[i].name == fileDataEntries[j].name) 
+                        { 
+                            //std::wcout << L"Same filename " << fileDataEntries[i].name << std::endl; 
+                        }
+                        else
+                        {
+                            std::wcout << L"Different filename " << fileDataEntries[i].name << L" " << fileDataEntries[j].name << std::endl;
+                        }
+
+                        if (
+                            fileDataEntries[i].crc32 == fileDataEntries[j].crc32 &&
+                            fileDataEntries[i].md5 == fileDataEntries[j].md5 &&
+                            fileDataEntries[i].sha1 == fileDataEntries[j].sha1 &&
+                            fileDataEntries[i].sha2 == fileDataEntries[j].sha2 &&
+                            fileDataEntries[i].keccak == fileDataEntries[j].keccak &&
+                            fileDataEntries[i].sha3 == fileDataEntries[j].sha3
+                            )
+                        {
+                            //std::wcout << L"All hashes match!" << std::endl;
+                        }
+                        else
+                        {
+                            std::wcout << L"Hashes different" << std::endl;
+                        }
                     }
 
                     //match comparisons run full hash and byte comparison
