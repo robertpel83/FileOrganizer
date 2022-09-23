@@ -121,6 +121,7 @@ public:
 vector<FileDataEntry> fileDataEntries;
 
 std::chrono::steady_clock::time_point start;
+bool isWindows = false;
 
 
 
@@ -781,30 +782,213 @@ void getFileCreatedModifiedDateWStat(FileDataEntry *f)
 //create and modify date
 void getCreatedAndLastModifiedDateForAllFiles()
 {
-    //12s 494k files
-    std::wcout << L"getFileCreatedModifiedDateWindows" << std::endl;
-    start = std::chrono::steady_clock::now();
-    for (int i = 0; i < fileDataEntries.size(); i++)
+
+    if (isWindows)
     {
-        FileDataEntry* f = &(fileDataEntries[i]);
-        getFileCreatedModifiedDateWindows(f);
+        //12s 494k files
+        std::wcout << L"getFileCreatedModifiedDateWindows" << std::endl;
+        start = std::chrono::steady_clock::now();
+        for (int i = 0; i < fileDataEntries.size(); i++)
+        {
+            FileDataEntry* f = &(fileDataEntries[i]);
+            getFileCreatedModifiedDateWindows(f);
+        }
+        std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
     }
-    std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 
-
-
-    //both of these are pretty comparable
-    //23s 494k files
-    std::wcout << L"getFileCreatedModifiedDateWStat" << std::endl;
-    start = std::chrono::steady_clock::now();
-    for (int i = 0; i < fileDataEntries.size(); i++)
+    if (isWindows == false)
     {
-        FileDataEntry* f = &(fileDataEntries[i]);
-        getFileCreatedModifiedDateWStat(f);
+        //both of these are pretty comparable
+        //23s 494k files
+        std::wcout << L"getFileCreatedModifiedDateWStat" << std::endl;
+        start = std::chrono::steady_clock::now();
+        for (int i = 0; i < fileDataEntries.size(); i++)
+        {
+            FileDataEntry* f = &(fileDataEntries[i]);
+            getFileCreatedModifiedDateWStat(f);
+        }
+        std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
     }
-    std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
 }
 
+void getFastHash(FileDataEntry* f)
+{
+    if (f->crc32.empty() == false)return;
+    if (f->md5.empty() == false)return;
+    if (f->sha1.empty() == false)return;
+    if (f->sha2.empty() == false)return;
+    if (f->keccak.empty() == false)return;
+    if (f->sha3.empty() == false)return;
+
+    bool computeCrc32 = 1;
+    bool computeMd5 = 1;
+    bool computeSha1 = 1;
+    bool computeSha2 = 1;
+    bool computeKeccak = 1;
+    bool computeSha3 = 1;
+
+    CRC32  digestCrc32;
+    MD5    digestMd5;
+    SHA1   digestSha1;
+    SHA256 digestSha2;
+    Keccak digestKeccak(Keccak::Keccak256);
+    SHA3   digestSha3(SHA3::Bits256);
+
+
+
+    int chunkSize = 1024 * 16;
+    int bufferSize = chunkSize * 5;
+    if (f->size > bufferSize)
+    {
+        char* buffer = new char[bufferSize];
+
+        try
+        {
+            if (std::ifstream is{ f->nameAndPath, std::ios::in | std::ios::binary })
+            {
+                is.exceptions(is.failbit);
+
+                std::size_t numBytesRead = 0;
+
+                is.seekg((f->size / 5) * 0);
+                is.exceptions(is.failbit);
+                is.read(&buffer[chunkSize * 0], chunkSize);
+                is.exceptions(is.failbit);
+
+                numBytesRead += size_t(is.gcount());
+
+                is.seekg((f->size / 5) * 1);
+                is.exceptions(is.failbit);
+                is.read(&buffer[chunkSize * 1], chunkSize);
+                is.exceptions(is.failbit);
+
+                numBytesRead += size_t(is.gcount());
+
+                is.seekg((f->size / 5) * 2);
+                is.exceptions(is.failbit);
+                is.read(&buffer[chunkSize * 2], chunkSize);
+                is.exceptions(is.failbit);
+
+                numBytesRead += size_t(is.gcount());
+
+                is.seekg((f->size / 5) * 3);
+                is.exceptions(is.failbit);
+                is.read(&buffer[chunkSize * 3], chunkSize);
+                is.exceptions(is.failbit);
+
+                numBytesRead += size_t(is.gcount());
+
+                is.seekg((f->size - chunkSize));
+                is.exceptions(is.failbit);
+                is.read(&buffer[chunkSize * 4], chunkSize);
+                is.exceptions(is.failbit);
+
+                numBytesRead += size_t(is.gcount());
+
+                //std::wcout << L"Buffer size " << bufferSize << std::endl;
+                //std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+
+                is.close();
+
+                if (computeCrc32)   digestCrc32.add(buffer, numBytesRead);
+                if (computeMd5)     digestMd5.add(buffer, numBytesRead);
+                if (computeSha1)    digestSha1.add(buffer, numBytesRead);
+                if (computeSha2)    digestSha2.add(buffer, numBytesRead);
+                if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
+                if (computeSha3)    digestSha3.add(buffer, numBytesRead);
+
+
+            }
+        }
+        catch (const std::ios_base::failure& e)
+        {
+            std::cout << "Caught an ios_base::failure.\n"
+                << "Explanatory string: " << e.what() << '\n'
+                << "Error code: " << e.code() << '\n';
+        }
+
+        delete[] buffer;
+    }
+    else
+    {
+        char* buffer = new char[f->size];
+
+        try
+        {
+            if (std::ifstream is{ f->nameAndPath, std::ios::in | std::ios::binary })
+            {
+                is.exceptions(is.failbit);
+
+                is.read(buffer, f->size);
+
+                is.exceptions(is.failbit);
+
+                std::size_t numBytesRead = size_t(is.gcount());
+
+                //std::wcout << L"File size " << f->size << std::endl;
+                //std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+
+                is.close();
+
+                if (computeCrc32)   digestCrc32.add(buffer, numBytesRead);
+                if (computeMd5)     digestMd5.add(buffer, numBytesRead);
+                if (computeSha1)    digestSha1.add(buffer, numBytesRead);
+                if (computeSha2)    digestSha2.add(buffer, numBytesRead);
+                if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
+                if (computeSha3)    digestSha3.add(buffer, numBytesRead);
+
+            }
+        }
+        catch (const std::ios_base::failure& e)
+        {
+            std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
+        }
+
+        delete[] buffer;
+    }
+
+    //show results
+    //if (computeCrc32) std::wcout << L"CRC32:      " << convertUtf8ToWide(digestCrc32.getHash()) << std::endl;
+    //if (computeMd5)   std::wcout << L"MD5:        " << convertUtf8ToWide(digestMd5.getHash()) << std::endl;
+    //if (computeSha1)  std::wcout << L"SHA1:       " << convertUtf8ToWide(digestSha1.getHash()) << std::endl;
+    //if (computeSha2)  std::wcout << L"SHA2/256:   " << convertUtf8ToWide(digestSha2.getHash()) << std::endl;
+    //if (computeKeccak)std::wcout << L"Keccak/256: " << convertUtf8ToWide(digestKeccak.getHash()) << std::endl;
+    //if (computeSha3)  std::wcout << L"SHA3/256:   " << convertUtf8ToWide(digestSha3.getHash()) << std::endl;
+
+    //f->size = size;
+    f->crc32 = convertUtf8ToWide(digestCrc32.getHash());
+    f->md5 = convertUtf8ToWide(digestMd5.getHash());
+    f->sha1 = convertUtf8ToWide(digestSha1.getHash());
+    f->sha2 = convertUtf8ToWide(digestSha2.getHash());
+    f->keccak = convertUtf8ToWide(digestKeccak.getHash());
+    f->sha3 = convertUtf8ToWide(digestSha3.getHash());
+
+
+    //if (db)
+    //{
+    //    // Output line to file 
+    //    fwprintf(db, L"%s\n", f.name.c_str());
+    //    fwprintf(db, L"%s\n", f.path.c_str());
+    //    fwprintf(db, L"%llu\n", f.size);
+    //    fwprintf(db, L"%llu\n", f.createdTime);
+    //    fwprintf(db, L"%llu\n", f.modifiedTime);
+    //    fwprintf(db, L"%s\n", f.createdDate.c_str());
+    //    fwprintf(db, L"%s\n", f.modifiedDate.c_str());
+    //    fwprintf(db, L"%s\n", f.crc32.c_str());
+    //    fwprintf(db, L"%s\n", f.md5.c_str());
+    //    fwprintf(db, L"%s\n", f.sha1.c_str());
+    //    fwprintf(db, L"%s\n", f.sha2.c_str());
+    //    fwprintf(db, L"%s\n", f.keccak.c_str());
+    //    fwprintf(db, L"%s\n", f.sha3.c_str());
+    //    fwprintf(db, L";");
+    //}
+    //else
+    //{
+    //    wprintf(L"Database not open\n");
+    //    exit(EXIT_FAILURE);
+    //}
+}
 
 
 void getFastHashForAllFiles()
@@ -819,173 +1003,7 @@ void getFastHashForAllFiles()
     {
         FileDataEntry* f = &(fileDataEntries[i]);
 
-        bool computeCrc32 = 1;
-        bool computeMd5 = 1;
-        bool computeSha1 = 1;
-        bool computeSha2 = 1;
-        bool computeKeccak = 1;
-        bool computeSha3 = 1;
-
-        CRC32  digestCrc32;
-        MD5    digestMd5;
-        SHA1   digestSha1;
-        SHA256 digestSha2;
-        Keccak digestKeccak(Keccak::Keccak256);
-        SHA3   digestSha3(SHA3::Bits256);
-
-
-
-        int chunkSize = 1024 * 16;
-        int bufferSize = chunkSize * 5;
-        if (f->size > bufferSize)
-        {
-            char* buffer = new char[bufferSize];
-
-            try
-            {
-                if (std::ifstream is{ f->nameAndPath, std::ios::in | std::ios::binary })
-                {
-                    is.exceptions(is.failbit);
-
-                    std::size_t numBytesRead = 0;
-
-                    is.seekg((f->size / 5) * 0);
-                    is.exceptions(is.failbit);
-                    is.read(&buffer[chunkSize * 0], chunkSize);
-                    is.exceptions(is.failbit);
-
-                    numBytesRead += size_t(is.gcount());
-
-                    is.seekg((f->size / 5) * 1);
-                    is.exceptions(is.failbit);
-                    is.read(&buffer[chunkSize * 1], chunkSize);
-                    is.exceptions(is.failbit);
-
-                    numBytesRead += size_t(is.gcount());
-
-                    is.seekg((f->size / 5) * 2);
-                    is.exceptions(is.failbit);
-                    is.read(&buffer[chunkSize * 2], chunkSize);
-                    is.exceptions(is.failbit);
-
-                    numBytesRead += size_t(is.gcount());
-
-                    is.seekg((f->size / 5) * 3);
-                    is.exceptions(is.failbit);
-                    is.read(&buffer[chunkSize * 3], chunkSize);
-                    is.exceptions(is.failbit);
-
-                    numBytesRead += size_t(is.gcount());
-
-                    is.seekg((f->size - chunkSize));
-                    is.exceptions(is.failbit);
-                    is.read(&buffer[chunkSize * 4], chunkSize);
-                    is.exceptions(is.failbit);
-
-                    numBytesRead += size_t(is.gcount());
-
-                    //std::wcout << L"Buffer size " << bufferSize << std::endl;
-                    //std::wcout << L"numBytesRead " << numBytesRead << std::endl;
-
-                    is.close();
-
-                    if (computeCrc32)   digestCrc32.add(buffer, numBytesRead);
-                    if (computeMd5)     digestMd5.add(buffer, numBytesRead);
-                    if (computeSha1)    digestSha1.add(buffer, numBytesRead);
-                    if (computeSha2)    digestSha2.add(buffer, numBytesRead);
-                    if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
-                    if (computeSha3)    digestSha3.add(buffer, numBytesRead);
-
-
-                }
-            }
-            catch (const std::ios_base::failure& e)
-            {
-                std::cout << "Caught an ios_base::failure.\n"
-                    << "Explanatory string: " << e.what() << '\n'
-                    << "Error code: " << e.code() << '\n';
-            }
-
-            delete[] buffer;
-        }
-        else
-        {
-            char* buffer = new char[f->size];
-
-            try
-            {
-                if (std::ifstream is{ f->nameAndPath, std::ios::in | std::ios::binary })
-                {
-                    is.exceptions(is.failbit);
-
-                    is.read(buffer, f->size);
-
-                    is.exceptions(is.failbit);
-
-                    std::size_t numBytesRead = size_t(is.gcount());
-
-                    //std::wcout << L"File size " << f->size << std::endl;
-                    //std::wcout << L"numBytesRead " << numBytesRead << std::endl;
-
-                    is.close();
-
-                    if (computeCrc32)   digestCrc32.add(buffer, numBytesRead);
-                    if (computeMd5)     digestMd5.add(buffer, numBytesRead);
-                    if (computeSha1)    digestSha1.add(buffer, numBytesRead);
-                    if (computeSha2)    digestSha2.add(buffer, numBytesRead);
-                    if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
-                    if (computeSha3)    digestSha3.add(buffer, numBytesRead);
-
-                }
-            }
-            catch (const std::ios_base::failure& e)
-            {
-                std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
-            }
-
-            delete[] buffer;
-        }
-
-        //show results
-        //if (computeCrc32) std::wcout << L"CRC32:      " << convertUtf8ToWide(digestCrc32.getHash()) << std::endl;
-        //if (computeMd5)   std::wcout << L"MD5:        " << convertUtf8ToWide(digestMd5.getHash()) << std::endl;
-        //if (computeSha1)  std::wcout << L"SHA1:       " << convertUtf8ToWide(digestSha1.getHash()) << std::endl;
-        //if (computeSha2)  std::wcout << L"SHA2/256:   " << convertUtf8ToWide(digestSha2.getHash()) << std::endl;
-        //if (computeKeccak)std::wcout << L"Keccak/256: " << convertUtf8ToWide(digestKeccak.getHash()) << std::endl;
-        //if (computeSha3)  std::wcout << L"SHA3/256:   " << convertUtf8ToWide(digestSha3.getHash()) << std::endl;
-
-        //f->size = size;
-        f->crc32 = convertUtf8ToWide(digestCrc32.getHash());
-        f->md5 = convertUtf8ToWide(digestMd5.getHash());
-        f->sha1 = convertUtf8ToWide(digestSha1.getHash());
-        f->sha2 = convertUtf8ToWide(digestSha2.getHash());
-        f->keccak = convertUtf8ToWide(digestKeccak.getHash());
-        f->sha3 = convertUtf8ToWide(digestSha3.getHash());
-
-
-        //if (db)
-        //{
-        //    // Output line to file 
-        //    fwprintf(db, L"%s\n", f.name.c_str());
-        //    fwprintf(db, L"%s\n", f.path.c_str());
-        //    fwprintf(db, L"%llu\n", f.size);
-        //    fwprintf(db, L"%llu\n", f.createdTime);
-        //    fwprintf(db, L"%llu\n", f.modifiedTime);
-        //    fwprintf(db, L"%s\n", f.createdDate.c_str());
-        //    fwprintf(db, L"%s\n", f.modifiedDate.c_str());
-        //    fwprintf(db, L"%s\n", f.crc32.c_str());
-        //    fwprintf(db, L"%s\n", f.md5.c_str());
-        //    fwprintf(db, L"%s\n", f.sha1.c_str());
-        //    fwprintf(db, L"%s\n", f.sha2.c_str());
-        //    fwprintf(db, L"%s\n", f.keccak.c_str());
-        //    fwprintf(db, L"%s\n", f.sha3.c_str());
-        //    fwprintf(db, L";");
-        //}
-        //else
-        //{
-        //    wprintf(L"Database not open\n");
-        //    exit(EXIT_FAILURE);
-        //}
+        getFastHash(f);
 
     }
 }
@@ -1602,7 +1620,6 @@ static FILE* db = NULL;
 
 
 
-bool isWindows = false;
 
 
 
@@ -1714,7 +1731,7 @@ int main(int argc, char* argv[])
     if(false)
     getDateFromFilenameForAllFiles();
 
-    if (false)
+    if(false)
     getDatesFromEXIFDataForAllFiles();
 
 
@@ -1723,24 +1740,83 @@ int main(int argc, char* argv[])
     //And also you may want to compare to std::sort(which is typically an introsort : a quick sort + insertion sort for small sizes),
     //std::stable_sort(typically a merge sort), and std::make_heap + std::sort_heap(heap sort)
     {
-
         //sort by file size
 
         std::wcout << L"Start sort by size" << std::endl;
         start = std::chrono::steady_clock::now();
 
-        std::sort(fileDataEntries.begin(), fileDataEntries.end());//56s 494k files
-        //std::stable_sort(fileDataEntries.begin(), fileDataEntries.end());//34s 494k files
-
+        //std::sort(fileDataEntries.begin(), fileDataEntries.end());//56s 494k files
+        std::stable_sort(fileDataEntries.begin(), fileDataEntries.end());//53s 494k files
 
         std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+    }
+
+    //for each entry, check to see if there are duplicates ahead
+    {
+        for (int i = 0; i < fileDataEntries.size(); i++)
+        {
+            __int64 size = fileDataEntries[i].size;
+
+            for (int j = i + 1; j < fileDataEntries.size(); j++)
+            {
+                if (size == fileDataEntries[j].size)
+                {
+                    //got a match
+
+                    //check hash
+                    getFastHash(&(fileDataEntries[i]));
+                    getFastHash(&(fileDataEntries[j]));
+
+                    //compare hash
+                    if (
+                        (
+                            fileDataEntries[i].crc32.empty() == false &&
+                            fileDataEntries[i].md5.empty() == false &&
+                            fileDataEntries[i].sha1.empty() == false &&
+                            fileDataEntries[i].sha2.empty() == false &&
+                            fileDataEntries[i].keccak.empty() == false &&
+                            fileDataEntries[i].sha3.empty() == false &&
+
+                            fileDataEntries[j].crc32.empty() == false &&
+                            fileDataEntries[j].md5.empty() == false &&
+                            fileDataEntries[j].sha1.empty() == false &&
+                            fileDataEntries[j].sha2.empty() == false &&
+                            fileDataEntries[j].keccak.empty() == false &&
+                            fileDataEntries[j].sha3.empty() == false
+                            )
+                        &&
+                        (
+                            fileDataEntries[i].crc32 == fileDataEntries[j].crc32 ||
+                            fileDataEntries[i].md5 == fileDataEntries[j].md5 ||
+                            fileDataEntries[i].sha1 == fileDataEntries[j].sha1 ||
+                            fileDataEntries[i].sha2 == fileDataEntries[j].sha2 ||
+                            fileDataEntries[i].keccak == fileDataEntries[j].keccak ||
+                            fileDataEntries[i].sha3 == fileDataEntries[j].sha3
+                            )
+                        )
+                    {
+                        std::wcout << L"Possible match: " << fileDataEntries[i].nameAndPath << L" " << fileDataEntries[j].nameAndPath << std::endl;
+                    }
+
+                    //match comparisons run full hash and byte comparison
+
+                }
+                else
+                {
+                    j = fileDataEntries.size();
+                    break;
+                }
+            }
+
+        }
 
     }
+
+
+
     
 
-    //compare hash
 
-    //match comparisons run full hash and byte comparison
 
 
     //use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
