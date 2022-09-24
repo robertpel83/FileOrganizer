@@ -32,15 +32,9 @@
     <QtMoc Include="OpenFileOrganizer.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClCompile Include="OpenFileOrganizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FileOrganizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libs\fstlib-develop\ext\gtest\src\gtest-all.cc">
@@ -284,6 +278,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libs\tinyxml2-master\tinyxml2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenFileOrganizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

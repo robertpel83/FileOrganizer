@@ -106,9 +106,13 @@
     <QtRcc Include="OpenFileOrganizer.qrc" />
     <QtUic Include="OpenFileOrganizer.ui" />
     <QtMoc Include="OpenFileOrganizer.h" />
-    <ClCompile Include="OpenFileOrganizer.cpp" />
+    <ClCompile Include="OpenFileOrganizer.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="FileOrganizer.cpp" />
     <ClCompile Include="libs\fstlib-develop\ext\gtest\src\gtest-all.cc" />
     <ClCompile Include="libs\fstlib-develop\ext\lz4\lz4.c" />
     <ClCompile Include="libs\fstlib-develop\ext\zstd\common\debug.c" />
