@@ -1264,11 +1264,11 @@ void getDateFromFilenameForAllFiles()
 
                 {
                     std::istringstream is(matches[0].str().substr(n + 5, 2));
-                    if (is >> m);
+                    is >> m;
                 }
                 {
                     std::istringstream is(matches[0].str().substr(n + 8, 2));
-                    if (is >> d);
+                    is >> d;
                 }
 
                 std::wcout << y << L" " << m << L" " << d << std::endl;
@@ -1299,11 +1299,11 @@ void getDateFromFilenameForAllFiles()
 
                     {
                         std::istringstream is(matches[0].str().substr(n + 4, 2));
-                        if (is >> m);
+                        is >> m;
                     }
                     {
                         std::istringstream is(matches[0].str().substr(n + 6, 2));
-                        if (is >> d);
+                        is >> d;
                     }
 
                     std::wcout << y << L" " << m << L" " << d << std::endl;
@@ -1321,18 +1321,18 @@ void getDateFromFilenameForAllFiles()
 
                         {
                             std::istringstream is(matches[0].str().substr(n, 2));
-                            if (is >> m);
+                            is >> m;
                         }
 
                         {
                             std::istringstream is(matches[0].str().substr(n + 3, 2));
-                            if (is >> d);
+                            is >> d;
                         }
 
                         if (matches[0].str().substr(n + 6, 2) == "19" || matches[0].str().substr(n + 6, 2) == "20")
                         {
                             std::istringstream is(matches[0].str().substr(n + 6, 4));
-                            if (is >> y);
+                            is >> y;
                         }
                         else
                         {
@@ -1369,13 +1369,13 @@ void getDateFromFilenameForAllFiles()
                                 else
                                 {
                                     std::istringstream is(matches[0].str().substr(n + 1, 4));
-                                    if (is >> y);
+                                    is >> y;
                                 }
                             }
                             else
                             {
                                 std::istringstream is(matches[0].str().substr(n, 4));
-                                if (is >> y);
+                                is >> y;
                             }
 
                             std::regex_search(s, matches, monthmondaythday);
@@ -1402,12 +1402,12 @@ void getDateFromFilenameForAllFiles()
                                     if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
                                     {
                                         std::istringstream is(matches[0].str().substr(n, 2));
-                                        if (is >> d);
+                                        is >> d;
                                     }
                                     else
                                     {
                                         std::istringstream is(matches[0].str().substr(n, 1));
-                                        if (is >> d);
+                                        is >> d;
                                     }
                                 }
 
@@ -1427,12 +1427,12 @@ void getDateFromFilenameForAllFiles()
                                     if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
                                     {
                                         std::istringstream is(matches[0].str().substr(n, 2));
-                                        if (is >> d);
+                                        is >> d;
                                     }
                                     else
                                     {
                                         std::istringstream is(matches[0].str().substr(n, 1));
-                                        if (is >> d);
+                                        is >> d;
                                     }
 
                                     if (matches[0].str().find("Jan") != string::npos)m = 1;
@@ -1624,7 +1624,7 @@ static FILE* db = NULL;
 
 
 
-int main(int argc, char* argv[])
+void main2(int argc, char* argv[])
 {
 
 #ifdef WIN32
@@ -1651,7 +1651,7 @@ int main(int argc, char* argv[])
     //}
 
 
-    wstring startpath = L"D:\\";
+    wstring startpath = L"C:\\";
     _int64 filecount = 0;
     LARGE_INTEGER li;
 
@@ -1821,11 +1821,18 @@ int main(int argc, char* argv[])
                         else
                         {
                             std::wcout << L"Hashes different" << std::endl;
+
+                            //match comparisons run full hash and byte comparison
+
+                            //TODO: check full hash
+
+                            //TODO: do byte comparison
+
+
+
+
                         }
                     }
-
-                    //match comparisons run full hash and byte comparison
-
                 }
                 else
                 {
@@ -1833,14 +1840,14 @@ int main(int argc, char* argv[])
                     break;
                 }
             }
-
         }
-
     }
 
 
 
-    
+    //video file metadata
+    //music file metadata
+    //pdf and document metadata
 
 
 
@@ -1859,16 +1866,39 @@ int main(int argc, char* argv[])
     //store all filenames and dates etc in metadata
 
 
-    //ocr
+    //save and load database with metadata
 
-    //ai image object detection
 
+
+
+    //gui
+    //filter by file type
+    //add directories, subdirectories
+    //sort by size, name, matches, type
+    //match in same directory
+    //operations (rename, remove duplicates, merge metadata)
 
     //file renamer
 
 
-    //gui
+    //ocr
 
+    //ai image object classification
+
+    //ai ocr
+
+    //ai video comparison, object classification
+
+
+
+    
+
+
+    
+
+    //somehow make part of filesystem or explorer extension, run system wide search
+
+    //switch to linux, test program, embed in gnome?
 
 
 }
