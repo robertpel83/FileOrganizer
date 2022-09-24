@@ -177,7 +177,7 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QTextEdit" name="consoleOutputTextEdit"/>
+          <widget class="QPlainTextEdit" name="consoleOutputPlainTextEdit"/>
          </item>
         </layout>
        </widget>
