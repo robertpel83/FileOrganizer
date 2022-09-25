@@ -129,15 +129,15 @@ exif_mnote_data_fuji_save (ExifMnoteData *ne, unsigned char **buf,
 
 			/* Ensure even offsets. Set padding bytes to 0. */
 			if (s & 1) ts += 1;
-			t = exif_mem_realloc (ne->mem, *buf, ts);
+			t = exif_mem_realloc (ne->mem, *buf, (ExifLong)(ts));
 			if (!t) {
 				return;
 			}
 			*buf = t;
-			*buf_size = ts;
+			*buf_size = (unsigned int)(ts);
 			doff = *buf_size - s;
 			if (s & 1) { doff--; *(*buf + *buf_size - 1) = '\0'; }
-			exif_set_long (*buf + o, n->order, doff);
+			exif_set_long (*buf + o, n->order, (ExifLong)(doff));
 		} else
 			doff = o;
 
@@ -236,7 +236,7 @@ exif_mnote_data_fuji_load (ExifMnoteData *en,
 		 * in the entry but somewhere else (offset).
 		 */
 		s = exif_format_get_size (n->entries[tcount].format) * n->entries[tcount].components;
-		n->entries[tcount].size = s;
+		n->entries[tcount].size = (unsigned int)(s);
 		if (s) {
 			size_t dataofs = o + 8;
 			if (s > 4)
@@ -250,7 +250,7 @@ exif_mnote_data_fuji_load (ExifMnoteData *en,
 				continue;
 			}
 
-			n->entries[tcount].data = exif_mem_alloc (en->mem, s);
+			n->entries[tcount].data = exif_mem_alloc (en->mem, (ExifLong)(s));
 			if (!n->entries[tcount].data) {
 				EXIF_LOG_NO_MEMORY(en->log, "ExifMnoteDataFuji", s);
 				continue;
@@ -262,7 +262,7 @@ exif_mnote_data_fuji_load (ExifMnoteData *en,
 		++tcount;
 	}
 	/* Store the count of successfully parsed tags */
-	n->count = tcount;
+	n->count = (unsigned int)(tcount);
 }
 
 static unsigned int

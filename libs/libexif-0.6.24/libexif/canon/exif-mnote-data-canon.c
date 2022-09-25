@@ -165,16 +165,16 @@ exif_mnote_data_canon_save (ExifMnoteData *ne,
 			/* Ensure even offsets. Set padding bytes to 0. */
 			if (s & 1) ts += 1;
 			t = exif_mem_realloc (ne->mem, *buf,
-						 sizeof (char) * ts);
+						 (ExifLong)(sizeof (char) * ts));
 			if (!t) {
 				EXIF_LOG_NO_MEMORY(ne->log, "ExifMnoteCanon", ts);
 				return;
 			}
 			*buf = t;
-			*buf_size = ts;
+			*buf_size = (unsigned int)(ts);
 			doff = *buf_size - s;
 			if (s & 1) { doff--; *(*buf + *buf_size - 1) = '\0'; }
-			exif_set_long (*buf + o, n->order, n->offset + doff);
+			exif_set_long (*buf + o, n->order, (ExifLong)(n->offset + doff));
 		} else
 			doff = o;
 
@@ -279,7 +279,7 @@ exif_mnote_data_canon_load (ExifMnoteData *ne,
 		 */
 		s = exif_format_get_size (n->entries[tcount].format) * 
 								  n->entries[tcount].components;
-		n->entries[tcount].size = s;
+		n->entries[tcount].size = (unsigned int)(s);
 		if (!s) {
 			exif_log (ne->log, EXIF_LOG_CODE_CORRUPT_DATA,
 				  "ExifMnoteCanon",
@@ -298,7 +298,7 @@ exif_mnote_data_canon_load (ExifMnoteData *ne,
 				continue;
 			}
 
-			n->entries[tcount].data = exif_mem_alloc (ne->mem, s);
+			n->entries[tcount].data = exif_mem_alloc (ne->mem, (ExifLong)(s));
 			if (!n->entries[tcount].data) {
 				EXIF_LOG_NO_MEMORY(ne->log, "ExifMnoteCanon", s);
 				continue;
@@ -327,7 +327,7 @@ exif_mnote_data_canon_load (ExifMnoteData *ne,
 		++tcount;
 	}
 	/* Store the count of successfully parsed tags */
-	n->count = tcount;
+	n->count = (unsigned int)(tcount);
 }
 
 static unsigned int

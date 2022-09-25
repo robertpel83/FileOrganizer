@@ -130,7 +130,7 @@ exif_loader_write_file (ExifLoader *l, const char *path)
 		return;
 	}
 	while (1) {
-		size = fread (data, 1, sizeof (data), f);
+		size = (int)(fread (data, 1, sizeof (data), f));
 		if (size <= 0) 
 			break;
 		if (!exif_loader_write (l, data, size)) 

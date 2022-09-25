@@ -207,8 +207,8 @@ void fdsWriteCharVec_v6(ofstream& myfile, IStringWriter* stringWriter, int compr
     int* intBufSize = reinterpret_cast<int*>(blockP + 12);
 
     stringWriter->SetBuffersFromVec(block * BLOCKSIZE_CHAR, (block + 1) * BLOCKSIZE_CHAR);
-    unsigned long long totSize = storeCharBlockCompressed_v6(myfile, stringWriter, block * BLOCKSIZE_CHAR,
-      (block + 1) * BLOCKSIZE_CHAR, streamCompressInt, streamCompressChar, *algoInt, *algoChar, *intBufSize, block);
+    unsigned long long totSize = storeCharBlockCompressed_v6(myfile, stringWriter, (unsigned int)(block * BLOCKSIZE_CHAR),
+      (unsigned int)((block + 1) * BLOCKSIZE_CHAR), streamCompressInt, streamCompressChar, *algoInt, *algoChar, *intBufSize, (int)(block));
 
     fullSize += totSize;
     *blockPos = fullSize;
@@ -221,8 +221,8 @@ void fdsWriteCharVec_v6(ofstream& myfile, IStringWriter* stringWriter, int compr
   int* intBufSize = reinterpret_cast<int*>(blockP + 12);
 
   stringWriter->SetBuffersFromVec(nrOfBlocks * BLOCKSIZE_CHAR, vecLength);
-  unsigned long long totSize = storeCharBlockCompressed_v6(myfile, stringWriter, nrOfBlocks * BLOCKSIZE_CHAR,
-    vecLength, streamCompressInt, streamCompressChar, *algoInt, *algoChar, *intBufSize, nrOfBlocks);
+  unsigned long long totSize = storeCharBlockCompressed_v6(myfile, stringWriter, (unsigned int)(nrOfBlocks * BLOCKSIZE_CHAR),
+    (unsigned int)(vecLength), streamCompressInt, streamCompressChar, *algoInt, *algoChar, *intBufSize, (int)(nrOfBlocks));
 
   fullSize += totSize;
   *blockPos = fullSize;
@@ -251,7 +251,7 @@ inline void ReadDataBlock_v6(istream& myfile, IStringColumn* blockReader, unsign
 
   myfile.read(reinterpret_cast<char*>(sizeMeta), totElements * 4); // read cumulative string lengths and NA bits
 
-  unsigned int charDataSize = blockSize - totElements * 4;
+  unsigned int charDataSize = (unsigned int)(blockSize - totElements * 4);
 
   std::unique_ptr<char[]> bufP(new char[charDataSize]);
   char* buf = bufP.get();
@@ -289,13 +289,13 @@ inline void ReadDataBlockCompressed_v6(istream& myfile, IStringColumn* blockRead
 
     // Decompress size but not NA metadata (which is currently uncompressed)
 
-    decompressor.Decompress(algoInt, reinterpret_cast<char*>(sizeMeta), nrOfElements * 4, strSizeBuf, intBlockSize);
+    decompressor.Decompress(algoInt, reinterpret_cast<char*>(sizeMeta), (unsigned int)(nrOfElements * 4), strSizeBuf, intBlockSize);
   }
 
   unsigned int charDataSizeUncompressed = sizeMeta[nrOfElements - 1];
 
   // Read and uncompress string vector data, use stack if possible here !!!!!
-  unsigned int charDataSize = blockSize - intBlockSize - nrOfNAInts * 4;
+  unsigned int charDataSize = (unsigned int)(blockSize - intBlockSize - nrOfNAInts * 4);
 
   std::unique_ptr<char[]> bufP(new char[charDataSizeUncompressed]);
   char* buf = bufP.get();
@@ -417,7 +417,7 @@ void fdsReadCharVec_v6(istream& myfile, IStringColumn* blockReader, unsigned lon
 
   // Vector data is compressed
 
-  unsigned int bufLength = (nrOfBlocks + 1) * CHAR_INDEX_SIZE; // 1 long and 2 unsigned int per block
+  unsigned int bufLength = (unsigned int)((nrOfBlocks + 1) * CHAR_INDEX_SIZE); // 1 long and 2 unsigned int per block
 
   // add extra first element for convenience
   std::unique_ptr<char[]> blockInfoP = std::unique_ptr<char[]>(new char[bufLength + CHAR_INDEX_SIZE]);

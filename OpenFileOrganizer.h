@@ -125,7 +125,7 @@ public:
 
 
 
-std::string convertWideToANSI(const std::wstring& wstr)
+static std::string convertWideToANSI(const std::wstring& wstr)
 {
     int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
     std::string str(count, 0);
@@ -133,7 +133,7 @@ std::string convertWideToANSI(const std::wstring& wstr)
     return str;
 }
 
-std::wstring convertAnsiToWide(const std::string& str)
+static std::wstring convertAnsiToWide(const std::string& str)
 {
     int count = MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0);
     std::wstring wstr(count, 0);
@@ -141,7 +141,7 @@ std::wstring convertAnsiToWide(const std::string& str)
     return wstr;
 }
 
-std::string convertWideToUtf8(const std::wstring& wstr)
+static std::string convertWideToUtf8(const std::wstring& wstr)
 {
     int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
     std::string str(count, 0);
@@ -149,7 +149,7 @@ std::string convertWideToUtf8(const std::wstring& wstr)
     return str;
 }
 
-std::wstring convertUtf8ToWide(const std::string& str)
+static std::wstring convertUtf8ToWide(const std::string& str)
 {
     int count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), NULL, 0);
     std::wstring wstr(count, 0);
@@ -157,12 +157,12 @@ std::wstring convertUtf8ToWide(const std::string& str)
     return wstr;
 }
 
-std::wstring convertStringToWStringUsingFilesystem(std::string s)
+static std::wstring convertStringToWStringUsingFilesystem(std::string s)
 {
     return std::filesystem::path(s).wstring();
 }
 
-std::wstring convertWStringToStringUsingFilesystem(std::wstring w)
+static std::wstring convertWStringToStringUsingFilesystem(std::wstring w)
 {
     return std::filesystem::path(w).wstring();
 }
@@ -247,7 +247,7 @@ protected:
         int pos = 0;
         while (pos != std::wstring::npos)
         {
-            pos = m_string.find(L"\n");
+            pos = (int)(m_string.find(L"\n"));
             if (pos != std::wstring::npos)
             {
                 std::wstring tmp(m_string.begin(), m_string.begin() + pos);
@@ -273,6 +273,86 @@ private:
     QPlainTextEdit* log_window;
 };
 
+class MessageHandler : public QObject
+{
+    Q_OBJECT
+public:
+    MessageHandler(QPlainTextEdit* textEdit, QObject* parent = Q_NULLPTR) : QObject(parent), m_textEdit(textEdit) {}
+
+public slots:
+    void catchMessage(QString msg)
+    {
+        this->m_textEdit->appendPlainText(msg);
+    }
+    
+private:
+    QPlainTextEdit* m_textEdit;
+};
+
+
+
+class ThreadLogStream : public QObject, public std::wstreambuf
+{
+    Q_OBJECT
+public:
+    ThreadLogStream(std::wostream& stream, QObject* parent = Q_NULLPTR) :QObject(parent), m_stream(stream)
+    {
+        m_old_buf = stream.rdbuf();
+        stream.rdbuf(this);
+    }
+    ~ThreadLogStream()
+    {
+        // output anything that is left
+        if (!m_string.empty())
+        {
+            QString qs;
+            qs += m_string;
+            emit sendLogString(qs);// QString::fromStdWString(m_string));
+        }
+        m_stream.rdbuf(m_old_buf);
+    }
+protected:
+    virtual int_type overflow(int_type v)
+    {
+        if (v == '\n')
+        {
+            QString qs;
+            qs += m_string;
+            emit sendLogString(qs);// QString::fromStdString(m_string));
+            m_string.erase(m_string.begin(), m_string.end());
+        }
+        else
+            m_string += v;
+        return v;
+    }
+    virtual std::streamsize xsputn(const wchar_t* p, std::streamsize n)
+    {
+        m_string.append(p, p + n);
+        size_t pos = 0;
+        while (pos != std::wstring::npos)
+        {
+            pos = m_string.find(L"\n");
+            if (pos != std::wstring::npos)
+            {
+                std::wstring tmp(m_string.begin(), m_string.begin() + pos);
+
+                QString qs;
+                qs += tmp;
+
+                emit sendLogString(qs);// QString::fromStdString(tmp));
+                m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
+            }
+        }
+        return n;
+    }
+private:
+    std::wostream& m_stream;
+    std::wstreambuf* m_old_buf;
+    std::wstring m_string;
+signals:
+    void sendLogString(const QString& str);
+};
+
 
 
 class OpenFileOrganizer : public QMainWindow
@@ -283,8 +363,18 @@ public:
     OpenFileOrganizer(QWidget* parent = nullptr);
     ~OpenFileOrganizer();
 
+    static  void QMessageOutput(QtMsgType, const QMessageLogContext&, const QString& msg);
+
+
 private:
     Ui::OpenFileOrganizerClass ui;
+
+    // MessageHandler for display and ThreadLogStream for redirecting cout
+    
+    MessageHandler* msgHandler = Q_NULLPTR;
+    ThreadLogStream* m_qd;
+
+    const QString errorString = "error";
 
 private slots:
     void handleButton();
@@ -295,49 +385,38 @@ private slots:
 
 
 
-class ThreadWorker : public QObject
+class Worker : public QObject
 {
     Q_OBJECT
 public:
-    ThreadWorker()
-    {
-
-    }
-    ThreadWorker(QPlainTextEdit *consoleOutputPlainTextEdit)
+    
+    Worker()//QPlainTextEdit *consoleOutputPlainTextEdit)
     {
         
-        plainTextEdit = consoleOutputPlainTextEdit;
-         qout = new QDebugStream(std::wcout, plainTextEdit);
-         std::wcout << L"Hello this is a test" << std::endl;
+        //plainTextEdit = consoleOutputPlainTextEdit;
+         //qout = new QDebugStream(std::wcout, plainTextEdit);
+         //std::wcout << L"Hello this is a test" << std::endl;
+
+        //db = NULL;
     }
     vector<FileDataEntry> fileDataEntries;
     std::chrono::steady_clock::time_point start;
     bool isWindows = false;
-#define DB_LOCATION L"locate.db"
-    FILE* db;
-    QPlainTextEdit* plainTextEdit;
-    QDebugStream* qout;
 
-private:
+//#define DB_LOCATION L"locate.db"
+    //FILE* db;
+    //QPlainTextEdit* plainTextEdit;
+    //QDebugStream* qout;
 
-signals:
-
-    void finished();
 
 public slots:
-    void doWork()
-    {
-        
-       
+    void process();
+signals:
+    void finished();
+    //void error(QString err);
 
-        go();
-        emit finished();
-    }
-    void quit()
-    {
 
-    }
-
+private:
 
     //std::unordered_set<wstring> recursiveDirectoryIteratorIncrementPaths;
     //for whatever reason, recursive_directory_iterator cannot read "All Users" folder, but directory_iterator can. weird.
@@ -1421,7 +1500,7 @@ public slots:
                         std::wcout << L"yyyy_mm_dd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
 
-                    int n = matches[0].str().find_first_of("0123456789");
+                    int n = (int)(matches[0].str().find_first_of("0123456789"));
 
                     std::istringstream is(matches[0].str().substr(n, 4));
                     if (is >> y)
@@ -1455,7 +1534,7 @@ public slots:
                         for (int n = 0; n < matches.size(); n++)
                             std::wcout << L"yyyymmdd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                        int n = matches[0].str().find_first_of("0123456789");
+                        int n = (int)(matches[0].str().find_first_of("0123456789"));
 
 
                         std::istringstream is(matches[0].str().substr(n, 4));
@@ -1488,7 +1567,7 @@ public slots:
                             for (int n = 0; n < matches.size(); n++)
                                 std::wcout << L"mm dd [yy]yy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                            int n = matches[0].str().find_first_of("0123456789");
+                            int n = (int)(matches[0].str().find_first_of("0123456789"));
 
                             {
                                 std::istringstream is(matches[0].str().substr(n, 2));
@@ -1529,7 +1608,7 @@ public slots:
                                 //for (int n = 0; n < matches.size(); n++)
                                     //std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                                int n = matches[0].str().find_first_of("0123456789");
+                                int n = (int)(matches[0].str().find_first_of("0123456789"));
 
                                 if (matches[0].str().substr(n, 1) != "1" && matches[0].str().substr(n, 1) != "2")
                                 {
@@ -1568,7 +1647,7 @@ public slots:
                                     if (matches[0].str().find("Nov") != string::npos)m = 11;
                                     if (matches[0].str().find("Dec") != string::npos)m = 12;
 
-                                    int n = matches[0].str().find_first_of("0123456789");
+                                    int n = (int)(matches[0].str().find_first_of("0123456789"));
                                     {
                                         if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
                                         {
@@ -1593,7 +1672,7 @@ public slots:
                                         for (int n = 0; n < matches.size(); n++)
                                             std::wcout << L"daythdaymonthmon " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
 
-                                        int n = matches[0].str().find_first_of("0123456789");
+                                        int n = (int)(matches[0].str().find_first_of("0123456789"));
 
                                         if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
                                         {
@@ -1991,7 +2070,7 @@ public slots:
                         }
                         else
                         {
-                            j = fileDataEntries.size();
+                            j = (int)(fileDataEntries.size());
                             break;
                         }
                     }

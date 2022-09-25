@@ -54,8 +54,8 @@ using namespace std;
 void fdsStreamUncompressed_v2(ofstream& myfile, char* vec, unsigned long long vecLength, int elementSize, int blockSizeElems,
   FixedRatioCompressor* fixedRatioCompressor, std::string annotation, bool hasAnnotation)
 {
-  const unsigned int annotationLength = annotation.length();
-  int nrOfBlocks = 1 + (vecLength - 1) / blockSizeElems; // number of compressed / uncompressed blocks
+  const unsigned int annotationLength = (unsigned int)(annotation.length());
+  int nrOfBlocks = (int)(1 + (vecLength - 1) / blockSizeElems); // number of compressed / uncompressed blocks
   const int remain = 1 + (vecLength + blockSizeElems - 1) % blockSizeElems; // number of elements in last incomplete block
   int blockSize = blockSizeElems * elementSize;
 
@@ -202,8 +202,8 @@ void fdsStreamUncompressed_v2(ofstream& myfile, char* vec, unsigned long long ve
 void fdsStreamcompressed_v2(ofstream& myfile, char* colVec, unsigned long long nrOfRows, int elementSize,
   StreamCompressor* streamCompressor, int blockSizeElems, std::string annotation, bool hasAnnotation)
 {
-  unsigned int annotationLength = annotation.length();
-  int nrOfBlocks = 1 + (nrOfRows - 1) / blockSizeElems; // number of compressed / uncompressed blocks
+  unsigned int annotationLength = (unsigned int)(annotation.length());
+  int nrOfBlocks = (int)(1 + (nrOfRows - 1) / blockSizeElems); // number of compressed / uncompressed blocks
   int remain = 1 + (nrOfRows + blockSizeElems - 1) % blockSizeElems; // number of elements in last incomplete block
   int blockSize = blockSizeElems * elementSize;
 
@@ -390,8 +390,8 @@ inline void fdsReadFixedCompStream_v2(istream& myfile, char* outVec, unsigned lo
 
   // Determine random-access starting point
   unsigned int repSizeElement = repSize / elementSize;
-  unsigned int startRep = startRow / repSizeElement;
-  unsigned int endRep = (startRow + vecLength - 1) / repSizeElement;
+  unsigned int startRep = (unsigned int)(startRow / repSizeElement);
+  unsigned int endRep = (unsigned int)((startRow + vecLength - 1) / repSizeElement);
 
   Decompressor decompressor; // decompressor
 
@@ -401,7 +401,7 @@ inline void fdsReadFixedCompStream_v2(istream& myfile, char* outVec, unsigned lo
   }
 
   unsigned int startRowRep = startRep * repSizeElement;
-  unsigned int startOffset = startRow - startRowRep; // rep-block offset in number of elements
+  unsigned int startOffset = (unsigned int)(startRow - startRowRep); // rep-block offset in number of elements
 
   char* outP = outVec; // allow shifting of vector pointer
 
@@ -489,7 +489,7 @@ inline void fdsReadFixedCompStream_v2(istream& myfile, char* outVec, unsigned lo
 
   // Last rep unit may be partial
   char buf[MAX_SOURCE_REP_SIZE]; // single rep unit buffer
-  unsigned int nrOfElemsLastRep = startRow + vecLength - endRep * repSizeElement;
+  unsigned int nrOfElemsLastRep = (unsigned int)(startRow + vecLength - endRep * repSizeElement);
 
   decompressor.Decompress(compAlgo, buf, repSize, &repBuf[lastTargetBlockSize - targetRepSize], targetRepSize); // decompress repetition block
   memcpy(&outP[activeBlockPos + lastBlockSize - repSize], buf, elementSize * nrOfElemsLastRep); // skip last elements if required
@@ -515,12 +515,12 @@ void ProcessBatch(char* outVec, char* blockIndex, unsigned long long blockSize, 
     }
     else if (isAlligned) // compressed and output vector alligned
     {
-      decompressor.Decompress(threadAlgo, &outVec[outOffset + (blockCount - 1) * blockSize], blockSize, &threadBuf[totSize], curCompBlockSize);
+      decompressor.Decompress(threadAlgo, &outVec[outOffset + (blockCount - 1) * blockSize], (unsigned int)(blockSize), &threadBuf[totSize], (unsigned int)(curCompBlockSize));
     }
     else // misaligned output vector, memcpy to avoid inefficient decompression
     {
       char allignBuf[MAX_SIZE_COMPRESS_BLOCK];
-      decompressor.Decompress(threadAlgo, allignBuf, blockSize, &threadBuf[totSize], curCompBlockSize);
+      decompressor.Decompress(threadAlgo, allignBuf, (unsigned int)(blockSize), &threadBuf[totSize], (unsigned int)(curCompBlockSize));
       memcpy(&outVec[outOffset + (blockCount - 1) * blockSize], allignBuf, blockSize); // copy to misaligned pointer
     }
 
@@ -660,11 +660,11 @@ void fdsReadColumn_v2(istream& myfile, char* outVec, unsigned long long blockPos
 
     if (length == curSize)
     {
-      decompressor.Decompress(algo, outVec, elementSize * length, compBuf, compSize); // direct decompress
+      decompressor.Decompress(algo, outVec, (unsigned int)(elementSize * length), compBuf, (unsigned int)(compSize)); // direct decompress
     }
     else
     {
-      decompressor.Decompress(algo, tmpBuf, elementSize * curSize, compBuf, compSize); // decompress in tmp buffer
+      decompressor.Decompress(algo, tmpBuf, elementSize * curSize, compBuf, (unsigned int)(compSize)); // decompress in tmp buffer
       memcpy(outVec, &tmpBuf[elementSize * startOffset], elementSize * length); // data range
     }
 
@@ -691,11 +691,11 @@ void fdsReadColumn_v2(istream& myfile, char* outVec, unsigned long long blockPos
 
     if (startOffset == 0) // full block
     {
-      decompressor.Decompress(algo, outVec, blockSize, compBuf, compSize);
+      decompressor.Decompress(algo, outVec, blockSize, compBuf, (unsigned int)(compSize));
     }
     else
     {
-      decompressor.Decompress(algo, tmpBuf, blockSize, compBuf, compSize);
+      decompressor.Decompress(algo, tmpBuf, blockSize, compBuf, (unsigned int)(compSize));
       memcpy(outVec, &tmpBuf[elementSize * startOffset], elementSize * subBlockSize);
     }
   }
@@ -712,9 +712,9 @@ void fdsReadColumn_v2(istream& myfile, char* outVec, unsigned long long blockPos
 
   maxBlock--; // decrement to get number of full blocks
 
-  const int nrOfThreads = max(1ULL, min(static_cast<unsigned long long>(GetFstThreads()), maxBlock));
-  int batchSize = min(static_cast<unsigned long long>(maxbatchSize), maxBlock / nrOfThreads); // keep thread buffer small
-  batchSize = max(1, batchSize);
+  const int nrOfThreads = (int)(max(1ULL, min(static_cast<unsigned long long>(GetFstThreads()), maxBlock)));
+  int batchSize = (int)(min(static_cast<unsigned long long>(maxbatchSize), maxBlock / nrOfThreads)); // keep thread buffer small
+  batchSize = (int)(max(1, batchSize));
 
   // TODO: localize threadBuffer in small area
   std::unique_ptr<char[]> threadBufferP(new char[nrOfThreads * MAX_COMPRESSBOUND * batchSize]);
@@ -748,7 +748,7 @@ void fdsReadColumn_v2(istream& myfile, char* outVec, unsigned long long blockPos
         // last batch might have a smaller size
         if (blockCount == (nrOfBatches - 1))
         {
-          curBatchSize = batchSize - (nrOfBatches * batchSize % maxBlock);
+          curBatchSize = (int)(batchSize - (nrOfBatches * batchSize % maxBlock));
         }
 
         blockEnd = blockStart + curBatchSize;
@@ -814,17 +814,17 @@ void fdsReadColumn_v2(istream& myfile, char* outVec, unsigned long long blockPos
     {
       if ((outOffset % 8) == 0) // outVec pointer is 8-byte aligned
       {
-        decompressor.Decompress(algo, &outVec[outOffset], curSize * elementSize, compBuf, compSize);
+        decompressor.Decompress(algo, &outVec[outOffset], (unsigned int)(curSize * elementSize), compBuf, (unsigned int)(compSize));
       }
       else
       {
-        decompressor.Decompress(algo, tmpBuf, curSize * elementSize, compBuf, compSize);
+        decompressor.Decompress(algo, tmpBuf, (unsigned int)(curSize * elementSize), compBuf, (unsigned int)(compSize));
         memcpy(&outVec[outOffset], tmpBuf, curSize * elementSize);
       }
     }
     else
     {
-      decompressor.Decompress(algo, tmpBuf, curSize * elementSize, compBuf, compSize); // define tmpBuf locally for speed ?
+      decompressor.Decompress(algo, tmpBuf, (unsigned int)(curSize * elementSize), compBuf, (unsigned int)(compSize)); // define tmpBuf locally for speed ?
       memcpy(static_cast<char*>(&outVec[outOffset]), tmpBuf, elementSize * remain);
     }
   }

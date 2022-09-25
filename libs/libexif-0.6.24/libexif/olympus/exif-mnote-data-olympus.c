@@ -213,14 +213,14 @@ exif_mnote_data_olympus_save (ExifMnoteData *ne,
 			doff = *buf_size;
 			ts = *buf_size + s;
 			t = exif_mem_realloc (ne->mem, *buf,
-						 sizeof (char) * ts);
+						 (ExifLong)(sizeof (char) * ts));
 			if (!t) {
 				EXIF_LOG_NO_MEMORY(ne->log, "ExifMnoteDataOlympus", ts);
 				return;
 			}
 			*buf = t;
-			*buf_size = ts;
-			exif_set_long (*buf + o, n->order, datao + doff);
+			*buf_size = (unsigned int)(ts);
+			exif_set_long (*buf + o, n->order, (ExifLong)(datao + doff));
 		} else
 			doff = o;
 
@@ -275,7 +275,7 @@ exif_mnote_data_olympus_load (ExifMnoteData *en,
 	 * two unknown bytes (0), "MM" or "II", another byte 0 and 
 	 * lastly 0x2A.
 	 */
-	n->version = exif_mnote_data_olympus_identify_variant(buf+o2, buf_size-o2);
+	n->version = exif_mnote_data_olympus_identify_variant(buf+o2, (unsigned int)(buf_size-o2));
 	switch (n->version) {
 	case olympusV1:
 	case sanyoV1:
@@ -469,7 +469,7 @@ exif_mnote_data_olympus_load (ExifMnoteData *en,
 	     */
 	    s = exif_format_get_size (n->entries[tcount].format) *
 		   			 n->entries[tcount].components;
-		n->entries[tcount].size = s;
+		n->entries[tcount].size = (unsigned int)(s);
 		if (s) {
 			size_t dataofs = o + 8;
 			if (s > 4) {
@@ -498,7 +498,7 @@ exif_mnote_data_olympus_load (ExifMnoteData *en,
 				continue;
 			}
 
-			n->entries[tcount].data = exif_mem_alloc (en->mem, s);
+			n->entries[tcount].data = exif_mem_alloc (en->mem, (ExifLong)(s));
 			if (!n->entries[tcount].data) {
 				EXIF_LOG_NO_MEMORY(en->log, "ExifMnoteOlympus", s);
 				continue;
@@ -510,7 +510,7 @@ exif_mnote_data_olympus_load (ExifMnoteData *en,
 		++tcount;
 	}
 	/* Store the count of successfully parsed tags */
-	n->count = tcount;
+	n->count = (unsigned int)(tcount);
 }
 
 static unsigned int

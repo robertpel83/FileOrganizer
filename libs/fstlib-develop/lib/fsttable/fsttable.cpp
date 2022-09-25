@@ -18,7 +18,7 @@ void StringColumn::AllocateVec(uint64_t vecLength)
 void StringColumn::BufferToVec(uint64_t nrOfElements, uint64_t startElem, uint64_t endElem,
 	uint64_t vecOffset, uint32_t* sizeMeta, char* buf)
 {
-	uint32_t nrOfNAInts = 1 + nrOfElements / 32;  // last bit is NA flag
+	uint32_t nrOfNAInts = (uint32_t)(1 + nrOfElements / 32);  // last bit is NA flag
 	uint32_t* bitsNA = &sizeMeta[nrOfElements];
 	uint32_t pos = 0;
 
@@ -77,7 +77,7 @@ void StringColumn::BufferToVec(uint64_t nrOfElements, uint64_t startElem, uint64
 
 	// Get possibly partial first cycle
 
-	uint32_t firstCylceEnd = startCycle * 32 + 31;
+	uint32_t firstCylceEnd = (uint32_t)(startCycle * 32 + 31);
 	for (uint64_t blockElem = startElem; blockElem <= firstCylceEnd; ++blockElem)
 	{
 		uint32_t bitMask = 1 << (blockElem % 32);
@@ -100,7 +100,7 @@ void StringColumn::BufferToVec(uint64_t nrOfElements, uint64_t startElem, uint64
 
 	// Get all but last cycle with fast NA test
 
-	for (uint32_t cycle = startCycle + 1; cycle != endCycle; ++cycle)
+	for (uint32_t cycle = (uint32_t)(startCycle + 1); cycle != endCycle; ++cycle)
 	{
 		uint32_t cycleNAs = bitsNA[cycle];
 		uint32_t middleCycleEnd = cycle * 32 + 32;
@@ -145,7 +145,7 @@ void StringColumn::BufferToVec(uint64_t nrOfElements, uint64_t startElem, uint64
 	cycleNAs = bitsNA[endCycle];
 
 	++endElem;
-	for (uint32_t blockElem = endCycle * 32; blockElem != endElem; ++blockElem)
+	for (uint32_t blockElem = (uint32_t)(endCycle * 32); blockElem != endElem; ++blockElem)
 	{
 		uint32_t bitMask = 1 << (blockElem % 32);
 		uint32_t newPos = sizeMeta[blockElem];

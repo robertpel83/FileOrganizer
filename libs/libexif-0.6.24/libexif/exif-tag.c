@@ -1017,7 +1017,7 @@ exif_tag_table_first(ExifTag tag)
 		return -1;	/* Not found */
 
 	/* Calculate index of found entry */
-	i = entry - ExifTagTable;
+	i = (int)(entry - ExifTagTable);
 
 	/* There may be other entries with the same tag number, so search
 	 * backwards to find the first

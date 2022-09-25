@@ -92,7 +92,7 @@ exif_mnote_data_pentax_save (ExifMnoteData *ne,
 	 * Allocate enough memory for header, the number of entries, entries,
 	 * and next IFD pointer
 	 */
-	*buf_size = o2 + 2 + n->count * 12 + 4;
+	*buf_size = (unsigned int)(o2 + 2 + n->count * 12 + 4);
 	switch (n->version) {
 	case casioV2:
 		base = MNOTE_PENTAX2_TAG_BASE;
@@ -182,14 +182,14 @@ exif_mnote_data_pentax_save (ExifMnoteData *ne,
 			size_t ts = *buf_size + s;
 			doff = *buf_size;
 			t = exif_mem_realloc (ne->mem, *buf,
-						 sizeof (char) * ts);
+						 (ExifLong)(sizeof (char) * ts));
 			if (!t) {
 				EXIF_LOG_NO_MEMORY(ne->log, "ExifMnoteDataPentax", ts);
 				return;
 			}
 			*buf = t;
-			*buf_size = ts;
-			exif_set_long (*buf + o, n->order, datao + doff);
+			*buf_size = (unsigned int)(ts);
+			exif_set_long (*buf + o, n->order, (ExifLong)(datao + doff));
 		} else
 			doff = o;
 
@@ -319,7 +319,7 @@ exif_mnote_data_pentax_load (ExifMnoteData *en,
 		 */
 		s = exif_format_get_size (n->entries[tcount].format) *
                                       n->entries[tcount].components;
-		n->entries[tcount].size = s;
+		n->entries[tcount].size = (unsigned int)(s);
 		if (s) {
 			size_t dataofs = o + 8;
 			if (s > 4)
@@ -333,7 +333,7 @@ exif_mnote_data_pentax_load (ExifMnoteData *en,
 				continue;
 			}
 
-			n->entries[tcount].data = exif_mem_alloc (en->mem, s);
+			n->entries[tcount].data = exif_mem_alloc (en->mem, (ExifLong)(s));
 			if (!n->entries[tcount].data) {
 				EXIF_LOG_NO_MEMORY(en->log, "ExifMnoteDataPentax", s);
 				continue;
@@ -345,7 +345,7 @@ exif_mnote_data_pentax_load (ExifMnoteData *en,
 		++tcount;
 	}
 	/* Store the count of successfully parsed tags */
-	n->count = tcount;
+	n->count = (unsigned int)(tcount);
 }
 
 static unsigned int

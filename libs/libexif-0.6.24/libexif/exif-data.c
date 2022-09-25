@@ -374,7 +374,7 @@ level_cost(unsigned int n)
     static const double log_1_1 = 0.09531017980432493;
 
 	/* Adding 0.1 protects against the case where n==1 */
-	return ceil(log(n + 0.1)/log_1_1);
+	return (unsigned int)(ceil(log(n + 0.1)/log_1_1));
 }
 
 /*! Load data for an IFD.
@@ -434,7 +434,7 @@ exif_data_load_data_content (ExifData *data, ExifIfd ifd,
 	offset += 2;
 
 	/* Check if we have enough data. */
-	if (CHECKOVERFLOW(offset, ds, 12*n)) {
+	if (CHECKOVERFLOW(offset, ds, (unsigned int)(12*n))) {
 		n = (ds - offset) / 12;
 		exif_log (data->priv->log, EXIF_LOG_CODE_DEBUG, "ExifData",
 				  "Short data; only loading %hu entries...", n);

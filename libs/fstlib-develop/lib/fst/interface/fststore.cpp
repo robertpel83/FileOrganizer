@@ -256,7 +256,7 @@ void FstStore::fstWrite(IFstTable &fstTable, const int compress) const
 
   // Chunkset header [node C, free leaf of A or other chunkset header] [size: 80 + 8 * nrOfCols]
 
-  unsigned int offset = tableHeaderSize + keyIndexHeaderSize;
+  unsigned int offset = (unsigned int)(tableHeaderSize + keyIndexHeaderSize);
   unsigned long long* p_chunksetHash      = reinterpret_cast<unsigned long long*>(&metaDataWriteBlock[offset]);
   unsigned int* p_chunksetHeaderVersion   = reinterpret_cast<unsigned int*>(&metaDataWriteBlock[offset + 8]);
   int* p_chunksetFlags                    = reinterpret_cast<int*>(&metaDataWriteBlock[offset + 12]);
@@ -804,7 +804,7 @@ void FstStore::fstRead(IFstTable &tableReader, IStringArray* columnSelection, co
   }
   else  // determine column numbers of column names
   {
-    nrOfSelect = columnSelection->Length();
+    nrOfSelect = (int)(columnSelection->Length());
 
     colIndexP = std::unique_ptr<int[]>(new int[nrOfSelect]);
     colIndex = colIndexP.get();

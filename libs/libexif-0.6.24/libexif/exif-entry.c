@@ -630,7 +630,7 @@ static int
 match_repeated_char(const unsigned char *data, unsigned char ch, size_t n)
 {
 	int i;
-	for (i=n; i; --i, ++data) {
+	for (i=(int)(n); i; --i, ++data) {
 		if (*data == 0) {
 			i = 0;	/* all bytes before NUL matched */
 			break;
@@ -998,7 +998,7 @@ exif_entry_get_value (ExifEntry *e, char *val, unsigned int maxlen)
 		if (e->size && e->data) {
 			const unsigned char *tagdata = memchr(e->data, 0, e->size);
 			if (tagdata++) {
-				unsigned int editor_ofs = tagdata - e->data;
+				unsigned int editor_ofs = (unsigned int)(tagdata - e->data);
 				unsigned int remaining = e->size - editor_ofs;
 				if (match_repeated_char(tagdata, ' ', remaining)) {
 					strncat (val, (const char*)tagdata, MIN (maxlen-1 - strlen (val), remaining));
@@ -1724,7 +1724,7 @@ exif_entry_initialize (ExifEntry *e, ExifTag tag)
 	case EXIF_TAG_MODEL:
 	case EXIF_TAG_SOFTWARE:
 	case EXIF_TAG_ARTIST:
-		e->components = strlen (_("[None]")) + 1;
+		e->components = (unsigned long)(strlen (_("[None]")) + 1);
 		e->format = EXIF_FORMAT_ASCII;
 		e->size = exif_format_get_size (e->format) * e->components;
 		e->data = exif_entry_alloc (e, e->size);
@@ -1733,7 +1733,7 @@ exif_entry_initialize (ExifEntry *e, ExifTag tag)
 		break;
 	/* ASCII, default "[None]\0[None]\0" */
 	case EXIF_TAG_COPYRIGHT:
-		e->components = (strlen (_("[None]")) + 1) * 2;
+		e->components = (unsigned long)((strlen (_("[None]")) + 1) * 2);
 		e->format = EXIF_FORMAT_ASCII;
 		e->size = exif_format_get_size (e->format) * e->components;
 		e->data = exif_entry_alloc (e, e->size);
