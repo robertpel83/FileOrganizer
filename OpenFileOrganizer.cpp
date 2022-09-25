@@ -1,34 +1,32 @@
 #include "OpenFileOrganizer.h"
 
-void go();
-
-OpenFileOrganizer::OpenFileOrganizer(QWidget *parent)
-    : QMainWindow(parent)
+OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
+	: QMainWindow(parent)
 {
-    ui.setupUi(this);
+	ui.setupUi(this);
 
-    //QDebugStream qout(std::wcout, ui.scanDirsPlainTextEdit);
+	//QDebugStream qout(std::wcout, ui.scanDirsPlainTextEdit);
    // QDebugStream qout(std::wcout, ui.consoleOutputPlainTextEdit);
 
-    //std::wcout << L"Hello this is a test" << std::endl;
-    //std::wcout << L"Hello this is a test" << std::endl;
-    //std::wcout << L"Hello this is a test" << std::endl;
-    //std::wcout << L"Hello this is a test" << std::endl;
-    //std::wcout << L"Hello this is a test" << std::endl;
+	//std::wcout << L"Hello this is a test" << std::endl;
+	//std::wcout << L"Hello this is a test" << std::endl;
+	//std::wcout << L"Hello this is a test" << std::endl;
+	//std::wcout << L"Hello this is a test" << std::endl;
+	//std::wcout << L"Hello this is a test" << std::endl;
 
 
-        // Set up ThreadLogStream, which redirect cout to signal sendLogString
-     // Set up  MessageHandler,  wgucg catch message from sendLogString and Display
+	//Set up ThreadLogStream, which redirect cout to signal sendLogString
+	//Set up MessageHandler, wgucg catch message from sendLogString and Display
 
-    m_qd = new ThreadLogStream(std::wcout); //Redirect Console output to QTextEdit
-    this->msgHandler = new MessageHandler(ui.consoleOutputPlainTextEdit, this);
-    connect(m_qd, &ThreadLogStream::sendLogString, msgHandler, &MessageHandler::catchMessage);
+	m_qd = new ThreadLogStream(std::wcout); //Redirect Console output to QTextEdit
+	this->msgHandler = new MessageHandler(ui.consoleOutputPlainTextEdit, this);
+	connect(m_qd, &ThreadLogStream::sendLogString, msgHandler, &MessageHandler::catchMessage);
 
 
 
-    // Connect button signal to appropriate slot
-    connect(ui.startPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleButton);
-    connect(ui.startPushButton, &QPushButton::clicked, this, &OpenFileOrganizer::handleButton);
+	//Connect button signal to appropriate slot
+	connect(ui.startPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleButton);
+	//connect(ui.startPushButton, &QPushButton::clicked, this, &OpenFileOrganizer::handleButton);
 
 }
 
@@ -37,39 +35,1731 @@ OpenFileOrganizer::~OpenFileOrganizer()
 
 void OpenFileOrganizer::QMessageOutput(QtMsgType, const QMessageLogContext&, const QString& msg)
 {
-    std::wcout << msg.toStdWString() << std::endl;
-    
-
+	std::wcout << msg.toStdWString() << std::endl;
 }
-
-
-void Worker::process()
-{
-    go();
-    emit finished();
-}
-
-
 
 void OpenFileOrganizer::handleButton()
 {
 
-    QThread* thread = new QThread;
-    Worker* worker = new Worker();
-    worker->moveToThread(thread);
-    //connect( worker, &Worker::error, this, &OpenFileOrganizer::errorString);
-    connect( thread, &QThread::started, worker, &Worker::process);
-    connect( worker, &Worker::finished, thread, &QThread::quit);
-    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
-    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
-    thread->start();
+	QThread* thread = new QThread;
+	Worker* worker = new Worker();
+	worker->moveToThread(thread);
+	//connect( worker, &Worker::error, this, &OpenFileOrganizer::errorString);
+	connect(thread, &QThread::started, worker, &Worker::process);
+	connect(worker, &Worker::finished, thread, &QThread::quit);
+	connect(worker, &Worker::finished, worker, &Worker::deleteLater);
+	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+	thread->start();
 
+}
+
+//std::unordered_set<wstring> recursiveDirectoryIteratorIncrementPaths;
+//for whatever reason, recursive_directory_iterator cannot read "All Users" folder, but directory_iterator can. weird.
+void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64& filecount)
+{
+	std::error_code ec;
+	std::filesystem::recursive_directory_iterator v = std::filesystem::recursive_directory_iterator(startpath, std::filesystem::directory_options::skip_permission_denied, ec);
+
+	//iterator based iteration
+	for (;
+		v != end(v); //end(v) is equal to default constructor std::filesystem::recursive_directory_iterator end_itr;
+		v.increment(ec)
+		)
+	{
+		// if the current index is needed:
+		//std::filesystem::recursive_directory_iterator::difference_type i = std::distance(begin(v), it);
+
+		if (ec)
+		{
+			std::wcout << L"Increment error " << convertUtf8ToWide(ec.message()) << std::endl;
+			ec.clear();
+		}
+		else
+		{
+			try {
+				// access element as *it
+				if ((*v).is_regular_file())
+				{
+					filecount++;
+
+					FileDataEntry f;
+					f.nameAndPath = (*v).path().wstring();
+					f.name = (*v).path().filename().wstring();
+					f.path = (*v).path().parent_path().wstring();
+					fileDataEntries.push_back(f);
+
+				}
+				//if ((*v).is_directory())
+				//{
+					//recursiveDirectoryIteratorIncrementPaths.insert((*v).path().wstring());
+				//}
+			}
+			catch (std::filesystem::filesystem_error& e)
+			{
+				std::error_code x = e.code();
+				//std::wcout << L"Filesystem error " << ConvertUtf8ToWide(e.what()) << std::endl;
+			}
+		}
+	}
+}
+
+
+
+
+void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _int64& filecount)
+{
+	if (!exists(dir_path))
+	{
+		std::wcout << dir_path.c_str() << L" does not exist" << std::endl;
+		return;
+	}
+
+	std::stack<wstring> directories;
+
+	directories.push(dir_path);
+
+	while (!directories.empty())
+	{
+		wstring path = directories.top();
+
+		directories.pop();
+
+		std::error_code ec;
+		std::filesystem::directory_iterator itr(path, std::filesystem::directory_options::skip_permission_denied, ec);
+
+		for (;
+			itr != end(itr);  //end(itr) is equal to default constructor std::filesystem::recursive_directory_iterator end_itr;
+			itr.increment(ec))
+		{
+			if (ec)
+			{
+				std::wcout << L"Increment error " << convertUtf8ToWide(ec.message()) << std::endl;
+				ec.clear();
+			}
+			else
+			{
+				try {
+					if (is_directory(itr->status()))
+					{
+						directories.push(itr->path().wstring());
+					}
+					else if (is_regular_file(itr->status()))//.type() == std::filesystem::file_type::regular) //!= std::filesystem::file_type::not_found)//if (itr->path().filename() == file_name) // see below
+					{
+						filecount++;
+
+						FileDataEntry f;
+						f.nameAndPath = itr->path().wstring();
+						f.name = itr->path().filename().wstring();
+						f.path = path;
+						fileDataEntries.push_back(f);
+					}
+				}
+				catch (std::filesystem::filesystem_error& e)
+				{
+					std::error_code x = e.code();
+					//std::wcout << L"Filesystem error " << ConvertUtf8ToWide(e.what()) << std::endl;
+				}
+			}
+		}
+	}
+
+}
+
+
+// Find files recursively 
+void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wchar_t* dirname
+{
+	std::stack<wstring> directories;
+	directories.push(startPath);
+
+	while (!directories.empty())
+	{
+		wstring path = directories.top();
+		directories.pop();
+
+		_WDIR* dir = _wopendir(path.c_str());
+
+		if (dir != NULL)
+		{
+			struct _wdirent* ent;
+
+			while ((ent = _wreaddir(dir)) != NULL)
+			{
+				switch (ent->d_type)
+				{
+				case DT_REG:
+				{
+					filecount++;
+
+					FileDataEntry f;
+					f.nameAndPath = path + L"\\" + ent->d_name;
+					f.name = ent->d_name;
+					f.path = path;
+					fileDataEntries.push_back(f);
+				}
+				break;
+				case DT_DIR:
+					// Scan sub-directory recursively
+					if (wcscmp(ent->d_name, L".") != 0
+						&& wcscmp(ent->d_name, L"..") != 0)
+					{
+						wstring nextPath = path + wstring(L"/") + wstring(ent->d_name);
+						directories.push(nextPath);
+					}
+					break;
+
+				default:
+					// Do not device entries
+					//NOP
+					;
+				}
+			}
+			//if(ent==NULL)std::wcout << L"Dirent Error ReadDir == NULL after " << dirname << L"/" << lastEntName << std::endl;
+
+			wclosedir(dir);
+		}
+
+	}
+}
+
+
+
+//std::unordered_set<wstring> findFirstFilePaths;
+
+void Worker::ListFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount)
+{
+
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA ffd;
+
+	std::stack<wstring> directories;
+
+	directories.push(originalPath);
+
+	while (!directories.empty())
+	{
+		wstring path = directories.top();
+		wstring pathWithTrailingDelimiterAndWildcard = path + L"\\*";
+		directories.pop();
+
+		hFind = FindFirstFileExW(pathWithTrailingDelimiterAndWildcard.c_str(), FindExInfoBasic, &ffd, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
+		if (hFind == INVALID_HANDLE_VALUE)
+		{
+			DWORD error = GetLastError();
+
+			if (error == ERROR_ACCESS_DENIED);// std::wcout << L"FindFirstFileExW Error " << error << L" ERROR_ACCESS_DENIED for " << path << std::endl;
+			else std::wcout << L"FindFirstFileExW Error " << error << L" for " << path << std::endl;
+		}
+		else
+		{
+			do
+			{
+				if (wcscmp(ffd.cFileName, L".") != 0 &&
+					wcscmp(ffd.cFileName, L"..") != 0)
+				{
+					if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+						//&&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_DEVICE) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_SPARSE_FILE) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_VIRTUAL) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS) == 0 &&
+						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_RECALL_ON_OPEN) == 0
+						//)
+					{
+						directories.push(path + L"\\" + ffd.cFileName);
+						//findFirstFilePaths.insert(path + L"\\" + ffd.cFileName);
+					}
+					else
+					{
+						filecount++;
+						FileDataEntry f;
+						f.nameAndPath = path + L"\\" + ffd.cFileName;
+						f.name = ffd.cFileName;
+						f.path = path;
+						fileDataEntries.push_back(f);
+					}
+				}
+			} while (FindNextFileW(hFind, &ffd) != 0);
+
+			DWORD error = GetLastError();
+			if (error != ERROR_SUCCESS && error != ERROR_NO_MORE_FILES)
+			{
+				std::wcout << L"FindNextFileW Error: " << error << std::endl;
+			}
+
+			FindClose(hFind);
+			hFind = INVALID_HANDLE_VALUE;
+		}
+	}
+}
+
+
+
+__int64 Worker::getFileSizeWindows(FileDataEntry* f)//wstring fileNameAndPath)
+{
+	HANDLE hFile = CreateFileW(f->nameAndPath.c_str(), GENERIC_READ,
+		FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		DWORD error = GetLastError();
+		if (error != ERROR_SUCCESS && error != ERROR_NO_MORE_FILES)
+		{
+			if (error == ERROR_PATH_NOT_FOUND)std::wcout << L"CreateFileW Error: " << error << L" ERROR_PATH_NOT_FOUND " << f->nameAndPath.c_str() << std::endl;
+			else if (error == ERROR_ACCESS_DENIED)std::wcout << L"CreateFileW Error: " << error << L" ERROR_ACCESS_DENIED " << f->nameAndPath.c_str() << std::endl;
+			else if (error == ERROR_SHARING_VIOLATION)std::wcout << L"CreateFileW Error: " << error << L" ERROR_SHARING_VIOLATION " << f->nameAndPath.c_str() << std::endl;
+			else if (error == ERROR_CANT_ACCESS_FILE)std::wcout << L"CreateFileW Error: " << error << L" ERROR_CANT_ACCESS_FILE " << f->nameAndPath.c_str() << std::endl;
+			else std::wcout << L"CreateFileW Error: " << error << L" " << f->nameAndPath.c_str() << std::endl;
+		}
+		return -1;
+	}
+
+	LARGE_INTEGER size;
+	if (!GetFileSizeEx(hFile, &size))
+	{
+		DWORD error = GetLastError();
+		if (error != ERROR_SUCCESS && error != ERROR_NO_MORE_FILES)
+		{
+			if (error == ERROR_PATH_NOT_FOUND)std::wcout << L"GetFileSizeEx Error: " << error << L" ERROR_PATH_NOT_FOUND " << f->nameAndPath.c_str() << std::endl;
+			else if (error == ERROR_ACCESS_DENIED)std::wcout << L"GetFileSizeEx Error: " << error << L" ERROR_ACCESS_DENIED " << f->nameAndPath.c_str() << std::endl;
+			else if (error == ERROR_SHARING_VIOLATION)std::wcout << L"GetFileSizeEx Error: " << error << L" ERROR_SHARING_VIOLATION " << f->nameAndPath.c_str() << std::endl;
+			else if (error == ERROR_CANT_ACCESS_FILE)std::wcout << L"GetFileSizeEx Error: " << error << L" ERROR_CANT_ACCESS_FILE " << f->nameAndPath.c_str() << std::endl;
+			else std::wcout << L"GetFileSizeEx Error: " << error << L" " << f->nameAndPath.c_str() << std::endl;
+		}
+		CloseHandle(hFile);
+		return -1; // error condition, could call GetLastError to find out more
+	}
+
+	CloseHandle(hFile);
+
+	f->size = size.QuadPart;
+	return size.QuadPart;
+}
+
+BY_HANDLE_FILE_INFORMATION Worker::getFileInformationByHandleWindows(wstring fileNameAndPath)
+{
+	{
+		HANDLE hFile = CreateFileW(fileNameAndPath.c_str(), GENERIC_READ,
+			FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL, NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			DWORD error = GetLastError();
+			if (error != ERROR_SUCCESS && error != ERROR_NO_MORE_FILES)
+			{
+				if (error == ERROR_PATH_NOT_FOUND)std::wcout << L"CreateFileW Error: " << error << L" ERROR_PATH_NOT_FOUND " << fileNameAndPath.c_str() << std::endl;
+				else if (error == ERROR_ACCESS_DENIED)std::wcout << L"CreateFileW Error: " << error << L" ERROR_ACCESS_DENIED " << fileNameAndPath.c_str() << std::endl;
+				else if (error == ERROR_SHARING_VIOLATION)std::wcout << L"CreateFileW Error: " << error << L" ERROR_SHARING_VIOLATION " << fileNameAndPath.c_str() << std::endl;
+				else if (error == ERROR_CANT_ACCESS_FILE)std::wcout << L"CreateFileW Error: " << error << L" ERROR_CANT_ACCESS_FILE " << fileNameAndPath.c_str() << std::endl;
+				else std::wcout << L"CreateFileW Error: " << error << L" " << fileNameAndPath.c_str() << std::endl;
+			}
+		}
+
+		BY_HANDLE_FILE_INFORMATION handleFileInfo;
+		GetFileInformationByHandle(hFile, &handleFileInfo);
+		CloseHandle(hFile);
+
+		return handleFileInfo;
+		/*
+			DWORD dwFileAttributes;
+			FILETIME ftCreationTime;
+			FILETIME ftLastAccessTime;
+			FILETIME ftLastWriteTime;
+			DWORD dwVolumeSerialNumber;
+			DWORD nFileSizeHigh;
+			DWORD nFileSizeLow;
+			DWORD nNumberOfLinks;
+			DWORD nFileIndexHigh;
+			DWORD nFileIndexLow;
+		*/
+	}
+}
+
+__int64 Worker::getFileSizeFromHandleFileInformationWindows(FileDataEntry* f)//wstring fileNameAndPath)
+{
+	BY_HANDLE_FILE_INFORMATION info = getFileInformationByHandleWindows(f->nameAndPath);
+	__int64 max = MAXDWORD;
+	max += 1;
+	__int64 size = (info.nFileSizeHigh * (max)) + info.nFileSizeLow;
+	f->size = size;
+	return size;
+}
+
+WIN32_FILE_ATTRIBUTE_DATA Worker::getFileAttributesWindows(wstring fileNameAndPath)
+{
+	WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+	if (!GetFileAttributesExW(fileNameAndPath.c_str(), GetFileExInfoStandard, &fileInfo))
+	{
+		DWORD error = GetLastError();
+		if (error != ERROR_SUCCESS && error != ERROR_NO_MORE_FILES)
+		{
+			if (error == ERROR_PATH_NOT_FOUND)std::wcout << L"GetFileAttributesExW Error: " << error << L" ERROR_PATH_NOT_FOUND " << fileNameAndPath.c_str() << std::endl;
+			else if (error == ERROR_ACCESS_DENIED)std::wcout << L"GetFileAttributesExW Error: " << error << L" ERROR_ACCESS_DENIED " << fileNameAndPath.c_str() << std::endl;
+			else if (error == ERROR_SHARING_VIOLATION)std::wcout << L"GetFileAttributesExW Error: " << error << L" ERROR_SHARING_VIOLATION " << fileNameAndPath.c_str() << std::endl;
+			else if (error == ERROR_CANT_ACCESS_FILE)std::wcout << L"GetFileAttributesExW Error: " << error << L" ERROR_CANT_ACCESS_FILE " << fileNameAndPath.c_str() << std::endl;
+			else std::wcout << L"GetFileAttributesExW Error: " << error << L" " << fileNameAndPath.c_str() << std::endl;
+		}
+	}
+	/*
+		DWORD dwFileAttributes;
+		FILETIME ftCreationTime;
+		FILETIME ftLastAccessTime;
+		FILETIME ftLastWriteTime;
+		DWORD nFileSizeHigh;
+		DWORD nFileSizeLow;
+	*/
+	return fileInfo;
+}
+__int64 Worker::getFileSizeFromFileAttributesWindows(FileDataEntry* f)//wstring fileNameAndPath)
+{
+	WIN32_FILE_ATTRIBUTE_DATA info = getFileAttributesWindows(f->nameAndPath);
+	__int64 max = MAXDWORD;
+	max += 1;
+	__int64 size = (info.nFileSizeHigh * (max)) + info.nFileSizeLow;
+	f->size = size;
+	return size;
+}
+
+long long Worker::getFileSizeWStat(FileDataEntry* f)//std::wstring filename)
+{
+	struct _stat64 stat_buf;
+	int rc = _wstat64(f->nameAndPath.c_str(), &stat_buf);
+	long long size = rc == 0 ? stat_buf.st_size : -1;
+	f->size = size;
+	return size;
+}
+
+
+long long Worker::getFileSizeFStat(int _FileHandle)
+{
+	struct _stat64 stat_buf;
+	int rc = _fstat64(_FileHandle, &stat_buf);
+	return rc == 0 ? stat_buf.st_size : -1;
+}
+
+uintmax_t Worker::getFileSizeFilesystem(FileDataEntry* f)//std::filesystem::path p)
+{
+	std::error_code ec;
+	uintmax_t size = std::filesystem::file_size(std::filesystem::path(f->nameAndPath), ec);
+	if (ec)
+	{
+		std::wcout << L"file_size error " << convertUtf8ToWide(ec.message()) << L" " << f->nameAndPath << std::endl;
+		ec.clear();
+	}
+	return size;
+}
+
+uintmax_t Worker::getFileSizeFilesystemDirectoryEntry(FileDataEntry* f)//std::filesystem::directory_entry d)
+{
+	std::error_code ec;
+	uintmax_t size = std::filesystem::directory_entry(f->nameAndPath).file_size(ec);
+	if (ec)
+	{
+		std::wcout << L"file_size error " << convertUtf8ToWide(ec.message()) << L" " << f->nameAndPath << std::endl;
+		ec.clear();
+	}
+	return size;
+}
+
+
+long long Worker::getFileSizeWithIfstream(wstring name)
+{
+	std::ifstream file;
+	file.open(name, std::ios::in | std::ios::binary);
+	file.ignore(LLONG_MAX);// std::numeric_limits<std::streamsize>::max());
+	std::streamsize length = file.gcount();
+	file.clear();   //  Since ignore will have set eof.
+	file.seekg(0, std::ios_base::beg);
+	file.close();
+	return length;
+}
+
+
+void Worker::getSizeForAllFiles()
+{
+	__int64 size = 0;
+
+	if (isWindows)
+	{
+		//Very slow 1863s 494k files
+		if (false)
+		{
+			std::wcout << L"getFileSizeWindows" << std::endl;
+			start = std::chrono::steady_clock::now();
+			for (int i = 0; i < fileDataEntries.size(); i++)
+			{
+				FileDataEntry* f = &(fileDataEntries[i]);
+				size += getFileSizeWindows(f);
+			}
+			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+			std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+		}
+
+		//22s 494k files
+		if (false)
+		{
+			std::wcout << L"getFileSizeFromHandleFileInformationWindows" << std::endl;
+			start = std::chrono::steady_clock::now();
+			size = 0;
+			for (int i = 0; i < fileDataEntries.size(); i++)
+			{
+				FileDataEntry* f = &(fileDataEntries[i]);
+				size += getFileSizeFromHandleFileInformationWindows(f);
+			}
+			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+			std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+		}
+
+		//5.1s 494k files
+		//if (false)
+		{
+			std::wcout << L"getFileSizeFromFileAttributesWindows" << std::endl;
+			start = std::chrono::steady_clock::now();
+			size = 0;
+			for (int i = 0; i < fileDataEntries.size(); i++)
+			{
+				FileDataEntry* f = &(fileDataEntries[i]);
+				size += getFileSizeFromFileAttributesWindows(f);
+			}
+			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+			std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+		}
+
+
+	}
+
+
+	if (isWindows == false)
+	{
+		//17s 494k files
+		if (false)
+		{
+			std::wcout << L"getFileSizeWStat" << std::endl;
+			start = std::chrono::steady_clock::now();
+			size = 0;
+			for (int i = 0; i < fileDataEntries.size(); i++)
+			{
+				FileDataEntry* f = &(fileDataEntries[i]);
+				size += getFileSizeWStat(f);
+			}
+			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+			std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+		}
+
+
+		//5.4s 494k files
+		//if (false)
+		{
+			std::wcout << L"getFileSizeFilesystem" << std::endl;
+			start = std::chrono::steady_clock::now();
+			size = 0;
+			for (int i = 0; i < fileDataEntries.size(); i++)
+			{
+				FileDataEntry* f = &(fileDataEntries[i]);
+				size += getFileSizeFilesystem(f);
+			}
+			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
+			std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+		}
+	}
+
+
+}
+
+
+
+void Worker::getFileCreatedModifiedDateWindows(FileDataEntry* f)
+{
+	WIN32_FILE_ATTRIBUTE_DATA info = getFileAttributesWindows(f->nameAndPath);
+	FILETIME ct = info.ftCreationTime;
+	FILETIME mt = info.ftLastWriteTime;
+
+	__int64 createdTime = 0;
+	__int64 modifiedTime = 0;
+	wstring createdDateString;
+	wstring modifiedDateString;
+
+	__int64 max = MAXDWORD;
+	max += 1;
+
+	createdTime = (ct.dwHighDateTime * (max)) + ct.dwLowDateTime;
+	modifiedTime = (mt.dwHighDateTime * (max)) + mt.dwLowDateTime;
+
+
+	{
+		SYSTEMTIME systemTime;
+		FileTimeToSystemTime(&ct, &systemTime);
+		wchar_t buffer[100];
+		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", systemTime.wYear, systemTime.wMonth, systemTime.wDay, systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
+		createdDateString = wstring(buffer);
+	}
+
+	{
+		SYSTEMTIME systemTime;
+		FileTimeToSystemTime(&mt, &systemTime);
+		wchar_t buffer[100];
+		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", systemTime.wYear, systemTime.wMonth, systemTime.wDay, systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
+		modifiedDateString = wstring(buffer);
+	}
+
+	f->createdTime = createdTime;
+	f->modifiedTime = modifiedTime;
+	f->createdDateString = createdDateString;
+	f->modifiedDateString = modifiedDateString;
+
+	//std::wcout << "Created time:" << createdTime << std::endl;
+	//std::wcout << "Modified time:" << modifiedTime << std::endl;
+	//std::wcout << "Created date:" << createdDateString;// << std::endl;
+	//std::wcout << "Modified date:" << modifiedDateString;// << std::endl;
+}
+
+void Worker::getFileCreatedModifiedDateFilesystem(FileDataEntry* f)
+{
+	//Creation time can't be accessed through std::filesystem
+}
+
+void Worker::getFileCreatedModifiedDateWStat(FileDataEntry* f)
+{
+	time_t createdTime = 0;
+	time_t modifiedTime = 0;
+	wstring createdDateString;
+	wstring modifiedDateString;
+
+	struct _stat64 result;
+	if (_wstat64(f->nameAndPath.c_str(), &result) == 0)
+	{
+		//long long size = result.st_size;
+		createdTime = result.st_ctime;
+		modifiedTime = result.st_mtime;
+
+		{
+			wchar_t buffer[100];
+			wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S\n", gmtime(&result.st_ctime));
+			createdDateString = wstring(buffer);
+		}
+
+		{
+			wchar_t buffer[100];
+			wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S\n", gmtime(&result.st_mtime));
+			modifiedDateString = wstring(buffer);
+		}
+
+		//createdDateString = convertUtf8ToWide(ctime(&result.st_ctime));
+		//modifiedDateString = convertUtf8ToWide(ctime(&result.st_mtime));
+
+		f->createdTime = createdTime;
+		f->modifiedTime = modifiedTime;
+		f->createdDateString = createdDateString;
+		f->modifiedDateString = modifiedDateString;
+
+		//std::wcout << "Created time:" << createdTime << std::endl;
+		//std::wcout << "Modified time:" << modifiedTime << std::endl;
+		//std::wcout << "Created date:" << createdDateString;// << std::endl;
+		//std::wcout << "Modified date:" << modifiedDateString;// << std::endl;
+
+	}
+}
+
+//create and modify date
+void Worker::getCreatedAndLastModifiedDateForAllFiles()
+{
+
+	if (isWindows)
+	{
+		//12s 494k files
+		std::wcout << L"getFileCreatedModifiedDateWindows" << std::endl;
+		start = std::chrono::steady_clock::now();
+		for (int i = 0; i < fileDataEntries.size(); i++)
+		{
+			FileDataEntry* f = &(fileDataEntries[i]);
+			getFileCreatedModifiedDateWindows(f);
+		}
+		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+	}
+
+	if (isWindows == false)
+	{
+		//both of these are pretty comparable
+		//23s 494k files
+		std::wcout << L"getFileCreatedModifiedDateWStat" << std::endl;
+		start = std::chrono::steady_clock::now();
+		for (int i = 0; i < fileDataEntries.size(); i++)
+		{
+			FileDataEntry* f = &(fileDataEntries[i]);
+			getFileCreatedModifiedDateWStat(f);
+		}
+		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+	}
+
+}
+
+void Worker::getFastHash(FileDataEntry* f)
+{
+	if (f->crc32.empty() == false)return;
+	if (f->md5.empty() == false)return;
+	if (f->sha1.empty() == false)return;
+	if (f->sha2.empty() == false)return;
+	if (f->keccak.empty() == false)return;
+	if (f->sha3.empty() == false)return;
+
+	bool computeCrc32 = 1;
+	bool computeMd5 = 1;
+	bool computeSha1 = 1;
+	bool computeSha2 = 1;
+	bool computeKeccak = 1;
+	bool computeSha3 = 1;
+
+	CRC32  digestCrc32;
+	MD5    digestMd5;
+	SHA1   digestSha1;
+	SHA256 digestSha2;
+	Keccak digestKeccak(Keccak::Keccak256);
+	SHA3   digestSha3(SHA3::Bits256);
+
+
+
+	int chunkSize = 1024 * 16;
+	int bufferSize = chunkSize * 5;
+	if (f->size > bufferSize)
+	{
+		char* buffer = new char[bufferSize];
+
+		try
+		{
+			if (std::ifstream is{ f->nameAndPath, std::ios::in | std::ios::binary })
+			{
+				is.exceptions(is.failbit);
+
+				std::size_t numBytesRead = 0;
+
+				is.seekg((f->size / 5) * 0);
+				is.exceptions(is.failbit);
+				is.read(&buffer[chunkSize * 0], chunkSize);
+				is.exceptions(is.failbit);
+
+				numBytesRead += size_t(is.gcount());
+
+				is.seekg((f->size / 5) * 1);
+				is.exceptions(is.failbit);
+				is.read(&buffer[chunkSize * 1], chunkSize);
+				is.exceptions(is.failbit);
+
+				numBytesRead += size_t(is.gcount());
+
+				is.seekg((f->size / 5) * 2);
+				is.exceptions(is.failbit);
+				is.read(&buffer[chunkSize * 2], chunkSize);
+				is.exceptions(is.failbit);
+
+				numBytesRead += size_t(is.gcount());
+
+				is.seekg((f->size / 5) * 3);
+				is.exceptions(is.failbit);
+				is.read(&buffer[chunkSize * 3], chunkSize);
+				is.exceptions(is.failbit);
+
+				numBytesRead += size_t(is.gcount());
+
+				is.seekg((f->size - chunkSize));
+				is.exceptions(is.failbit);
+				is.read(&buffer[chunkSize * 4], chunkSize);
+				is.exceptions(is.failbit);
+
+				numBytesRead += size_t(is.gcount());
+
+				//std::wcout << L"Buffer size " << bufferSize << std::endl;
+				//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+
+				is.close();
+
+				if (computeCrc32)   digestCrc32.add(buffer, numBytesRead);
+				if (computeMd5)     digestMd5.add(buffer, numBytesRead);
+				if (computeSha1)    digestSha1.add(buffer, numBytesRead);
+				if (computeSha2)    digestSha2.add(buffer, numBytesRead);
+				if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
+				if (computeSha3)    digestSha3.add(buffer, numBytesRead);
+
+
+			}
+		}
+		catch (const std::ios_base::failure& e)
+		{
+			std::cout << "Caught an ios_base::failure.\n"
+				<< "Explanatory string: " << e.what() << '\n'
+				<< "Error code: " << e.code() << '\n';
+		}
+
+		delete[] buffer;
+	}
+	else
+	{
+		char* buffer = new char[f->size];
+
+		try
+		{
+			if (std::ifstream is{ f->nameAndPath, std::ios::in | std::ios::binary })
+			{
+				is.exceptions(is.failbit);
+
+				is.read(buffer, f->size);
+
+				is.exceptions(is.failbit);
+
+				std::size_t numBytesRead = size_t(is.gcount());
+
+				//std::wcout << L"File size " << f->size << std::endl;
+				//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+
+				is.close();
+
+				if (computeCrc32)   digestCrc32.add(buffer, numBytesRead);
+				if (computeMd5)     digestMd5.add(buffer, numBytesRead);
+				if (computeSha1)    digestSha1.add(buffer, numBytesRead);
+				if (computeSha2)    digestSha2.add(buffer, numBytesRead);
+				if (computeKeccak)  digestKeccak.add(buffer, numBytesRead);
+				if (computeSha3)    digestSha3.add(buffer, numBytesRead);
+
+			}
+		}
+		catch (const std::ios_base::failure& e)
+		{
+			std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
+		}
+
+		delete[] buffer;
+	}
+
+	//show results
+	//if (computeCrc32) std::wcout << L"CRC32:      " << convertUtf8ToWide(digestCrc32.getHash()) << std::endl;
+	//if (computeMd5)   std::wcout << L"MD5:        " << convertUtf8ToWide(digestMd5.getHash()) << std::endl;
+	//if (computeSha1)  std::wcout << L"SHA1:       " << convertUtf8ToWide(digestSha1.getHash()) << std::endl;
+	//if (computeSha2)  std::wcout << L"SHA2/256:   " << convertUtf8ToWide(digestSha2.getHash()) << std::endl;
+	//if (computeKeccak)std::wcout << L"Keccak/256: " << convertUtf8ToWide(digestKeccak.getHash()) << std::endl;
+	//if (computeSha3)  std::wcout << L"SHA3/256:   " << convertUtf8ToWide(digestSha3.getHash()) << std::endl;
+
+	//f->size = size;
+	f->crc32 = convertUtf8ToWide(digestCrc32.getHash());
+	f->md5 = convertUtf8ToWide(digestMd5.getHash());
+	f->sha1 = convertUtf8ToWide(digestSha1.getHash());
+	f->sha2 = convertUtf8ToWide(digestSha2.getHash());
+	f->keccak = convertUtf8ToWide(digestKeccak.getHash());
+	f->sha3 = convertUtf8ToWide(digestSha3.getHash());
+
+
+	//if (db)
+	//{
+	//    // Output line to file 
+	//    fwprintf(db, L"%s\n", f.name.c_str());
+	//    fwprintf(db, L"%s\n", f.path.c_str());
+	//    fwprintf(db, L"%llu\n", f.size);
+	//    fwprintf(db, L"%llu\n", f.createdTime);
+	//    fwprintf(db, L"%llu\n", f.modifiedTime);
+	//    fwprintf(db, L"%s\n", f.createdDate.c_str());
+	//    fwprintf(db, L"%s\n", f.modifiedDate.c_str());
+	//    fwprintf(db, L"%s\n", f.crc32.c_str());
+	//    fwprintf(db, L"%s\n", f.md5.c_str());
+	//    fwprintf(db, L"%s\n", f.sha1.c_str());
+	//    fwprintf(db, L"%s\n", f.sha2.c_str());
+	//    fwprintf(db, L"%s\n", f.keccak.c_str());
+	//    fwprintf(db, L"%s\n", f.sha3.c_str());
+	//    fwprintf(db, L";");
+	//}
+	//else
+	//{
+	//    wprintf(L"Database not open\n");
+	//    exit(EXIT_FAILURE);
+	//}
+}
+
+
+void Worker::getFastHashForAllFiles()
+{
+
+	//It makes an extra pass of the file list to create a 'fasthash'. The fasthash uses small samples of the file(16 kilobytes),
+	//taken from the beginning, end, and three places in the middle; then does a duplicate check based on the hash of the samples.
+	//This is very quick for large files, and it helps eliminate the vast majority of potential duplicates very quickly, as
+	//most files will have different samples. Most other duplicate finders omit this step, but it really speeds things up.
+
+	for (int i = 0; i < fileDataEntries.size(); i++)
+	{
+		FileDataEntry* f = &(fileDataEntries[i]);
+
+		getFastHash(f);
+
+	}
+}
+
+
+void Worker::getDateFromFilenameForAllFiles()
+{
+	for (int i = 0; i < fileDataEntries.size(); i++)
+	{
+		FileDataEntry* f = &(fileDataEntries[i]);
+
+
+		//get date from filename, detect year, detect date format, extract and convert
+
+
+		//yyyy-mm-dd
+		//yyyy mm dd
+		//yyyy_mm_dd
+		//yyyy.mm.dd  
+		//yyyymmdd
+
+		//yyyy cannot be 3xxx 1xxx 23xx 29xx 17xx
+		//mm cannot be 00 13 2x
+		//dd cannot be 00 33 4x
+		//(?!2[3-9])not 3xxx    [12][09]\d{2}1900-2099 [^0-9a-zA-Z]any separator (?!00)(?!1[3-9])[01]\d{1}month cant be 00 or 13 [^0-9a-zA-Z]any separator (?!00)(?!3[3-9])[0123]\d{1}day cant be 00 or 33
+
+
+		std::string regex_yyyy_mm_dd =
+			"(?!1[0-8])"//not 10xx-18xx
+			"(?!19[0-7])"//not 190x-197x
+			"(?!2[3-9])"//not 23xx
+			"[12][09][0-9][0-9]"//1000-2999
+			"[_. ,mMyY-]"//any separator including m M y Y
+			"(?!00)"//month cannot be 00
+			"(?!1[3-9])"//month cannot be 13-19
+			"[01][0-9]"//month only begins with 0 or 1
+			"[_. ,mMdD-]"//any separator including m M d D
+			"(?!00)"//day cannot be 00
+			"(?!3[3-9])"//day cannot be 33-39
+			"[0123][0-9]"//day only begins with 0 1 2 3
+			;
+
+		std::string syyyy_mm_dd =
+			"^"//beginning of file
+			"("
+			+ regex_yyyy_mm_dd +
+			")"
+			"|"//or
+			"[^0-9]"//not a number
+			"("
+			+ regex_yyyy_mm_dd +
+			")"
+			;
+
+
+		std::string regex_yyyymmdd =
+			"(?!1[0-8])"//not 10xx-18xx
+			"(?!19[0-7])"//not 190x-197x
+			"(?!2[3-9])"//not 23xx
+			"[12][09][0-9][0-9]"//1000-2999
+			"(?!00)"//month cannot be 00
+			"(?!1[3-9])"//month cannot be 13-19
+			"[01][0-9]"//month only begins with 0 or 1
+			"(?!00)"//day cannot be 00
+			"(?!3[3-9])"//day cannot be 33-39
+			"[0123][0-9]"//day only begins with 0 1 2 3
+			;
+
+
+		std::string syyyymmdd =
+			"^"//beginning of file
+			"("
+			+ regex_yyyymmdd +
+			")"
+			"|"//or
+			"[^0-9]"//not a number
+			"("
+			+ regex_yyyymmdd +
+			")"
+			;
+
+
+
+		std::regex yyyy_mm_dd(syyyy_mm_dd);
+		std::regex yyyymmdd(syyyymmdd);
+
+		//yyyy-mm-d?
+
+
+
+
+		//mm-dd-yy
+		//mm dd yy
+		//mm/dd/yy
+		//mm_dd_yy
+		//mm.dd.yy  
+		//mmddyy 
+		//mm cannot be 00 13 2x
+		//dd cannot be 00 33 4x
+		//yy can be anything but most likely 8x 9x 0x 1x 2x, cannot be higher than current year 23 24 25
+		std::string regex_mm_dd_yy =
+			"(?!00)"//month cannot be 00
+			"(?!1[3-9])"//month cannot be 13-19
+			"[01][0-9]"//month only begins with 0 or 1
+			"[_. ,mMdD-]"//any separator including m M d D
+			"(?!00)"//day cannot be 00
+			"(?!3[3-9])"//day cannot be 33-39
+			"[0123][0-9]"//day only begins with 0 1 2 3
+			"[_. ,dDyY-]"//any separator including d D y Y
+			"[12]?[90]?[012789][0-9]"//year [19-20]70-29
+			;
+		std::string smm_dd_yy =
+			"^"//beginning of file
+			"("
+			+ regex_mm_dd_yy +
+			")"
+			"|"//or
+			"[_. ,mM-]"//any separator including m M
+			"("
+			+ regex_mm_dd_yy +
+			")"
+			;
+
+		std::regex mm_dd_yy(smm_dd_yy);// \d{2}:\d{2}:\d{2}.\d{3}
+
+
+
+
+		//mm-d-yy?
+
+
+
+		//Dayname Monthname/Mon Day/Dayth, YYYY
+		//Month/Mon Day/Dayth YYYY
+		//Day/Dayth Month/Mon YYYY
+		//YYYY Month Day
+		//YYYY Day Month
+		//first look for YYYY, if exists then look for monthname, mon, day, 8th, etc
+
+		std::string regex_yyyy =
+			"(?!2[3-9])"//not 23xx
+			"(?!1[0-8])"//not 10xx-18xx
+			"(?!19[0-7])"//not 190x-197x
+			"[12][09][0-9][0-9]"//1000-2999
+			;
+
+		std::string syyyy =
+			"^"
+			"("
+			+ regex_yyyy + //beginning of string
+			")"
+			"[^0-9]"
+			"|"
+			"[^0-9]"
+			"("
+			+ regex_yyyy + //in the middle surrounded by non numbers
+			")"
+			"[^0-9]"
+			"|"
+			"[^0-9]"
+			"("
+			+ regex_yyyy + //at the end beginning with non number
+			")"
+			"$"
+			;
+
+		std::regex yyyy(syyyy);// \d{2}:\d{2}:\d{2}.\d{3}
+		//if found
+
+		//month/mon dayth/day
+		std::string monthmon("(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)");
+		std::string spacer("[^0-9][^0-9]?");
+
+		std::string regexdaythday =
+			"[0123]?1st"//01st 1st or 21st or 31st
+			"|"
+			"[0123]?2nd"//02nd 2nd 22nd 32nd
+			"|"
+			"(?!33)"//not 33rd
+			"[0123]?3rd"//03rd 3rd 23rd
+			"|"
+			"(?!3[4-9])"//not 34-39th
+			"[0123]?[0-9]th"//04th 9th 11th 24th 29th
+			"|"
+			"(?!00)"//not 00
+			"(?!3[3-9])"//not 33-39
+			"[0123]?[0-9]"//01-32
+			;
+
+		std::string sdaythday =
+			//"("
+			//+ regexdaythday +
+			//")"
+			//"[^0-9]"
+			//"|"
+			"("
+			+ regexdaythday +
+			")"
+			//"$"
+			;
+
+
+
+		std::regex monthmondaythday(monthmon + spacer + sdaythday);
+
+		//dayth/day month/mon
+		std::regex daythdaymonthmon(sdaythday + monthmon);
+
+		string strs[] = {
+			"2018-08-09 09:30:34.118",
+			"2018 01 01",
+			"2018_12_20",
+			"2018.02.02",
+			"20180111",
+			"01-30-99",
+			"01.30.02",
+			"January 1, 1990",
+			"8 February 2000",
+			"04 Feb 2016",
+			"12th August, 2011",
+			"September 02 2022",
+			"December 4th, 1997" ,
+			"2017 Mar 4"
+
+		};
+
+
+		string s(convertWideToUtf8(f->name));
+		//if(false)
+		//for (auto& s : strs)
+
+		{
+			std::smatch matches;
+			std::regex_search(s, matches, yyyy_mm_dd);
+			//int n = 0;
+
+			int y = 0;
+			int m = 0;
+			int d = 0;
+
+			if (!matches.empty())
+			{
+				for (int n = 0; n < matches.size(); n++)
+					std::wcout << L"yyyy_mm_dd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+
+				int n = (int)(matches[0].str().find_first_of("0123456789"));
+
+				std::istringstream is(matches[0].str().substr(n, 4));
+				if (is >> y)
+				{
+					if (y < 1900)
+					{
+						if (y > 70)y += 1900;
+						if (y < 50)y += 2000;
+					}
+				}
+
+				{
+					std::istringstream is(matches[0].str().substr(n + 5, 2));
+					is >> m;
+				}
+				{
+					std::istringstream is(matches[0].str().substr(n + 8, 2));
+					is >> d;
+				}
+
+				std::wcout << y << L" " << m << L" " << d << std::endl;
+
+
+			}
+			else
+			{
+
+				std::regex_search(s, matches, yyyymmdd);
+				if (!matches.empty())
+				{
+					for (int n = 0; n < matches.size(); n++)
+						std::wcout << L"yyyymmdd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+					int n = (int)(matches[0].str().find_first_of("0123456789"));
+
+
+					std::istringstream is(matches[0].str().substr(n, 4));
+					if (is >> y)
+					{
+						if (y < 1900)
+						{
+							if (y > 70)y += 1900;
+							if (y < 50)y += 2000;
+						}
+					}
+
+					{
+						std::istringstream is(matches[0].str().substr(n + 4, 2));
+						is >> m;
+					}
+					{
+						std::istringstream is(matches[0].str().substr(n + 6, 2));
+						is >> d;
+					}
+
+					std::wcout << y << L" " << m << L" " << d << std::endl;
+
+				}
+				else
+				{
+					std::regex_search(s, matches, mm_dd_yy);
+					if (!matches.empty())
+					{
+						for (int n = 0; n < matches.size(); n++)
+							std::wcout << L"mm dd [yy]yy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+						int n = (int)(matches[0].str().find_first_of("0123456789"));
+
+						{
+							std::istringstream is(matches[0].str().substr(n, 2));
+							is >> m;
+						}
+
+						{
+							std::istringstream is(matches[0].str().substr(n + 3, 2));
+							is >> d;
+						}
+
+						if (matches[0].str().substr(n + 6, 2) == "19" || matches[0].str().substr(n + 6, 2) == "20")
+						{
+							std::istringstream is(matches[0].str().substr(n + 6, 4));
+							is >> y;
+						}
+						else
+						{
+							std::istringstream is(matches[0].str().substr(n + 6, 2));
+							if (is >> y)
+							{
+								if (y < 1900)
+								{
+									if (y > 70)y += 1900;
+									if (y < 50)y += 2000;
+								}
+							}
+						}
+
+						std::wcout << y << L" " << m << L" " << d << std::endl;
+
+					}
+					else
+					{
+						std::regex_search(s, matches, yyyy);
+						if (!matches.empty())
+						{
+							//for (int n = 0; n < matches.size(); n++)
+								//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+							int n = (int)(matches[0].str().find_first_of("0123456789"));
+
+							if (matches[0].str().substr(n, 1) != "1" && matches[0].str().substr(n, 1) != "2")
+							{
+								if (matches[0].str().substr(n + 1, 1) != "1" && matches[0].str().substr(n + 1, 1) != "2")
+								{
+									//can't parse?
+								}
+								else
+								{
+									std::istringstream is(matches[0].str().substr(n + 1, 4));
+									is >> y;
+								}
+							}
+							else
+							{
+								std::istringstream is(matches[0].str().substr(n, 4));
+								is >> y;
+							}
+
+							std::regex_search(s, matches, monthmondaythday);
+							if (!matches.empty())
+							{
+								for (int n = 0; n < matches.size(); n++)
+									std::wcout << L"monthmondaythday " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+								if (matches[0].str().find("Jan") != string::npos)m = 1;
+								if (matches[0].str().find("Feb") != string::npos)m = 2;
+								if (matches[0].str().find("Mar") != string::npos)m = 3;
+								if (matches[0].str().find("Apr") != string::npos)m = 4;
+								if (matches[0].str().find("May") != string::npos)m = 5;
+								if (matches[0].str().find("Jun") != string::npos)m = 6;
+								if (matches[0].str().find("Jul") != string::npos)m = 7;
+								if (matches[0].str().find("Aug") != string::npos)m = 8;
+								if (matches[0].str().find("Sep") != string::npos)m = 9;
+								if (matches[0].str().find("Oct") != string::npos)m = 10;
+								if (matches[0].str().find("Nov") != string::npos)m = 11;
+								if (matches[0].str().find("Dec") != string::npos)m = 12;
+
+								int n = (int)(matches[0].str().find_first_of("0123456789"));
+								{
+									if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
+									{
+										std::istringstream is(matches[0].str().substr(n, 2));
+										is >> d;
+									}
+									else
+									{
+										std::istringstream is(matches[0].str().substr(n, 1));
+										is >> d;
+									}
+								}
+
+								std::wcout << y << L" " << m << L" " << d << std::endl;
+							}
+							else
+							{
+
+								std::regex_search(s, matches, daythdaymonthmon);
+								if (!matches.empty())
+								{
+									for (int n = 0; n < matches.size(); n++)
+										std::wcout << L"daythdaymonthmon " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+									int n = (int)(matches[0].str().find_first_of("0123456789"));
+
+									if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
+									{
+										std::istringstream is(matches[0].str().substr(n, 2));
+										is >> d;
+									}
+									else
+									{
+										std::istringstream is(matches[0].str().substr(n, 1));
+										is >> d;
+									}
+
+									if (matches[0].str().find("Jan") != string::npos)m = 1;
+									if (matches[0].str().find("Feb") != string::npos)m = 2;
+									if (matches[0].str().find("Mar") != string::npos)m = 3;
+									if (matches[0].str().find("Apr") != string::npos)m = 4;
+									if (matches[0].str().find("May") != string::npos)m = 5;
+									if (matches[0].str().find("Jun") != string::npos)m = 6;
+									if (matches[0].str().find("Jul") != string::npos)m = 7;
+									if (matches[0].str().find("Aug") != string::npos)m = 8;
+									if (matches[0].str().find("Sep") != string::npos)m = 9;
+									if (matches[0].str().find("Oct") != string::npos)m = 10;
+									if (matches[0].str().find("Nov") != string::npos)m = 11;
+									if (matches[0].str().find("Dec") != string::npos)m = 12;
+
+									std::wcout << y << L" " << m << L" " << d << std::endl;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 
 
 
 
+
+// function expects the string in format dd/mm/yyyy:
+bool Worker::extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int& y)
+{
+	std::istringstream is(s);
+	char delimiter;
+	if (is >> m >> delimiter >> d >> delimiter >> y) {
+
+		if (y < 1900)
+		{
+			if (y > 70)y += 1900;
+			if (y < 50)y += 2000;
+		}
+
+		struct tm t = { 0 };
+		t.tm_mday = d;
+		t.tm_mon = m - 1;
+		t.tm_year = y - 1900;
+		t.tm_isdst = -1;
+
+		// normalize:
+		time_t when = mktime(&t);
+		const struct tm* norm = localtime(&when);
+		// the actual date would be:
+		// m = norm->tm_mon + 1;
+		// d = norm->tm_mday;
+		// y = norm->tm_year;
+		// e.g. 29/02/2013 would become 01/03/2013
+
+		// validate (is the normalized date still the same?):
+		return (norm->tm_mday == d &&
+			norm->tm_mon == m - 1 &&
+			norm->tm_year == y - 1900);
+	}
+	return false;
+}
+
+void Worker::getDatesFromEXIFDataForAllFiles()
+{
+
+	//if file is an image get exif data, timestamps
+	//look at all possible timestamp values in exif
+
+	//libexif
+	for (int i = 0; i < fileDataEntries.size(); i++)
+	{
+		FileDataEntry* f = &(fileDataEntries[i]);
+
+
+		if (f->name.find(L".jpg") != std::wstring::npos || f->name.find(L".jpeg") != std::wstring::npos || f->name.find(L".JPG") != std::wstring::npos)
+		{
+			ExifData* d;
+			d = exif_data_new_from_file(convertWideToUtf8(f->nameAndPath).c_str());
+			if (!d)
+			{
+				std::wcout << L"Could not load data from " << f->name << std::endl;
+			}
+			else
+			{
+				void* callback_data = NULL;
+
+				exif_data_foreach_content(d, data_foreach_func, callback_data);
+
+				ExifMnoteData* mn = exif_data_get_mnote_data(d);
+				if (mn) {
+					char buf[2000];
+					int i;
+					int num = exif_mnote_data_count(mn);
+					std::wcout << L"  MakerNote" << std::endl;
+					for (i = 0; i < num; ++i) {
+						if (exif_mnote_data_get_value(mn, i, buf, sizeof(buf))) {
+							const char* name = exif_mnote_data_get_name(mn, i);
+							unsigned int id = exif_mnote_data_get_id(mn, i);
+							if (!name)
+								name = "(unknown)";
+							std::wcout << convertUtf8ToWide(name) << L" " << convertUtf8ToWide(buf) << std::endl;
+						}
+					}
+				}
+
+				exif_data_unref(d);
+			}
+		}
+	}
+
+	//DateTime
+	//DateTimeOriginal
+	//DateTimeDigitized
+	//Date
+	//Time
+	//GPSDateStamp
+	//GPSTimeStamp
+
+
+	//TinyEXIF
+	for (int i = 0; i < fileDataEntries.size(); i++)
+	{
+		FileDataEntry* f = &(fileDataEntries[i]);
+
+		if (f->name.find(L".jpg") != std::wstring::npos ||
+			f->name.find(L".jpeg") != std::wstring::npos ||
+			f->name.find(L".JPG") != std::wstring::npos ||
+			f->name.find(L".png") != std::wstring::npos ||
+			f->name.find(L".PNG") != std::wstring::npos
+			)
+		{
+			// open a stream to read just the necessary parts of the image file
+			std::ifstream stream(f->nameAndPath, std::ios::binary);
+			if (stream)
+			{
+				// parse image EXIF and XMP metadata
+				TinyEXIF::EXIFInfo imageEXIF(stream);
+				if (!imageEXIF.Fields)
+				{
+
+				}
+
+				if (!imageEXIF.DateTime.empty())
+					std::wcout << L"DateTime " << convertUtf8ToWide(imageEXIF.DateTime) << std::endl;
+				if (!imageEXIF.DateTimeOriginal.empty())
+					std::wcout << L"DateTimeOriginal " << convertUtf8ToWide(imageEXIF.DateTimeOriginal) << std::endl;
+				if (!imageEXIF.DateTimeDigitized.empty())
+					std::wcout << L"DateTimeDigitized " << convertUtf8ToWide(imageEXIF.DateTimeDigitized) << std::endl;
+
+			}
+		}
+	}
+
+}
+
+
+
+void Worker::process()
+{
+
+
+
+#ifdef WIN32
+	isWindows = true;
+#else
+	isWindows = false;
+#endif
+
+	//if (db == NULL)
+	//{
+	//    errno_t error;
+	//    error = _wfopen_s(&db, DB_LOCATION, L"wt, ccs=UNICODE");
+	//    if (error)
+	//    {
+	//        wprintf(L"Cannot open %s\n", DB_LOCATION);
+	//        exit(EXIT_FAILURE);
+	//    }
+	//}
+
+
+	wstring startpath = L"C:\\";
+	_int64 filecount = 0;
+	LARGE_INTEGER li;
+
+	_int64 CounterStart = 0;
+	_int64 msPassed = 0;
+
+	QueryPerformanceFrequency(&li);
+	double PCFreq = double(li.QuadPart) / 1000.0;
+
+
+
+
+
+	//std::wcout << L"directoryIteratorRecursive" << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//CounterStart = li.QuadPart;
+	//start = std::chrono::steady_clock::now();
+	//filecount = 0;
+	//
+	//directoryIteratorRecursive(startpath, filecount);
+	//
+	//std::wcout << L"Files found: " << filecount << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+	//std::wcout << L"direntScanDirectory" << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//CounterStart = li.QuadPart;
+	//start = std::chrono::steady_clock::now();
+	//filecount = 0;
+	//
+	//direntScanDirectory(startpath,filecount);
+	//
+	//std::wcout << L"Files found: " << filecount << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+
+	std::wcout << L"ListFilesWindowsFindFirstFile" << std::endl;
+
+	QueryPerformanceCounter(&li);
+	CounterStart = li.QuadPart;
+	start = std::chrono::steady_clock::now();
+	filecount = 0;
+
+	ListFilesWindowsFindFirstFile(startpath, filecount);
+
+	std::wcout << L"Files found: " << filecount << std::endl;
+
+	QueryPerformanceCounter(&li);
+	msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+	//std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+
+
+
+
+	getSizeForAllFiles();
+
+	getCreatedAndLastModifiedDateForAllFiles();
+
+	if (false)
+		getFastHashForAllFiles();
+
+	if (false)
+		getDateFromFilenameForAllFiles();
+
+	if (false)
+		getDatesFromEXIFDataForAllFiles();
+
+
+
+	//You can use std::swap to swap two values.
+	//And also you may want to compare to std::sort(which is typically an introsort : a quick sort + insertion sort for small sizes),
+	//std::stable_sort(typically a merge sort), and std::make_heap + std::sort_heap(heap sort)
+	{
+		//sort by file size
+
+		std::wcout << L"Start sort by size" << std::endl;
+		start = std::chrono::steady_clock::now();
+
+		//std::sort(fileDataEntries.begin(), fileDataEntries.end());//56s 494k files
+		std::stable_sort(fileDataEntries.begin(), fileDataEntries.end());//53s 494k files
+
+		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+	}
+
+	//for each entry, check to see if there are duplicates ahead
+	{
+		for (int i = 0; i < fileDataEntries.size(); i++)
+		{
+			__int64 size = fileDataEntries[i].size;
+
+			if (size > 1024 * 1024)
+				for (int j = i + 1; j < fileDataEntries.size(); j++)
+				{
+					if (size == fileDataEntries[j].size)
+					{
+						//got a match
+
+						//check hash
+						getFastHash(&(fileDataEntries[i]));
+						getFastHash(&(fileDataEntries[j]));
+
+						//compare hash
+						if (
+							(
+								fileDataEntries[i].crc32.empty() == false &&
+								fileDataEntries[i].md5.empty() == false &&
+								fileDataEntries[i].sha1.empty() == false &&
+								fileDataEntries[i].sha2.empty() == false &&
+								fileDataEntries[i].keccak.empty() == false &&
+								fileDataEntries[i].sha3.empty() == false &&
+
+								fileDataEntries[j].crc32.empty() == false &&
+								fileDataEntries[j].md5.empty() == false &&
+								fileDataEntries[j].sha1.empty() == false &&
+								fileDataEntries[j].sha2.empty() == false &&
+								fileDataEntries[j].keccak.empty() == false &&
+								fileDataEntries[j].sha3.empty() == false
+								)
+							&&
+							(
+								fileDataEntries[i].crc32 == fileDataEntries[j].crc32 ||
+								fileDataEntries[i].md5 == fileDataEntries[j].md5 ||
+								fileDataEntries[i].sha1 == fileDataEntries[j].sha1 ||
+								fileDataEntries[i].sha2 == fileDataEntries[j].sha2 ||
+								fileDataEntries[i].keccak == fileDataEntries[j].keccak ||
+								fileDataEntries[i].sha3 == fileDataEntries[j].sha3
+								)
+							)
+						{
+							//std::wcout << L"Possible match: " << fileDataEntries[i].nameAndPath << L" " << fileDataEntries[j].nameAndPath << L" " << fileDataEntries[i].size << std::endl;
+
+							if (fileDataEntries[i].name == fileDataEntries[j].name)
+							{
+								//std::wcout << L"Same filename " << fileDataEntries[i].name << std::endl; 
+							}
+							else
+							{
+								std::wcout << L"Different filename " << fileDataEntries[i].name << L" " << fileDataEntries[j].name << std::endl;
+							}
+
+							if (
+								fileDataEntries[i].crc32 == fileDataEntries[j].crc32 &&
+								fileDataEntries[i].md5 == fileDataEntries[j].md5 &&
+								fileDataEntries[i].sha1 == fileDataEntries[j].sha1 &&
+								fileDataEntries[i].sha2 == fileDataEntries[j].sha2 &&
+								fileDataEntries[i].keccak == fileDataEntries[j].keccak &&
+								fileDataEntries[i].sha3 == fileDataEntries[j].sha3
+								)
+							{
+								//std::wcout << L"All hashes match!" << std::endl;
+							}
+							else
+							{
+								std::wcout << L"Hashes different" << std::endl;
+
+								//match comparisons run full hash and byte comparison
+
+								//TODO: check full hash
+
+								//TODO: do byte comparison
+
+
+
+
+							}
+						}
+					}
+					else
+					{
+						j = (int)(fileDataEntries.size());
+						break;
+					}
+				}
+		}
+	}
+
+
+
+
+
+
+
+	//video file metadata
+	//music file metadata
+	//pdf and document metadata
+
+
+
+
+	//use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
+
+
+
+	//keep all filenames and dates, compare with filename date, exif dates, determine most correct timestamp for image and duplicates
+
+
+
+	//keep higher quality version, optionally delete others
+
+	//rename files with most accurate date, optionally reset timestamps
+	//store all filenames and dates etc in metadata
+
+
+	//save and load database with metadata
+
+
+
+
+	//gui
+	//filter by file type
+	//add directories, subdirectories
+	//sort by size, name, matches, type
+	//match in same directory
+	//operations (rename, remove duplicates, merge metadata)
+
+	//file renamer
+
+
+	//ocr
+
+	//ai image object classification
+
+	//ai ocr
+
+	//ai video comparison, object classification
+
+
+
+
+
+
+
+
+	//somehow make part of filesystem or explorer extension, run system wide search
+
+	//switch to linux, test program, embed in gnome?
+
+
+	emit finished();
+
+}
 
 
 
@@ -92,24 +1782,24 @@ vector<wstring> notFoundMatch1;
 
 for (std::unordered_set<wstring>::const_iterator it = recursiveDirectoryIteratorIncrementPaths.cbegin(); it != recursiveDirectoryIteratorIncrementPaths.cend(); ++it)
 {
-    wstring path = *it;
+	wstring path = *it;
 
-    std::unordered_set<wstring>::const_iterator got = directoryIteratorRecursivePaths.find(path);
+	std::unordered_set<wstring>::const_iterator got = directoryIteratorRecursivePaths.find(path);
 
-    if (got == directoryIteratorRecursivePaths.end())
-        notFoundMatch1.push_back(path);
+	if (got == directoryIteratorRecursivePaths.end())
+		notFoundMatch1.push_back(path);
 }
 
 vector<wstring> notFoundMatch2;
 
 for (std::unordered_set<wstring>::const_iterator it = directoryIteratorRecursivePaths.cbegin(); it != directoryIteratorRecursivePaths.cend(); ++it)
 {
-    wstring path = *it;
+	wstring path = *it;
 
-    std::unordered_set<wstring>::const_iterator got = recursiveDirectoryIteratorIncrementPaths.find(path);
+	std::unordered_set<wstring>::const_iterator got = recursiveDirectoryIteratorIncrementPaths.find(path);
 
-    if (got == recursiveDirectoryIteratorIncrementPaths.end())
-        notFoundMatch2.push_back(path);
+	if (got == recursiveDirectoryIteratorIncrementPaths.end())
+		notFoundMatch2.push_back(path);
 }
 
 std::wcout << L"recursiveDirectoryIteratorIncrementPaths not found in directoryIteratorRecursivePaths " << notFoundMatch1.size() << std::endl;
@@ -118,14 +1808,14 @@ std::wcout << L"directoryIteratorRecursivePaths not found in recursiveDirectoryI
 std::wcout << L"recursiveDirectoryIteratorIncrementPaths not found in directoryIteratorRecursivePaths" << std::endl;
 for (int i = 0; i < notFoundMatch1.size(); i++)
 {
-    wstring path = notFoundMatch1[i];
-    std::wcout << path << std::endl;
+	wstring path = notFoundMatch1[i];
+	std::wcout << path << std::endl;
 }
 std::wcout << L"directoryIteratorRecursivePaths not found in recursiveDirectoryIteratorIncrementPaths" << std::endl;
 for (int i = 0; i < notFoundMatch2.size(); i++)
 {
-    wstring path = notFoundMatch2[i];
-    std::wcout << path << std::endl;
+	wstring path = notFoundMatch2[i];
+	std::wcout << path << std::endl;
 }
 */
 //findFirstFilePaths
@@ -230,7 +1920,7 @@ Andrew G. Howard, Menglong Zhu, Bo Chen, Dmitry Kalenichenko, Weijun Wang, Tobia
 We present a class of efficient models called MobileNets for mobile and embedded vision applications. MobileNets are based on a streamlined architecture that uses depth-wise separable convolutions to build light weight deep neural networks. We introduce two simple global hyper-parameters that efficiently trade off between latency and accuracy. These hyper-parameters allow the model builder to choose the right sized model for their application based on the constraints of the problem. We present extensive experiments on resource and accuracy tradeoffs and show strong performance compared to other popular models on ImageNet classification. We then demonstrate the effectiveness of MobileNets across a wide range of applications and use cases including object detection, finegrain classification, face attributes and large scale geo-localization.
 Subjects:	Computer Vision and Pattern Recognition (cs.CV)
 Cite as:	arXiv:1704.04861 [cs.CV]
-    (or arXiv:1704.04861v1 [cs.CV] for this version)
+	(or arXiv:1704.04861v1 [cs.CV] for this version)
 
 https://doi.org/10.48550/arXiv.1704.04861
 Focus to learn more
@@ -344,23 +2034,23 @@ There are two things we want out of a perceptual hash algorithm: speed and accur
 /*
 void convertUTF8ToUTF16CodeCvt()
 {
-    //UTF - 8 to UTF - 16
+	//UTF - 8 to UTF - 16
 
-    std::string source;
+	std::string source;
 
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-    std::u16string dest = convert.from_bytes(source);
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	std::u16string dest = convert.from_bytes(source);
 
 }
 
 void convertUTF16ToUTF8CodeCvt()
 {
-    //UTF - 16 to UTF - 8
+	//UTF - 16 to UTF - 8
 
-    std::u16string source;
+	std::u16string source;
 
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-    std::string dest = convert.to_bytes(source);
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	std::string dest = convert.to_bytes(source);
 }
 */
 
@@ -369,16 +2059,16 @@ void convertUTF16ToUTF8CodeCvt()
 /*
 int main()
 {
-    const WCHAR* wText = L"Wide string";
-    const char* text = convert_from_wstring(wText);
-    std::cout << text << "\n";
-    free(text);
+	const WCHAR* wText = L"Wide string";
+	const char* text = convert_from_wstring(wText);
+	std::cout << text << "\n";
+	free(text);
 
-    const WCHAR *wtext = convert_to_wstring("Multibyte string");
-    std::wcout << wtext << "\n";
-    free(wtext);
+	const WCHAR *wtext = convert_to_wstring("Multibyte string");
+	std::wcout << wtext << "\n";
+	free(wtext);
 
-    return 0;
+	return 0;
 }
 */
 
@@ -388,14 +2078,14 @@ int main()
 
 std::wstring convert_to_wstring(const std::string & str)
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
-    return conv.from_bytes(str);
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
+	return conv.from_bytes(str);
 }
 
 std::string convert_from_wstring(const std::wstring & wstr)
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
-    return conv.to_bytes(wstr);
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
+	return conv.to_bytes(wstr);
 }
 //If you need to interact with other code that is based on char* / wchar_t*,
 //std::string as a constructor for accepting char* inputand a c_str() method that can be used for char* output,
@@ -416,27 +2106,27 @@ const size_t BUF_SIZE = 1024;
 
 class IConv {
 
-    iconv_t ic_;
+	iconv_t ic_;
 
 public:
-    IConv(const char* to, const char* from)
-        : ic_(iconv_open(to, from)) {
-        if (iconv_t(-1) == ic_)
-            throw std::runtime_error("error from iconv_open()");
-    }
+	IConv(const char* to, const char* from)
+		: ic_(iconv_open(to, from)) {
+		if (iconv_t(-1) == ic_)
+			throw std::runtime_error("error from iconv_open()");
+	}
 
-    ~IConv()
-    {
-        if (iconv_t(-1) != ic_) iconv_close(ic_);
-    }
+	~IConv()
+	{
+		if (iconv_t(-1) != ic_) iconv_close(ic_);
+	}
 
-    bool convert(char* input, char* output, size_t& out_size) {
-        size_t inbufsize = strlen(input) + 1;
-        return
-            (size_t(-1)
-                != iconv(ic_, &input, &inbufsize, &output, &out_size))
-            && (0U == inbufsize);
-    }
+	bool convert(char* input, char* output, size_t& out_size) {
+		size_t inbufsize = strlen(input) + 1;
+		return
+			(size_t(-1)
+				!= iconv(ic_, &input, &inbufsize, &output, &out_size))
+			&& (0U == inbufsize);
+	}
 };
 
 
@@ -444,28 +2134,28 @@ public:
 
 int main(void)
 {
-    char str1[BUF_SIZE] = "tägelîch";
-    char str2[BUF_SIZE] = "something else";
-    IConv ic("UTF16LE", "ISO_8859-1");
-    bool ret;
-    size_t outsize = BUF_SIZE;
+	char str1[BUF_SIZE] = "tägelîch";
+	char str2[BUF_SIZE] = "something else";
+	IConv ic("UTF16LE", "ISO_8859-1");
+	bool ret;
+	size_t outsize = BUF_SIZE;
 
-    ret = ic.convert(str1, str2, outsize);
-    if (ret == false) {
-        cout << "iconv failed: " << errno << endl;
-    }
-    else {
-       cout << "outsize[" << outsize << "]\n";
-       cout << "str1[" << str1 << "]\n";
-       cout << "str2[" << str2 << "]\n";
+	ret = ic.convert(str1, str2, outsize);
+	if (ret == false) {
+		cout << "iconv failed: " << errno << endl;
+	}
+	else {
+	   cout << "outsize[" << outsize << "]\n";
+	   cout << "str1[" << str1 << "]\n";
+	   cout << "str2[" << str2 << "]\n";
 
-       for ( int i = 0 ; i < (BUF_SIZE - outsize) ; ++i )
-          if ( str2[i] )
-             cout << "str2[" << i << "]=[" << int(str2[i]) << "]("
-                << str2[i] << ")\n";
-    }
+	   for ( int i = 0 ; i < (BUF_SIZE - outsize) ; ++i )
+		  if ( str2[i] )
+			 cout << "str2[" << i << "]=[" << int(str2[i]) << "]("
+				<< str2[i] << ")\n";
+	}
 
-    return ret ? EXIT_SUCCESS : EXIT_FAILURE;
+	return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 
@@ -485,11 +2175,11 @@ int file2wcs (int fd, const char *charset, wchar_t *outbuf, size_t avail)
 
   cd = iconv_open ("WCHAR_T", charset);
   if (cd == (iconv_t) -1)
-    {
-     // Something went wrong.
+	{
+	 // Something went wrong.
 if (errno == EINVAL)
 error(0, 0, "conversion from '%s' to wchar_t not available",
-    charset);
+	charset);
 else
 perror("iconv_open");
 
@@ -497,65 +2187,65 @@ perror("iconv_open");
 *outbuf = L'\0';
 
 return -1;
-    }
+	}
 
-    while (avail > 0)
-    {
-        size_t nread;
-        size_t nconv;
-        char* inptr = inbuf;
+	while (avail > 0)
+	{
+		size_t nread;
+		size_t nconv;
+		char* inptr = inbuf;
 
-        // Read more input.
-        nread = read(fd, inbuf + insize, sizeof(inbuf) - insize);
-        if (nread == 0)
-        {
-            // When we come here the file is completely read.
-            //   This still could mean there are some unused
-            //   characters in the inbuf.  Put them back.
-            if (lseek(fd, -insize, SEEK_CUR) == -1)
-                result = -1;
+		// Read more input.
+		nread = read(fd, inbuf + insize, sizeof(inbuf) - insize);
+		if (nread == 0)
+		{
+			// When we come here the file is completely read.
+			//   This still could mean there are some unused
+			//   characters in the inbuf.  Put them back.
+			if (lseek(fd, -insize, SEEK_CUR) == -1)
+				result = -1;
 
-            //Now write out the byte sequence to get into the
-            //   initial state if this is necessary.
-            iconv(cd, NULL, NULL, &wrptr, &avail);
+			//Now write out the byte sequence to get into the
+			//   initial state if this is necessary.
+			iconv(cd, NULL, NULL, &wrptr, &avail);
 
-            break;
-        }
-        insize += nread;
+			break;
+		}
+		insize += nread;
 
-        //Do the conversion.
-        nconv = iconv(cd, &inptr, &insize, &wrptr, &avail);
-        if (nconv == (size_t)-1)
-        {
-            // Not everything went right.  It might only be
-            //   an unfinished byte sequence at the end of the
-             //  buffer.  Or it is a real problem.
-            if (errno == EINVAL)
-                // This is harmless.  Simply move the unused
-                 //  bytes to the beginning of the buffer so that
-                 //  they can be used in the next round.
-                memmove(inbuf, inptr, insize);
-            else
-            {
-                // It is a real problem.  Maybe we ran out of
-                //   space in the output buffer or we have invalid
-                //   input.  In any case back the file pointer to
-                 //  the position of the last processed byte.
-                lseek(fd, -insize, SEEK_CUR);
-                result = -1;
-                break;
-            }
-        }
-    }
+		//Do the conversion.
+		nconv = iconv(cd, &inptr, &insize, &wrptr, &avail);
+		if (nconv == (size_t)-1)
+		{
+			// Not everything went right.  It might only be
+			//   an unfinished byte sequence at the end of the
+			 //  buffer.  Or it is a real problem.
+			if (errno == EINVAL)
+				// This is harmless.  Simply move the unused
+				 //  bytes to the beginning of the buffer so that
+				 //  they can be used in the next round.
+				memmove(inbuf, inptr, insize);
+			else
+			{
+				// It is a real problem.  Maybe we ran out of
+				//   space in the output buffer or we have invalid
+				//   input.  In any case back the file pointer to
+				 //  the position of the last processed byte.
+				lseek(fd, -insize, SEEK_CUR);
+				result = -1;
+				break;
+			}
+		}
+	}
 
-    // Terminate the output string.
-    if (avail >= sizeof(wchar_t))
-        *((wchar_t*)wrptr) = L'\0';
+	// Terminate the output string.
+	if (avail >= sizeof(wchar_t))
+		*((wchar_t*)wrptr) = L'\0';
 
-    if (iconv_close(cd) != 0)
-        perror("iconv_close");
+	if (iconv_close(cd) != 0)
+		perror("iconv_close");
 
-    return (wchar_t*)wrptr - outbuf;
+	return (wchar_t*)wrptr - outbuf;
 }
 This example shows the most important aspects of using the iconv functions.It shows how successive
 calls to iconv can be used to convert large amounts of text.The user does not have to care about
@@ -601,77 +2291,77 @@ as a sequence of bytes, it might become tricky.
 /*
 void convertFromChar()
 {
-    //Example: Convert from char*
-    //This example demonstrates how to convert from a char* to the string types listed above.
-    //A char* string(also known as a C - style string) uses a terminating null to indicate the end of the string.
-    //C - style strings usually require 1 byte per character, but can also use 2 bytes.
-    //In the examples below, char* strings are sometimes referred to as multibyte character strings because of the string data
-    //that results from converting from wide Unicode strings.Single byteand multibyte character(MBCS) functions can operate on char* strings.
+	//Example: Convert from char*
+	//This example demonstrates how to convert from a char* to the string types listed above.
+	//A char* string(also known as a C - style string) uses a terminating null to indicate the end of the string.
+	//C - style strings usually require 1 byte per character, but can also use 2 bytes.
+	//In the examples below, char* strings are sometimes referred to as multibyte character strings because of the string data
+	//that results from converting from wide Unicode strings.Single byteand multibyte character(MBCS) functions can operate on char* strings.
 
-    using namespace std;
+	using namespace std;
 
 
-    // Create and display a C-style string, and then use it
-    // to create different kinds of strings.
-    const char* orig = "Hello, World!";
-    cout << orig << " (char *)" << endl;
+	// Create and display a C-style string, and then use it
+	// to create different kinds of strings.
+	const char* orig = "Hello, World!";
+	cout << orig << " (char *)" << endl;
 
-    // newsize describes the length of the
-    // wchar_t string called wcstring in terms of the number
-    // of wide characters, not the number of bytes.
-    size_t newsize = strlen(orig) + 1;
+	// newsize describes the length of the
+	// wchar_t string called wcstring in terms of the number
+	// of wide characters, not the number of bytes.
+	size_t newsize = strlen(orig) + 1;
 
-    // The following creates a buffer large enough to contain
-    // the exact number of characters in the original string
-    // in the new format. If you want to add more characters
-    // to the end of the string, increase the value of newsize
-    // to increase the size of the buffer.
-    wchar_t* wcstring = new wchar_t[newsize];
+	// The following creates a buffer large enough to contain
+	// the exact number of characters in the original string
+	// in the new format. If you want to add more characters
+	// to the end of the string, increase the value of newsize
+	// to increase the size of the buffer.
+	wchar_t* wcstring = new wchar_t[newsize];
 
-    // Convert char* string to a wchar_t* string.
-    size_t convertedChars = 0;
-    mbstowcs_s(&convertedChars, wcstring, newsize, orig, _TRUNCATE);
-    // Display the result and indicate the type of string that it is.
-    wcout << wcstring << L" (wchar_t *)" << endl;
-    delete[]wcstring;
+	// Convert char* string to a wchar_t* string.
+	size_t convertedChars = 0;
+	mbstowcs_s(&convertedChars, wcstring, newsize, orig, _TRUNCATE);
+	// Display the result and indicate the type of string that it is.
+	wcout << wcstring << L" (wchar_t *)" << endl;
+	delete[]wcstring;
 
-    // Convert the C-style string to a _bstr_t string.
-    _bstr_t bstrt(orig);
-    // Append the type of string to the new string
-    // and then display the result.
-    bstrt += " (_bstr_t)";
-    wcout << bstrt << endl;
+	// Convert the C-style string to a _bstr_t string.
+	_bstr_t bstrt(orig);
+	// Append the type of string to the new string
+	// and then display the result.
+	bstrt += " (_bstr_t)";
+	wcout << bstrt << endl;
 
-    // Convert the C-style string to a CComBSTR string.
-    CComBSTR ccombstr(orig);
-    if (ccombstr.Append(L" (CComBSTR)") == S_OK)
-    {
-        CW2A printstr(ccombstr);
-        cout << printstr << endl;
-    }
+	// Convert the C-style string to a CComBSTR string.
+	CComBSTR ccombstr(orig);
+	if (ccombstr.Append(L" (CComBSTR)") == S_OK)
+	{
+		CW2A printstr(ccombstr);
+		cout << printstr << endl;
+	}
 
-    // Convert the C-style string to a CStringA and display it.
-    CStringA cstringa(orig);
-    cstringa += " (CStringA)";
-    cout << cstringa << endl;
+	// Convert the C-style string to a CStringA and display it.
+	CStringA cstringa(orig);
+	cstringa += " (CStringA)";
+	cout << cstringa << endl;
 
-    // Convert the C-style string to a CStringW and display it.
-    CStringW cstring(orig);
-    cstring += " (CStringW)";
-    // To display a CStringW correctly, use wcout and cast cstring
-    // to (LPCTSTR).
-    wcout << (LPCTSTR)cstring << endl;
+	// Convert the C-style string to a CStringW and display it.
+	CStringW cstring(orig);
+	cstring += " (CStringW)";
+	// To display a CStringW correctly, use wcout and cast cstring
+	// to (LPCTSTR).
+	wcout << (LPCTSTR)cstring << endl;
 
-    // Convert the C-style string to a basic_string and display it.
-    string basicstring(orig);
-    basicstring += " (basic_string)";
-    cout << basicstring << endl;
+	// Convert the C-style string to a basic_string and display it.
+	string basicstring(orig);
+	basicstring += " (basic_string)";
+	cout << basicstring << endl;
 
-    // Convert the C-style string to a System::String and display it.
-    //System::String^ systemstring = gcnew String(orig);
-    //systemstring += " (System::String)";
-    //Console::WriteLine("{0}", systemstring);
-    //delete systemstring;
+	// Convert the C-style string to a System::String and display it.
+	//System::String^ systemstring = gcnew String(orig);
+	//systemstring += " (System::String)";
+	//Console::WriteLine("{0}", systemstring);
+	//delete systemstring;
 }
 */
 
@@ -680,167 +2370,167 @@ void convertFromChar()
 void convertFromWChar()
 {
 
-    //Example: Convert from wchar_t*
-    //This example demonstrates how to convert from a wchar_t* to other string types.
-    //Several string types, including wchar_t*, implement wide character formats.
-    //To convert a string between a multibyteand a wide character format, you can use a single function call like mbstowcs_s or a
-    //constructor invocation for a class like CStringA.
+	//Example: Convert from wchar_t*
+	//This example demonstrates how to convert from a wchar_t* to other string types.
+	//Several string types, including wchar_t*, implement wide character formats.
+	//To convert a string between a multibyteand a wide character format, you can use a single function call like mbstowcs_s or a
+	//constructor invocation for a class like CStringA.
 
-    using namespace std;
+	using namespace std;
 
-    // Create a string of wide characters, display it, and then
-    // use this string to create other types of strings.
-    const wchar_t* orig = L"Hello, World!";
-    wcout << orig << L" (wchar_t *)" << endl;
+	// Create a string of wide characters, display it, and then
+	// use this string to create other types of strings.
+	const wchar_t* orig = L"Hello, World!";
+	wcout << orig << L" (wchar_t *)" << endl;
 
-    // Convert the wchar_t string to a char* string. Record
-    // the length of the original string and add 1 to it to
-    // account for the terminating null character.
-    size_t origsize = wcslen(orig) + 1;
-    size_t convertedChars = 0;
+	// Convert the wchar_t string to a char* string. Record
+	// the length of the original string and add 1 to it to
+	// account for the terminating null character.
+	size_t origsize = wcslen(orig) + 1;
+	size_t convertedChars = 0;
 
-    // Use a multibyte string to append the type of string
-    // to the new string before displaying the result.
-    char strConcat[] = " (char *)";
-    size_t strConcatsize = (strlen(strConcat) + 1) * 2;
+	// Use a multibyte string to append the type of string
+	// to the new string before displaying the result.
+	char strConcat[] = " (char *)";
+	size_t strConcatsize = (strlen(strConcat) + 1) * 2;
 
-    // Allocate two bytes in the multibyte output string for every wide
-    // character in the input string (including a wide character
-    // null). Because a multibyte character can be one or two bytes,
-    // you should allot two bytes for each character. Having extra
-    // space for the new string isn't an error, but having
-    // insufficient space is a potential security problem.
-    const size_t newsize = origsize * 2;
-    // The new string will contain a converted copy of the original
-    // string plus the type of string appended to it.
-    char* nstring = new char[newsize + strConcatsize];
+	// Allocate two bytes in the multibyte output string for every wide
+	// character in the input string (including a wide character
+	// null). Because a multibyte character can be one or two bytes,
+	// you should allot two bytes for each character. Having extra
+	// space for the new string isn't an error, but having
+	// insufficient space is a potential security problem.
+	const size_t newsize = origsize * 2;
+	// The new string will contain a converted copy of the original
+	// string plus the type of string appended to it.
+	char* nstring = new char[newsize + strConcatsize];
 
-    // Put a copy of the converted string into nstring
-    wcstombs_s(&convertedChars, nstring, newsize, orig, _TRUNCATE);
-    // append the type of string to the new string.
-    _mbscat_s((unsigned char*)nstring, newsize + strConcatsize, (unsigned char*)strConcat);
-    // Display the result.
-    cout << nstring << endl;
-    delete[]nstring;
+	// Put a copy of the converted string into nstring
+	wcstombs_s(&convertedChars, nstring, newsize, orig, _TRUNCATE);
+	// append the type of string to the new string.
+	_mbscat_s((unsigned char*)nstring, newsize + strConcatsize, (unsigned char*)strConcat);
+	// Display the result.
+	cout << nstring << endl;
+	delete[]nstring;
 
-    // Convert a wchar_t to a _bstr_t string and display it.
-    _bstr_t bstrt(orig);
-    bstrt += " (_bstr_t)";
-    wcout << bstrt << endl;
+	// Convert a wchar_t to a _bstr_t string and display it.
+	_bstr_t bstrt(orig);
+	bstrt += " (_bstr_t)";
+	wcout << bstrt << endl;
 
-    // Convert the wchar_t string to a BSTR wide character string
-    // by using the ATL CComBSTR wrapper class for BSTR strings.
-    // Then display the result.
+	// Convert the wchar_t string to a BSTR wide character string
+	// by using the ATL CComBSTR wrapper class for BSTR strings.
+	// Then display the result.
 
-    CComBSTR ccombstr(orig);
-    if (ccombstr.Append(L" (CComBSTR)") == S_OK)
-    {
-        // CW2A converts the string in ccombstr to a multibyte
-        // string in printstr, used here for display output.
-        CW2A printstr(ccombstr);
-        cout << printstr << endl;
-        // The following line of code is an easier way to
-        // display wide character strings:
-        wcout << (LPCTSTR)ccombstr << endl;
-    }
+	CComBSTR ccombstr(orig);
+	if (ccombstr.Append(L" (CComBSTR)") == S_OK)
+	{
+		// CW2A converts the string in ccombstr to a multibyte
+		// string in printstr, used here for display output.
+		CW2A printstr(ccombstr);
+		cout << printstr << endl;
+		// The following line of code is an easier way to
+		// display wide character strings:
+		wcout << (LPCTSTR)ccombstr << endl;
+	}
 
-    // Convert a wide wchar_t string to a multibyte CStringA,
-    // append the type of string to it, and display the result.
-    CStringA cstringa(orig);
-    cstringa += " (CStringA)";
-    cout << cstringa << endl;
+	// Convert a wide wchar_t string to a multibyte CStringA,
+	// append the type of string to it, and display the result.
+	CStringA cstringa(orig);
+	cstringa += " (CStringA)";
+	cout << cstringa << endl;
 
-    // Convert a wide character wchar_t string to a wide
-    // character CStringW string and append the type of string to it
-    CStringW cstring(orig);
-    cstring += " (CStringW)";
-    // To display a CStringW correctly, use wcout and cast cstring
-    // to (LPCTSTR).
-    wcout << (LPCTSTR)cstring << endl;
+	// Convert a wide character wchar_t string to a wide
+	// character CStringW string and append the type of string to it
+	CStringW cstring(orig);
+	cstring += " (CStringW)";
+	// To display a CStringW correctly, use wcout and cast cstring
+	// to (LPCTSTR).
+	wcout << (LPCTSTR)cstring << endl;
 
-    // Convert the wide character wchar_t string to a
-    // basic_string, append the type of string to it, and
-    // display the result.
-    wstring basicstring(orig);
-    basicstring += L" (basic_string)";
-    wcout << basicstring << endl;
+	// Convert the wide character wchar_t string to a
+	// basic_string, append the type of string to it, and
+	// display the result.
+	wstring basicstring(orig);
+	basicstring += L" (basic_string)";
+	wcout << basicstring << endl;
 
-    // Convert a wide character wchar_t string to a
-    // System::String string, append the type of string to it,
-    // and display the result.
-    //String^ systemstring = gcnew String(orig);
-    //systemstring += " (System::String)";
-    //Console::WriteLine("{0}", systemstring);
-    //delete systemstring;
+	// Convert a wide character wchar_t string to a
+	// System::String string, append the type of string to it,
+	// and display the result.
+	//String^ systemstring = gcnew String(orig);
+	//systemstring += " (System::String)";
+	//Console::WriteLine("{0}", systemstring);
+	//delete systemstring;
 }
 */
 
 /*
 void convertFromBasicString()
 {
-    //Example: Convert from basic_string
-    //This example demonstrates how to convert from a basic_string to other string types.
+	//Example: Convert from basic_string
+	//This example demonstrates how to convert from a basic_string to other string types.
 
-    using namespace std;
+	using namespace std;
 
-    // Set up a basic_string string.
-    string orig("Hello, World!");
-    cout << orig << " (basic_string)" << endl;
+	// Set up a basic_string string.
+	string orig("Hello, World!");
+	cout << orig << " (basic_string)" << endl;
 
-    // Convert a wide character basic_string string to a multibyte char*
-    // string. To be safe, we allocate two bytes for each character
-    // in the original string, including the terminating null.
-    const size_t newsize = (orig.size() + 1) * 2;
+	// Convert a wide character basic_string string to a multibyte char*
+	// string. To be safe, we allocate two bytes for each character
+	// in the original string, including the terminating null.
+	const size_t newsize = (orig.size() + 1) * 2;
 
-    char* nstring = new char[newsize];
-    strcpy_s(nstring, newsize, orig.c_str());
-    cout << nstring << " (char *)" << endl;
-    delete[]nstring;
+	char* nstring = new char[newsize];
+	strcpy_s(nstring, newsize, orig.c_str());
+	cout << nstring << " (char *)" << endl;
+	delete[]nstring;
 
-    // Convert a basic_string string to a wide character
-    // wchar_t* string. You must first convert to a char*
-    // for this to work.
-    const size_t newsizew = orig.size() + 1;
-    size_t convertedChars = 0;
-    wchar_t* wcstring = new wchar_t[newsizew];
-    mbstowcs_s(&convertedChars, wcstring, newsizew, orig.c_str(), _TRUNCATE);
-    wcout << wcstring << L" (wchar_t *)" << endl;
-    delete[]wcstring;
+	// Convert a basic_string string to a wide character
+	// wchar_t* string. You must first convert to a char*
+	// for this to work.
+	const size_t newsizew = orig.size() + 1;
+	size_t convertedChars = 0;
+	wchar_t* wcstring = new wchar_t[newsizew];
+	mbstowcs_s(&convertedChars, wcstring, newsizew, orig.c_str(), _TRUNCATE);
+	wcout << wcstring << L" (wchar_t *)" << endl;
+	delete[]wcstring;
 
-    // Convert a basic_string string to a wide character
-    // _bstr_t string.
-    _bstr_t bstrt(orig.c_str());
-    bstrt += L" (_bstr_t)";
-    wcout << bstrt << endl;
+	// Convert a basic_string string to a wide character
+	// _bstr_t string.
+	_bstr_t bstrt(orig.c_str());
+	bstrt += L" (_bstr_t)";
+	wcout << bstrt << endl;
 
-    // Convert a basic_string string to a wide character
-    // CComBSTR string.
-    CComBSTR ccombstr(orig.c_str());
-    if (ccombstr.Append(L" (CComBSTR)") == S_OK)
-    {
-        // Make a multibyte version of the CComBSTR string
-        // and display the result.
-        CW2A printstr(ccombstr);
-        cout << printstr << endl;
-    }
+	// Convert a basic_string string to a wide character
+	// CComBSTR string.
+	CComBSTR ccombstr(orig.c_str());
+	if (ccombstr.Append(L" (CComBSTR)") == S_OK)
+	{
+		// Make a multibyte version of the CComBSTR string
+		// and display the result.
+		CW2A printstr(ccombstr);
+		cout << printstr << endl;
+	}
 
-    // Convert a basic_string string into a multibyte
-    // CStringA string.
-    CStringA cstring(orig.c_str());
-    cstring += " (CStringA)";
-    cout << cstring << endl;
+	// Convert a basic_string string into a multibyte
+	// CStringA string.
+	CStringA cstring(orig.c_str());
+	cstring += " (CStringA)";
+	cout << cstring << endl;
 
-    // Convert a basic_string string into a wide
-    // character CStringW string.
-    CStringW cstringw(orig.c_str());
-    cstringw += L" (CStringW)";
-    wcout << (LPCTSTR)cstringw << endl;
+	// Convert a basic_string string into a wide
+	// character CStringW string.
+	CStringW cstringw(orig.c_str());
+	cstringw += L" (CStringW)";
+	wcout << (LPCTSTR)cstringw << endl;
 
-    // Convert a basic_string string to a System::String
-    //String^ systemstring = gcnew String(orig.c_str());
-    //systemstring += " (System::String)";
-    //Console::WriteLine("{0}", systemstring);
-    //delete systemstring;
+	// Convert a basic_string string to a System::String
+	//String^ systemstring = gcnew String(orig.c_str());
+	//systemstring += " (System::String)";
+	//Console::WriteLine("{0}", systemstring);
+	//delete systemstring;
 }
 */
 
@@ -852,16 +2542,16 @@ void convertFromBasicString()
 
 std::wstring convertNarrowUTF8StringToWideUTF16String(std::string narrow_utf8_source_string)
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wide = converter.from_bytes(narrow_utf8_source_string);
-    return wide;
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::wstring wide = converter.from_bytes(narrow_utf8_source_string);
+	return wide;
 }
 
 std::string convertWideUTF16StringToNarrowUTF8String(std::wstring wide_utf16_source_string)
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::string narrow = converter.to_bytes(wide_utf16_source_string);
-    return narrow;
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::string narrow = converter.to_bytes(wide_utf16_source_string);
+	return narrow;
 
 }
 */
