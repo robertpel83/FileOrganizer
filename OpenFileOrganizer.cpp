@@ -53,6 +53,74 @@ void OpenFileOrganizer::handleButton()
 
 }
 
+
+
+
+
+std::string convertWideToANSI(const std::wstring& wstr)
+{
+	int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
+	std::string str(count, 0);
+	WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
+	return str;
+}
+
+std::wstring convertAnsiToWide(const std::string& str)
+{
+	int count = MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0);
+	std::wstring wstr(count, 0);
+	MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), &wstr[0], count);
+	return wstr;
+}
+
+std::string convertWideToUtf8(const std::wstring& wstr)
+{
+	int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
+	std::string str(count, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
+	return str;
+}
+
+std::wstring convertUtf8ToWide(const std::string& str)
+{
+	int count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), NULL, 0);
+	std::wstring wstr(count, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), &wstr[0], count);
+	return wstr;
+}
+
+std::wstring convertStringToWStringUsingFilesystem(std::string s)
+{
+	return std::filesystem::path(s).wstring();
+}
+
+std::wstring convertWStringToStringUsingFilesystem(std::wstring w)
+{
+	return std::filesystem::path(w).wstring();
+}
+
+void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
+{
+	char buf[2000];
+	exif_entry_get_value(entry, buf, sizeof(buf));
+	std::wcout << convertUtf8ToWide(exif_tag_get_name(entry->tag)) << L" " <<
+		convertUtf8ToWide(exif_format_get_name(entry->format)) << L" " <<
+		entry->size << L" " <<
+		(int)(entry->components) << L" " <<
+		convertUtf8ToWide(exif_entry_get_value(entry, buf, sizeof(buf))) << std::endl;
+}
+
+void data_foreach_func(ExifContent* content, void* callback_data)
+{
+	static unsigned content_count;
+	std::wcout << exif_content_get_ifd(content) << std::endl;
+	exif_content_foreach_entry(content, content_foreach_func, callback_data);
+	++content_count;
+}
+
+
+
+
 //std::unordered_set<wstring> recursiveDirectoryIteratorIncrementPaths;
 //for whatever reason, recursive_directory_iterator cannot read "All Users" folder, but directory_iterator can. weird.
 void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64& filecount)
@@ -226,7 +294,7 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 
 //std::unordered_set<wstring> findFirstFilePaths;
 
-void Worker::ListFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount)
+void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount)
 {
 
 	HANDLE hFind = INVALID_HANDLE_VALUE;
@@ -1396,8 +1464,13 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	{
 		FileDataEntry* f = &(fileDataEntries[i]);
 
+		std::wstring lowerName = f->name;
+		transform(
+			lowerName.begin(), lowerName.end(),
+			lowerName.begin(),
+			towlower);
 
-		if (f->name.find(L".jpg") != std::wstring::npos || f->name.find(L".jpeg") != std::wstring::npos || f->name.find(L".JPG") != std::wstring::npos)
+		if (lowerName.find(L".jpg") != std::wstring::npos || lowerName.find(L".jpeg") != std::wstring::npos)
 		{
 			ExifData* d;
 			d = exif_data_new_from_file(convertWideToUtf8(f->nameAndPath).c_str());
@@ -1446,12 +1519,17 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	for (int i = 0; i < fileDataEntries.size(); i++)
 	{
 		FileDataEntry* f = &(fileDataEntries[i]);
+		std::wstring lowerName = f->name;
+		transform(
+			lowerName.begin(), lowerName.end(),
+			lowerName.begin(),
+			towlower);
 
-		if (f->name.find(L".jpg") != std::wstring::npos ||
-			f->name.find(L".jpeg") != std::wstring::npos ||
-			f->name.find(L".JPG") != std::wstring::npos ||
-			f->name.find(L".png") != std::wstring::npos ||
-			f->name.find(L".PNG") != std::wstring::npos
+		if (
+			lowerName.find(L".jpg") != std::wstring::npos ||
+			lowerName.find(L".jpeg") != std::wstring::npos ||
+			lowerName.find(L".png") != std::wstring::npos 
+			
 			)
 		{
 			// open a stream to read just the necessary parts of the image file
@@ -1551,15 +1629,15 @@ void Worker::process()
 	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 
 
-
-	std::wcout << L"ListFilesWindowsFindFirstFile" << std::endl;
+	firststart = std::chrono::steady_clock::now();
+	std::wcout << L"listFilesWindowsFindFirstFile" << std::endl;
 
 	QueryPerformanceCounter(&li);
 	CounterStart = li.QuadPart;
 	start = std::chrono::steady_clock::now();
 	filecount = 0;
 
-	ListFilesWindowsFindFirstFile(startpath, filecount);
+	listFilesWindowsFindFirstFile(startpath, filecount);
 
 	std::wcout << L"Files found: " << filecount << std::endl;
 
@@ -1605,6 +1683,8 @@ void Worker::process()
 
 	//for each entry, check to see if there are duplicates ahead
 	{
+		std::wcout << L"Check duplicates" << std::endl;
+		start = std::chrono::steady_clock::now();
 		for (int i = 0; i < fileDataEntries.size(); i++)
 		{
 			__int64 size = fileDataEntries[i].size;
@@ -1656,7 +1736,7 @@ void Worker::process()
 							}
 							else
 							{
-								std::wcout << L"Different filename " << fileDataEntries[i].name << L" " << fileDataEntries[j].name << std::endl;
+								//std::wcout << L"Different filename " << fileDataEntries[i].name << L" " << fileDataEntries[j].name << std::endl;
 							}
 
 							if (
@@ -1674,12 +1754,11 @@ void Worker::process()
 							{
 								std::wcout << L"Hashes different" << std::endl;
 
-								//match comparisons run full hash and byte comparison
+								
 
-								//TODO: check full hash
+								//TODO: do byte comparison on potential dupes to be sure
 
-								//TODO: do byte comparison
-
+								//store certain duplicates together in a data structure
 
 
 
@@ -1693,17 +1772,10 @@ void Worker::process()
 					}
 				}
 		}
+		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 	}
 
 
-
-
-
-
-
-	//video file metadata
-	//music file metadata
-	//pdf and document metadata
 
 
 
@@ -1712,7 +1784,50 @@ void Worker::process()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//keep all filenames and dates, compare with filename date, exif dates, determine most correct timestamp for image and duplicates
+
+
+
+	//fix file extensions for wrong image type
+
+
+
+
+
+	//option minimum size
+	//size of fast hash chunks (or percentage?)
+	//do byte comparison
+
+
+
+
+
+
+
 
 
 
@@ -1725,6 +1840,44 @@ void Worker::process()
 	//save and load database with metadata
 
 
+
+
+
+	//Alternate data stream(ADS)
+	//Main article : Fork(file system)
+	//Alternate data streams allow more than one data stream to be associated with a filename(a fork), 
+	//using the format "filename:streamname" (e.g., "text.txt:extrastream").
+	//NTFS Streams were introduced in Windows NT 3.1, to enable Services for Macintosh(SFM) to store resource forks.
+	// Although current versions of Windows Server no longer include SFM, third - party Apple Filing Protocol(AFP) 
+	// products(such as GroupLogic's ExtremeZ-IP) still use this feature of the file system. Very small ADSs 
+	// (named "Zone.Identifier") are added by Internet Explorer and recently[when?] by other browsers to mark 
+	// files downloaded from external sites as possibly unsafe to run; the local shell would then require user 
+	// confirmation before opening them.[57] When the user indicates that they no longer want this confirmation dialog, 
+	// this ADS is deleted.
+	//Alternate streams are not listed in Windows Explorer, and their size is not included in the file's size. 
+	// When the file is copied or moved to another file system without ADS support the user is warned that alternate 
+	// data streams cannot be preserved. No such warning is typically provided if the file is attached to an e-mail, 
+	// or uploaded to a website. Thus, using alternate streams for critical data may cause problems. 
+	// Microsoft provides a tool called Streams[58] to view streams on a selected volume. 
+	// Starting with Windows PowerShell 3.0, it is possible to manage ADS natively with six cmdlets: 
+	// Add-Content, Clear-Content, Get-Content, Get-Item, Remove-Item, Set-Content.[59]
+	//Malware has used alternate data streams to hide code.[60] As a result, malware scanners 
+	//and other special tools now check for alternate data streams.
+
+
+	//macOS supports listing, [17] getting, [18] setting, [19] and removing[20] extended attributes from files or 
+	// directories using a Linux - like API.From the command line, these abilities are exposed through the xattr utility.[21]
+	//Since macOS 10.5, files originating from the web are marked with com.apple.quarantine via extended file attributes.
+	//[22] In some older versions of macOS(such as Mac OS X 10.6), user space extended attributes were not preserved on save in 
+	//common Cocoa applications(TextEdit, Preview etc.)
+
+	//The Linux kernel allows extended attribute to have names of up to 255 bytes and values of up to 64 KiB, 
+	//[14] as do XFSand ReiserFS, but ext2 / 3 / 4 and btrfs impose much smaller limits, requiring all the 
+	// attributes(names and values) of one file to fit in one "filesystem block" (usually 4 KiB).Per POSIX.1e, 
+	// [citation needed] the names are required to start with one of security, system, trusted, and user 
+	// plus a period.This defines the four namespaces of extended attributes.[15]
+	//Extended attributes can be accessedand modified using the getfattrand setfattr commands from the attr 
+	//package on most distributions.[16] The APIs are called getxattrand setxattr.
 
 
 	//gui
@@ -1745,8 +1898,9 @@ void Worker::process()
 
 	//ai video comparison, object classification
 
-
-
+	//video file metadata, online lookup? like picard? look for duplicates with approx same length and offer to remove lesser quality? rename with quality/codec etc in filename? get year released etc?
+	//music file metadata
+	//pdf and document metadata
 
 
 
@@ -1755,6 +1909,11 @@ void Worker::process()
 	//somehow make part of filesystem or explorer extension, run system wide search
 
 	//switch to linux, test program, embed in gnome?
+
+
+
+	std::wcout << L"Finished." << std::endl;
+	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - firststart) << std::endl;
 
 
 	emit finished();
@@ -1827,200 +1986,6 @@ for (int i = 0; i < notFoundMatch2.size(); i++)
 //    db = NULL;
 //}
 
-
-
-
-
-
-
-/*
-DupeKill_v1.2 ReadMe
-Incredibly, I found room on the internet for yet another duplicate file remover.
-Like others, this tool compares files based on content and lists any files which have exact binary duplicates.
-What sets this one apart is that you can give it hints about which files you'd like to keep before starting a scan.
-For example; if you tell it to prefer files with the 'most descriptive name', the app look at all duplicate filenames and default to the shortest,
-most descriptive name as the one to keep. A file with a name containing "copy of", or ".1.txt" would be considered less descriptive than one without;
-and a file named "lkePic.jpg" is considered less descriptive than "Lake Pictures.jpg". This way the default keep or remove action is pre-set;
-and time you spend going though the list and making changes to keep the 'right' file is minimized. The tool has many other options to choose
-from to pick the default 'kept' file: use the newest or oldest by date, the longest or shortest filename, or specify one or more
-directories where files should always be kept or removed.
-
-The app also makes use of a speed improvement I haven't seen anywhere else:
-It makes an extra pass of the file list to create a 'fasthash'. The fasthash uses small samples of the file (16 kilobytes),
-taken from the beginning, end, and three places in the middle; then does a duplicate check based on the hash of the samples.
-This is very quick for large files, and it helps eliminate the vast majority of potential duplicates very quickly, as
-most files will have different samples. Most other duplicate finders omit this step, but it really speeds things up.
-
-As of beta 6 the app is fairly robust; avoiding most of the traps in this excellent reference.
-
-Note: There's no fuzzy searching, this app only finds exact duplicates.
-
-Usage Notes
-Version 4.6.2 or better of the .net framework is required. Get it from Microsoft.
-
-No installation; just unpack and run. A settings file and ancillary files may be created in the program folder.
-
-Instructions:
-
-Pick a directory where you have duplicate files and hit scan.
-After the program identifies the duplicate files, you'll be given a list to choose what to keep and what to delete.
-The app makes suggestions, but you can make changes by right clicking and selecting delete or keep;
-Or by clicking the 'Action' column to toggle it. At this point scan results can be copied via the right click menu or
-exported in bulk via the 'Export Scan...' button.
-Hit the 'Execute Actions' button to run the selected actions. The app will warn you about deletions,
-and there's an extra warning if you're deleting all copies of a file.
-You can make a log to see what was done. The app will reset after this.
-Each duplicate will have an action automatically assigned, and you can manually set the action by
-right clicking or using the keyboard. Available actions are: Keep [spacebar], Delete [delete key],
-Link [F4 key], Recycle, or Move. The context menu option 'Mark as auto' will reset the action to whatever was
-automatically assigned. The 'Invert Action' option will toggle the action between 'Keep' and whatever
-the default removal action is (set this in settings, by default it's 'Delete').
-
-For complex searches, the 'Look In' drop-down has an 'Advanced criteria' option.
-Advanced criterias let you include or exclude multiple folders and have filtering options,
-as well as options to specify a default 'keep' or 'remove from' folder. These criteria can
-be named and permanently saved. To create a criteria, select 'Advanced Criteria..." from
-the 'Look In' drop-down; the Edit Criteria form will the show with further options.
-
-When using Advanced Criteria the '...' button is used to edit an existing criteria.
-To remove a saved criteria: select it in the drop-down, edit it with the '...' button,
-and hit the 'Delete this Criteria' button in the lower left.
-*/
-
-
-
-
-/*
-How does SimilarImages find those similar images?
-It uses a somewhat modified version of the "Quadrant RGB" algorithm and futhermore considers some other meta-information provided by the source files.
-This basicially means: the images will be split into quadrants and average RGB values are computed.
-Pairs that have pretty "close" avg. numbers are considered being "similar".
-*/
-
-/*
-imagededup is a python package that simplifies the task of finding exact and near duplicates in an image collection.
-
-
-This package provides functionality to make use of hashing algorithms that are particularly good at finding exact duplicates as well as convolutional neural networks which are also adept at finding near duplicates. An evaluation framework is also provided to judge the quality of deduplication for a given dataset.
-
-Following details the functionality provided by the package:
-
-Finding duplicates in a directory using one of the following algorithms:
-Convolutional Neural Network (CNN)
-Perceptual hashing (PHash)
-Difference hashing (DHash)
-Wavelet hashing (WHash)
-Average hashing (AHash)
-Generation of encodings for images using one of the above stated algorithms.
-*/
-
-/*
-MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications
-Andrew G. Howard, Menglong Zhu, Bo Chen, Dmitry Kalenichenko, Weijun Wang, Tobias Weyand, Marco Andreetto, Hartwig Adam
-We present a class of efficient models called MobileNets for mobile and embedded vision applications. MobileNets are based on a streamlined architecture that uses depth-wise separable convolutions to build light weight deep neural networks. We introduce two simple global hyper-parameters that efficiently trade off between latency and accuracy. These hyper-parameters allow the model builder to choose the right sized model for their application based on the constraints of the problem. We present extensive experiments on resource and accuracy tradeoffs and show strong performance compared to other popular models on ImageNet classification. We then demonstrate the effectiveness of MobileNets across a wide range of applications and use cases including object detection, finegrain classification, face attributes and large scale geo-localization.
-Subjects:	Computer Vision and Pattern Recognition (cs.CV)
-Cite as:	arXiv:1704.04861 [cs.CV]
-	(or arXiv:1704.04861v1 [cs.CV] for this version)
-
-https://doi.org/10.48550/arXiv.1704.04861
-Focus to learn more
-
-*/
-
-/*
-
-So how do you create a perceptual hash? There are a couple of common algorithms, but none are very complicated. (I'm always surprised that the most common algorithms even work, because they seem too simple!) One of the simplest hashes represents a basic average based on the low frequencies.
-
-With pictures, high frequencies give you detail, while low frequencies show you structure. A large, detailed picture has lots of high frequencies. A very small picture lacks details, so it is all low frequencies. To show how the Average Hash algorithm works, I'll use a picture of actress Alyson Hannigan.
-
-
-Reduce size. The fastest way to remove high frequencies and detail is to shrink the image. In this case, shrink it to 8x8 so that there are 64 total pixels. Don't bother keeping the aspect ratio, just crush it down to fit an 8x8 square. This way, the hash will match any variation of the image, regardless of scale or aspect ratio.
-
-Reduce color. The tiny 8x8 picture is converted to a grayscale. This changes the hash from 64 pixels (64 red, 64 green, and 64 blue) to 64 total colors.
-Average the colors. Compute the mean value of the 64 colors.
-Compute the bits. This is the fun part. Each bit is simply set based on whether the color value is above or below the mean.
-Construct the hash. Set the 64 bits into a 64-bit integer. The order does not matter, just as long as you are consistent. (I set the bits from left to right, top to bottom using big-endian.)
- =  = 8f373714acfcf4d0
-The resulting hash won't change if the image is scaled or the aspect ratio changes. Increasing or decreasing the brightness or contrast, or even altering the colors won't dramatically change the hash value. And best of all: this is FAST!
-
-If you want to compare two images, construct the hash from each image and count the number of bit positions that are different. (This is a Hamming distance.) A distance of zero indicates that it is likely a very similar picture (or a variation of the same picture). A distance of 5 means a few things may be different, but they are probably still close enough to be similar. But a distance of 10 or more? That's probably a very different picture.
-
-Getting Funky With pHash
-While the Average Hash is quick and easy, it may be too rigid of a comparison. For example, it can generate false-misses if there is a gamma correction or a color histogram is applied to the image. This is because the colors move along a non-linear scale -- changing where the "average" is located and therefore changing which bits are above/below the average.
-
-A more robust algorithm is used by pHash. (I use my own variation of the algorithm, but it's the same concept.) The pHash approach extends the average approach to the extreme, using a discrete cosine transform (DCT) to reduce the frequencies.
-Reduce size. Like Average Hash, pHash starts with a small image. However, the image is larger than 8x8; 32x32 is a good size. This is really done to simplify the DCT computation and not because it is needed to reduce the high frequencies.
-
-Reduce color. The image is reduced to a grayscale just to further simplify the number of computations.
-Compute the DCT. The DCT separates the image into a collection of frequencies and scalars. While JPEG uses an 8x8 DCT, this algorithm uses a 32x32 DCT.
-Reduce the DCT. While the DCT is 32x32, just keep the top-left 8x8. Those represent the lowest frequencies in the picture.
-Compute the average value. Like the Average Hash, compute the mean DCT value (using only the 8x8 DCT low-frequency values and excluding the first term since the DC coefficient can be significantly different from the other values and will throw off the average). Thanks to David Starkweather for the added information about pHash. He wrote: "the dct hash is based on the low 2D DCT coefficients starting at the second from lowest, leaving out the first DC term. This excludes completely flat image information (i.e. solid colors) from being included in the hash description."
-Further reduce the DCT. This is the magic step. Set the 64 hash bits to 0 or 1 depending on whether each of the 64 DCT values is above or below the average value. The result doesn't tell us the actual low frequencies; it just tells us the very-rough relative scale of the frequencies to the mean. The result will not vary as long as the overall structure of the image remains the same; this can survive gamma and color histogram adjustments without a problem.
-Construct the hash. Set the 64 bits into a 64-bit integer. The order does not matter, just as long as you are consistent. To see what this fingerprint looks like, simply set the values (this uses +255 and -255 based on whether the bits are 1 or 0) and convert from the 32x32 DCT (with zeros for the high frequencies) back into the 32x32 image:
- = 8a0303f6df3ec8cd
-At first glance, this might look like some random blobs... but look closer. There is a dark ring around her head and the dark horizontal line in the background (right side of the picture) appears as a dark spot.
-As with the Average Hash, pHash values can be compared using the same Hamming distance algorithm. (Just compare each bit position and count the number of differences.)
-
-Best in Class?
-Since I do a lot of work with digital photo forensics and huge picture collections, I need a way to search for similar pictures. So, I created a picture search tool that uses a couple of different perceptual hash algorithms. In my unscientific but long-term-use experience, I have found that Average Hash is significantly faster than pHash. Average Hash is a great algorithm if you are looking for something specific. For example, if I have a small thumbnail of an image and I know that the big one exists somewhere in my collection, then Average Hash will find it very quickly. However, if there are modifications -- like text was added or a head was spliced into place, then Average Hash probably won't do the job. While pHash is slower, it is very tolerant of minor modifications (minor being less than 25% of the picture).
-
-Then again, if you are running a service like TinEye, then you're not going to compute the pHash every time. I am certain that they have a database of pre-computed hash values. The basic comparison system is extremely fast. (There are some heavily optimized ways to compute a Hamming distance.) So computing the hash is a one-time cost and doing a million comparisons in a few seconds (on one computer) is very realistic.
-
-Variations
-There are variations to the perceptual hash algorithm that can also improve performance. For example, the image can be cropped before being reduced in size. This way, extra empty space around the main part of the image won't make a difference. Also, the image can be segmented. For example, if you have a face detection algorithm, then you can compute hashes for each face. (I suspect that TinEye's algorithm does something similar.)
-
-Other variations can track general coloring (e.g., her hair is more red than blue or green, and the background is closer to white than black) or the relative location of lines.
-
-When you can compare images, then you can start doing really cool things. For example, the search engine GazoPa [now offline] allows you to draw a picture. As with TinEye, I don't know the details about how GazoPa works. However, it appears to use a variation of the perceptual hash. Since the hash reduces everything down to the lowest frequencies, my crappy line drawing of three stick figures can be compared with other pictures -- likely matching photos that contain three people.
-
-About 8 months ago I wrote a blog entry on algorithms for comparing pictures. Basically, if you have a large database of pictures and want to find similar images, then you need an algorithm that generates a weighted comparison. In that blog entry, I described how two of the algorithms work:
-aHash (also called Average Hash or Mean Hash). This approach crushes the image into a grayscale 8x8 image and sets the 64 bits in the hash based on whether the pixel's value is greater than the average color for the image.
-
-pHash (also called "Perceptive Hash"). This algorithm is similar to aHash but use a discrete cosine transform (DCT) and compares based on frequencies rather than color values.
-As a comment to the blog entry, David Oftedal suggested a third option that he called a "difference hash". It took me 6 months to get back to evaluating hash functions and dHash is a definite winner.
-
-dHash
-Like aHash and pHash, dHash is pretty simple to implement and is far more accurate than it has any right to be. As an implementation, dHash is nearly identical to aHash but it performs much better. While aHash focuses on average values and pHash evaluates frequency patterns, dHash tracks gradients. Here's how the algorithm works, using the same Alyson Hannigan image as last time:
-
-Reduce size. The fastest way to remove high frequencies and detail is to shrink the image. In this case, shrink it to 9x8 so that there are 72 total pixels. (I'll get to the "why" for the odd 9x8 size in a moment.) By ignoring the size and aspect ratio, this hash will match any similar picture regardless of how it is stretched.
-Reduce color. Convert the image to a grayscale picture. This changes the hash from 72 pixels to a total of 72 colors. (For optimal performance, either reduce color before scaling or perform the scaling and color reduction at the same time.)
-Compute the difference. The dHash algorithm works on the difference between adjacent pixels. This identifies the relative gradient direction. In this case, the 9 pixels per row yields 8 differences between adjacent pixels. Eight rows of eight differences becomes 64 bits.
-Assign bits. Each bit is simply set based on whether the left pixel is brighter than the right pixel. The order does not matter, just as long as you are consistent. (I use a "1" to indicate that P[x] < P[x+1] and set the bits from left to right, top to bottom using big-endian.)
- =  = 3a6c6565498da525
-As with aHash, the resulting hash won't change if the image is scaled or the aspect ratio changes. Increasing or decreasing the brightness or contrast, or even altering the colors won't dramatically change the hash value. Even complex adjustments like gamma corrections and color profiles won't impact the result. And best of all: this is FAST! Seriously -- the slowest part of the algorithm is the size reduction step.
-
-The hash values represent the relative change in brightness intensity. To compare two hashes, just count the number of bits that are different. (This is the Hamming distance.) A value of 0 indicates the same hash and likely a similar picture. A value greater than 10 is likely a different image, and a value between 1 and 10 is potentially a variation.
-
-Speed and Accuracy
-From FotoForensics, we now have a testbed of over 150,000 images. I have a couple of test images that occur a known number of times. For example, one picture (needle) appears exactly once in the 150,000 image repository (haystack). Another picture occurs twice. A third test picture currently occurs 32 times.
-
-I've used aHash, pHash, and dHash to search for the various needles in the haystack. For comparisons, I did not pre-cache any of the repository hash values. I also consider a cutoff value of 10 to denote a match or a miss. (If the haystack image differs from the needle image by more than 10 bits, then it is assumed to not match.) Here's the results so far:
-
-No hash. This is a baseline for comparison. It loads each image into memory, and then unloads the image. This tells me how much time is spent just on the file access and loading. (And all images are located on an NFS-mounted directory -- so this includes network transfer times.) The total time is 16 minutes. Without any image comparisons, there is a minimum of 16 minutes needed just to load each image.
-
-No hash, Scale. Every one of these hash algorithms begins by scaling the image smaller. Small pictures scale very quickly, but large pictures can take 10 seconds or more. Just loading and scaling the 150,000 images takes 3.75 hours. (I really need to look into possible methods for optimizing my bilinear scaling algorithm.)
-
-aHash. This algorithm takes about 3.75 hours to run. In other words, it takes more time to load and scale the image than to run the algorithm. Unfortunately, aHash generates a huge number of false positives. It matched all of the expected images, but also matched about 10x more false-positives. For example, the test picture that should have matched 32 times actually matched over 400 images. Worse: some of the misses had a difference of less than 2 bits. In general, aHash is fast but not very accurate.
-
-pHash. This algorithm definitely performed the best with regards to accuracy. No false positives, no false negatives, and every match has a score of 2 or less. I'm sure that a bigger data set (or alternate needle image) will generate false matches, but the number of misses will likely be substantially less than aHash.
-
-The problem with pHash is the performance. It took over 7 hours to complete. This is because the DCT computation uses lots of operations including cosine and sine. If I pre-compute the DCT constants, then this will drop 1-2 hours from the overall runtime. But applying the DCT coefficients still takes time. pHash is accurate, but not very fast.
-
-dHash. Absolutely amazing... Very few false positives. For example, the image with two known matches ended up matching 6 pictures total (4 false positives). The scores were: 10, 0, 8, 10, 0, and 10. The two zeros were the correct matches; all of the false-positive matches had higher scores. As speed goes, dHash is as fast as aHash. Well, technically it is faster since it doesn't need to compute the mean color value. The dHash algorithm has all the speed of aHash with very few false-positives.
-Algorithm Variations
-I have tried a few variations of the dHash algorithm. For example, David's initial proposal used an 8x8 image and wrapped the last comparison (computing the pixel difference between P[0] and P[7] for the 8th comparison). This actually performs a little worse than my 9x8 variation (more false-positives), but only by a little.
-
-Storing values by row or column really doesn't make a difference. Computing both row and column hashes significantly reduces the number of false-positives and is comparable to pHash (almost as accurate). So it maintains speed and gains accuracy as the cost of requiring 128 bits for the hash.
-
-I've also combined pHash with dHash. Basically, I use the really fast dHash as a fast filter. If dHash matches, then I compute the more expensive pHash value. This gives me all the speed of dHash with all the accuracy of pHash.
-
-Finally, I realized that using dHash as a fast filter is good, but I don't need 64-bits for this computation. My 16-bit dHash variant uses a 6x4 reduced image. This gives me 20 difference values. Ignoring the four corners yields a 16-bit hash -- and has the benefit of ignoring the impact from Instagram-like vignetting (corner darkening). If I have a million different images, then I should expect about 15 images per 16-bit dHash. pHash can compare 15 images really quickly. At a billion images, I'm looking at about 15,258 image collisions and that still is a relatively small number.
-
-I can even permit my 16-bit dHash to be sloppy; permitting any 1-bit change to match. Any computed 16-bit dHash would yield 17 possible dHash values to match. A million images should yield about 260 collisions, and a billion becomes about 260,000 collisions. At a billion images, it would be worth storing the 16-bit dHash, 64-bit dHash, and 64-bit pHash values. But a million images? I'm still ahead just by pre-computing the 16-bit dHash and 64-bit pHash values.
-
-Applied Comparisons
-There are two things we want out of a perceptual hash algorithm: speed and accuracy. By combining dHash with pHash, we get both. But even without pHash, dHash is still a significant improvement over aHash and without any notable speed difference.
-*/
 
 
 
@@ -2555,3 +2520,617 @@ std::string convertWideUTF16StringToNarrowUTF8String(std::wstring wide_utf16_sou
 
 }
 */
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+AllDup
+Comparison Method
+The comparison methods aHash, bHash, dHash and pHash enables you to find similar or almost identical pictures by using a percent match lower than 100%. If you want find exactly the same pictures you have to use a percent match of 100% or the comparison methods MD5/SHA. An overview of the recognition rate of the comparison methods aHash, bHash, dHash and pHash can be found here.
+aHash
+The comparison method aHash (Average Hash) resizes the image to 8x8 or 16x16 pixel. The image will be converted to grayscale and the average color of the all image pixel will be calculated. Now the checksum will be created based on whether the pixel's value is greater than the average color of the image. The checksum can be 64-bit (8x8 pixel) or 256-bit (16x16 pixel).
+bHash
+The comparison method bHash (Blockhash) resizes the image to 128x128, 256x256 or 512x512 pixel. The image will be divided into a block matrix and the median value of all blocks will be calculated to create the checksum. The checksum can be 64-bit or 256-bit. The options "Fast" and "Precise" enables you to influence the accuracy of the checksum calculation.
+dHash
+The comparison method dHash (Difference Hash) resizes the image to 8x8 or 16x16 pixel. The image will be converted to grayscale and the relative change in brightness intensity between two pixels will be calculated to create the checksum. The checksum can be 64-bit (8x8 pixel) or 256-bit (16x16 pixel).
+pHash
+The comparison method pHash (Perceptual Hash) resizes the image to 32x32 pixel. The image will be converted to grayscale and the 64-bit checksum will be calculated based on the frequency spectrum data and a distance calculation doing a discrete cosine transform (DCT).
+MD5, SHA
+These comparison methods enables you to find exactly the same pictures. The following comparison methods are available:
+MD5 (128-Bit)
+SHA-1 (160-Bit)
+SHA-2 (256-Bit)
+SHA-2 (384-Bit)
+SHA-2 (512-Bit)
+For more information on the aHash, bHash, dHash, and pHash comparison methods, see articles Testing different image hash functions and Detection of Duplicate Images Using Image Hash Functions.
+
+
+Hints
+The following files will be automatically excluded from the search:
+Files with a size of 0 bytes
+Pictures with a width or height smaller than the specified compare size
+Corrupted, invalid or incomplete pictures (*)
+Files with a blocked read access (*)
+(*) An error message will be shown at the log pane.
+
+Percentage Match
+Here you can specify the minimum percentage matching of two pictures. The calculated percentage matching between two pictures will be shown at the column Match. The percentage always refers to the reference picture of a group which will be shown in a different text color.
+
+
+Picture Area
+This option enables you to specify the picture area to be used to create the checksum. The following options are available:
+entire picture
+area at the upper left corner
+area at the upper right corner
+area at the lower left corner
+area at the lower right corner
+When using the options 2, 3, 4 or 5, the size of the picture area can be specified in pixel. For example, a value of 16 pixel will be using a picture area with a width and height of 16 pixel at the selected corner.
+
+
+Compare Size
+Here you can specify the maximum width and height of the pictures to be compared. A lower compare size finds more similar pictures and speeds up the comparison time. A higher compare size finds more identical pictures and less similar pictures and of course needs more time to compare them.
+
+
+Checksum
+The size of the checksum in bits is displayed here. The checksum can only be changed when using the bHash comparison method.
+
+
+Compare only pictures with the same properties
+This option will be performed before the option Detect picture modifications.
+File Name
+This option enables you to compare only pictures with the same file name.
+File Extension
+This option enables you to compare only pictures with the same file extension.
+Width and Height
+This option enables you to compare only pictures with the same width and height.
+Orientation
+This option enables you to compare only pictures with the same orientation (portrait or landscape).
+Aspect Ratio
+This option enables you to compare only pictures with the same aspect ratio. The calculation of the aspect ratio is done by the formula "width divided by height". The result of the calculation is truncated to one decimal place. A picture with 1920x1080 pixel has an aspect ratio of "1.7".
+
+Detect picture modifications (slower)
+This option enables you to detect different picture modifications when comparing two pictures. For this purpose, each picture modification will be performed with the picture to be compared and in each case an additional checksum will be created. The following picture modifications can be detected:
+Rotated 90° to the right
+Rotated 180° to the right
+Rotated 90° to the left
+Flipped horizontally
+Rotated 90° to the right and flipped horizontally
+Flipped vertically
+Rotated 90° to the left and flipped horizontally
+
+
+Recognition Rate Test
+We have carried out tests with various comparison methods to determine the recognition rate for different image changes. For this purpose, 29 copies of a JPEG image (1600x1200px, 606KB) were created and their color, size and format changed. The tests always compared the original JPEG image and a modified copy of the image.
+The following comparison methods were used in the test:
+aHash, compare size: 16x16, checksum: 256-bit
+bHash (fast), compare size: 256x256, checksum: 256-bit
+dHash, compare size: 16x16, checksum: 256-bit
+pHash, compare size: 32x32, checksum: 64-bit
+
+
+
+
+
+
+
+
+
+
+
+AntiDupl.NET
+
+How does the program makes recommendations to remove duplicate files?
+
+If a duplicate pair of images in the same format, but the difference is less than half of the threshold image difference, 
+the program recommends to remove the image, which has the smaller the size of picture and/or smaller file size. 
+If the program will meet two identical images, then it will recommend to remove the one which is located in the Remove Paths. 
+If a picture with better quality will be in the directory to delete, the program recommends move it to place of picture in the normal directory.
+
+Could you briefly describe the algorithm for image comparison, which is used in your program?
+In simplified form, my algorithm of image comparison comprises the following steps:
+Resizing all the images to the same size (by default, this size is 32x32).
+The discarding the color information (conversion to grayscale image).
+The finding of mean square differences for each pair of reduced grayscale images.
+Comparison of the mean square difference with threshold - if the difference is less than the threshold, it is supposed that these images are similar.
+
+Search rotated and mirror image dupls - Enabling this option allows you to search rotated and mirrored duplicate images. 
+It has to do more comparisons; therefore search is slowed down eight times. By default, this option is disabled.
+
+Control image size - if this options is enabled then the program take into account the size of pictures. 
+For example, the picture sizes 1024x768 and 800x600 will be different, even if they are to be shown the same thing. By default, this option is disabled.
+
+Control image type - if this options is enabled then the program take into account the type of image in comparison. 
+For example, images in PNG and GIF formats will be different, regardless of their contents. The default option is disabled.
+
+Control image width/height ratio - when you turn on this option, the program checks the ratio of width and height of images. 
+For example, this allows us not to compare the square and rectangular images among themselves, which greatly accelerates the search. The degree of difference ratio of the width and height of images is governed by the parameter Image width/height ratio precision, located on the Advanced tab options (see below). By default, this option is enabled.
+
+Algorithm of comparing of images - algorithm by means of which pictures are compared. In standard fast algorithm - 'Mean square difference' 
+calculate a mean square deviation of brightness for each couple of images. He fast, but has big percent of false positives for pictures 
+with a big uniform background and can not find strongly changed images. When comparing pictures by means of an index of structural similarity 
+('SSIM') can find duplicates among strongly changed pictures, and also images with a big uniform background are better compared, but calculation 
+more slowly. Also 'SSIM' is very sensitive to the normalized size of image. It is better not to use him at the sizes less than 128x128. The default 
+setting is 'Mean square difference'. This parameter is duplicated on the Tool Bar.
+
+Threshold difference - or value mean square deviations of brightness of pictures or value of an index of structural similarity in 
+case of which value below value determined by this parameter, they are considered as duplicates. value determined by this parameter, 
+then the pictures are duplicates. When setting this option at a low level, the program can not detect some of the duplicates. If it is 
+equal to zero then program will be able to find only fully identical images. If he set too high, then increase the likelihood of false 
+positives. Also worth noting that the increase in this parameter leads to a slower speed of the algorithm and vice versa. It can vary 
+in the range from 0 to 15% for algorithm 'Mean square difference' and from 0 to 50% for algorithm 'SSIM'. By default, this parameter 
+is equal to 5% for algorithm 'Mean square difference' and 30% for algorithm 'SSIM'. This parameter is duplicated on the Tool Bar.
+
+Minimal image width/height - sets the minimum width/height of images is necessary that they will be checked for the presence of 
+defects or duplicates. This option allows you to exclude from the search too small images. The default setting is 64.
+
+Maximal image width/height - sets the maximum width/height of images is necessary that they will be checked for the presence of 
+defects or duplicates. This option allows you to exclude from the search too large images. The default setting is 8192.
+
+Compare images inside one directory - when this option is enabled, the program compares with each other the pictures located 
+both in one directory and in the different. Otherwise, the program will compare among themselves only the images which aren't 
+lying in one directory. By default, this option is disabled.
+
+Compare images from one path of search with one another - when this option is enabled, the program compares one with another 
+pictures that are located in the same search path. Otherwise, the program will only compare the images from different search 
+paths. By default, this option is disabled.
+
+Check on defect - option specifies whether you want to check the images for defects. By default, this option is enabled.
+
+Check on blockiness - the option defines, whether it is necessary to check pictures for existence of artifacts of 
+compression of JPEG - a blockiness. The blockiness is defined by the greatest amount of gradients of brightness 
+for extreme pixels of units 8x8. By default, this option is disable.
+
+Blockiness threshold - percent of the amount of gradients in case of which the image is considered the defective. 
+The chess black-and-white grid will have 100% with a size of cell of 8 pixels. The counted value will testify not 
+necessarily to the worst visual quality in comparison with the picture with smaller value and vice versa. 
+By default this parameter is equal 10.
+
+Check on blockiness only on not Jpeg - the option defines, whether it is necessary to check pictures for existence 
+of artifacts of compression of JPEG - a blockiness only not in Jpeg files. It allows to find only the pressed images, 
+without showing the simply strongly oblate. If at the PNG or BMP file there are explicit artifacts of compression it 
+means that the source file was saved in other format with certainly big size. By default, this option is disabled.
+
+Check on bluring -the option defines, whether it is necessary to check pictures for too big blur of the image. 
+Blur is calculated a gradient of the second derivative (which it is maximum on lines and edges) for the original 
+image and its reduced options. Exact value is defined by method of the linear interpolation. By default, this option is disabled.
+
+Bluring threshold - blur radius in case of which the image is considered the defective. So far the algorithm is 
+incomplete and high blur for landscape images is shown. By default this parameter is equal 4.
+
+Image width/height ration precision - option determines the accuracy which must be respected by the ratio of 
+width/height of the compared images. It can be 1/8, 1/16, 1/32 or 1/64. The default value is 1/32.
+
+Compare threads count - option specifies the number of threads of comparison, which are created when searching for 
+duplicates. It can take values Auto (number of threads is determined by the program), 1, ..., the number of processor 
+cores in the system. The default value is Auto.
+
+Load thread count - option specifies the number of threads of image loading, which are created when searching. It can 
+take values Auto (number of threads is determined by the program), 1, ..., the number of processor cores in the system. The default value is Auto.
+
+Normalized image size - this parameter can be described as follows: because images can be absolutely arbitrary size, 
+then the correct comparison of their need to lead to a common denominator. To do this, all images are scaled to the 
+same size and converted into 8-bit gray. Then have these normalized images are compared with each other and stored in a 
+database. This option determines the size of these images. The more normalized the size of images, the higher the accuracy 
+of the program. Adverse effects of this increase will be decrease of speed of the program, and large requirements to the 
+memory and the free disk space (to store the database of previously scanned images). Can take the values 
+16x16, 32x32, 64x64 or 128x128. The default value is 32�32.
+
+Width of ignored frame of image - This parameter determines the width of frame of the image, the contents of 
+which will be ignored during the comparison of images. This option is relevant if you want to compare pictures 
+with frames of different colors or small inscription on the edge. By default, this value is 0 %.
+
+Use libjpeg-turbo - a flag to use libjpeg-turbo library to improve performance of loading of JPEG images. 
+Otherwise, they will be deleted permanently. By default, this option is enabled.
+
+
+
+
+
+
+Czkawka
+Similar Images
+It is a tool for finding similar images that differ e.g. in watermark, size etc.
+
+The tool first collects images with specific extensions that can be checked - 
+[".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif", ".pnm", ".tga", ".ff", ".gif", ".jif", ".jfi", ".ico", ".webp", ".avif"].
+
+Next cached data is loaded from file to prevent hashing twice the same file.
+The cache which points to non-existing data, by default is deleted automatically.
+
+Then a perceptual hash is created for each image which isn't available in cache.
+
+Cryptographic hash (used for example in ciphers) for similar inputs gives completely different outputs:
+11110 ==> AAAAAB
+11111 ==> FWNTLW
+01110 ==> TWMQLA
+
+Perceptual hash at similar inputs, gives similar outputs:
+11110 ==> AAAAAB
+11111 ==> AABABB
+01110 ==> AAAACB
+
+Computed hash data is then thrown into a special tree that allows to compare hashes using Hamming distance.
+
+Next these hashes are saved to file, to be able to open images without needing to hash it more times.
+
+Finally, each hash is compared with the others and if the distance between them is less than the maximum 
+distance specified by the user, the images are considered similar and thrown from the pool of images to be searched.
+
+It is possible to choose one of 5 types of hashes - Gradient, Mean, VertGradient, Blockhash, DoubleGradient.
+Before calculating hashes usually images are resized with specific algorithm(Lanczos3, Gaussian, CatmullRom, 
+Triangle, Nearest) to e.g. 8x8 or 16x16 image(allowed sizes - 8x8, 16x16, 32x32, 64x64), which allows simplifying 
+later computations. Both size and filter can be adjusted in application.
+
+Each configuration saves results to different cache files to save users from invalid results.
+Some images broke hash functions and create hashes full of 0 or 255, so these images are silently excluded from 
+end results(but still are saved to cache).
+
+You can test each algorithm with provided CLI tool, just put to folder test.jpg file and run inside this command 
+czkawka_cli tester -i
+Faster compare option allows to only once compare results, so checking should work a lot of faster when using higher 
+number of similarity.
+
+Some tidbits:
+Smaller hash size not always means that calculating it will take more time
+Blockhash is the only algorithm that don't resize images before hashing
+Nearest resize algorithm can be faster even 5 times than any other available but provide worse results
+
+
+
+
+
+dupeguru
+Picture blocks
+dupeGuru Picture mode stands apart of its two friends. Its scan types are completely different. 
+The first one is its “Contents” scan, which is a bit too generic, hence the name we use here, “Picture blocks”.
+
+We start by opening every picture in RGB bitmap mode, then we “blockify” the picture. 
+We create a 15x15 grid and compute the average color of each grid tile. This is the “picture analysis” phase. 
+It’s very time consuming and the result is cached in a database (the “picture cache”).
+
+Once we’ve done that, we can start comparing them. Each tile in the grid (an average color) is compared to its 
+corresponding grid on the other picture and a color diff is computer (it’s simply a sum of the difference of R, G and B on each side). 
+All these sums are added up to a final “score”.
+
+If that score is smaller or equal to 100 - threshold, we have a match.
+
+A threshold of 100 adds an additional constraint that pictures have to be exactly the same 
+(it’s possible, due to averaging, that the tile comparison yields 0 for pictures that aren’t exactly the same, 
+but since “100%” suggests “exactly the same”, we discard those ocurrences). If you want to get pictures that are very, 
+very similar but still allow a bit of fuzzy differences, go for 99%.
+
+This second part of the scan is CPU intensive and can take quite a bit of time. This task has been made to take advatange of 
+multi-core CPUs and has been optimized to the best of my abilities, but the fact of the matter is that, due to the fuzziness of the 
+task, we still have to compare every picture to every other, making the algorithm quadratic (if N is the number of pictures to compare,
+the number of comparisons to perform is N*N).
+
+This algorithm is very naive, but in the field, it works rather well. If you master a better algorithm and want to improve 
+dupeGuru, by all means, let me know!
+
+
+
+
+
+
+
+DupeKill_v1.2 ReadMe
+Incredibly, I found room on the internet for yet another duplicate file remover.
+Like others, this tool compares files based on content and lists any files which have exact binary duplicates.
+What sets this one apart is that you can give it hints about which files you'd like to keep before starting a scan.
+For example; if you tell it to prefer files with the 'most descriptive name', the app look at all duplicate filenames and default to the shortest,
+most descriptive name as the one to keep. A file with a name containing "copy of", or ".1.txt" would be considered less descriptive than one without;
+and a file named "lkePic.jpg" is considered less descriptive than "Lake Pictures.jpg". This way the default keep or remove action is pre-set;
+and time you spend going though the list and making changes to keep the 'right' file is minimized. The tool has many other options to choose
+from to pick the default 'kept' file: use the newest or oldest by date, the longest or shortest filename, or specify one or more
+directories where files should always be kept or removed.
+
+The app also makes use of a speed improvement I haven't seen anywhere else:
+It makes an extra pass of the file list to create a 'fasthash'. The fasthash uses small samples of the file (16 kilobytes),
+taken from the beginning, end, and three places in the middle; then does a duplicate check based on the hash of the samples.
+This is very quick for large files, and it helps eliminate the vast majority of potential duplicates very quickly, as
+most files will have different samples. Most other duplicate finders omit this step, but it really speeds things up.
+
+As of beta 6 the app is fairly robust; avoiding most of the traps in this excellent reference.
+
+Note: There's no fuzzy searching, this app only finds exact duplicates.
+
+
+
+
+
+Duplicate Cleaner feature list
+Image Mode
+Match similar images		x	x
+Match exact images (Ignoring metadata)		x	x
+Match rotated or flipped images		x	x
+Match by Image tags	Includes date taken, Unique ID, User comment & more.	x	x
+Match similar Image tags		x
+Select image metadata to display in results	Customize your results list.	x
+Match by camera date/time taken	With a user definable tolerance in seconds.	x
+Match by geographical distance between images		x	x
+All popular image formats supported	.bmp .gif .jpg/.jpeg/.jpe .heic .ico .png .emf .dib .tif/.tiff .webp	x
+Camera RAW Image formats supported	.raw, .cr2, .nef, .dng, .arw, .crw, .kdc, .mos, .srw, .orf, .raf, .rw2, .x3f, .3fr, .mrw, .dcr, .erf, .mef, .pef, .sr2	x	x
+Audio Mode
+Match by similar sounding audio	Match by first 15 seconds (quick), two minutes or whole track.	x	x
+Match by exact audio data (ignoring tags)		x	x
+Match by song duration (with tolerance)		x
+Match by audio tags	Artist, Title, Album, TrackNo,TrackCount, DiscNo, DiscCount, Year, Genre, Comment, BitRate, SampleRate, Channels, MusicBrainzArtistID, MusicBrainzReleaseID,MusicBrainzTrackID, AmazonID (ASIN), AcoustID	x	x
+Select audio metadata tags to display in results	Customize your results list.	x
+Most popular audio formats supported	.mp3 .ogg .wav .wma .flac .m4a .m4p .aac	x	x
+Video Mode
+Match by similar video frames	Match by the similarity of series of video frames from throughout the video.	x
+Match by video thumbnail	Match by a thumbnail taken from the start of the video.	x
+Match by similar sounding audio soundtrack	Match by first 15 seconds (quick), first two minutes or whole soundtrack.	x
+Match by exact audio data, video data or both (ignoring metadata)		x
+Match by video duration (with tolerance)		x
+Match by video metadata tags	Title, Recorded date, Director,Performer, Genre, Episode, Format, Rotation, Has Audio, Has Cover Art	x
+Most popular video formats supported	mov, avi, mp4, mpg, wmv, flv, 3pg, asf, 3g2, webm, mkv, vob, m4v, mts, sec	x
+Other Match Criteria
+Match any combination of the below in addition to Regular, Image or Audio mode.
+Same file name		x	x	x
+Similar file name		x	x
+Same file extension		x	x	x
+Match copied file names		x		x
+Same file size	An additional file size tolerance can be specified	x	x	x
+Same created date/time	An additional date/time tolerance can be specified	x	x	x
+Same modified date/time	An additional date/time tolerance can be specified	x	x	x
+Same drive		x
+Same folder name	Folder name match depth can be specified	x	x
+Same folder name (relative to search base)		x
+Ignore duplicate groups within same folder	Duplicates can be EXCLUDED from the final list where ALL the duplicates in that group are in the same folder.	x	x
+Other scanning features
+Scan inside Zip files.		x	x
+Scan inside other archive formats	rar, gz, tar, bz2, tgz, 7z, tar, jar	x
+Ignore zero size files		x	x
+Count hard-links to file		x	x
+Specify folders to ignore		x	x	x
+Specify folders to protect		x	x	x
+Search for duplicates that match a master folder/drive		x	x
+Search for duplicates that must match other folders/drives only		x	x
+Search for duplicates that must match within this folder only		x
+File removal
+Delete files.	Recycle bin optional	x	x	x
+Move or Copy files		x	x
+Rename files		x	x
+Create shorcuts to file		x
+Create symbolic links to file	aka Soft links or symlinks	x
+Hard-link files		x	x
+Create batch files	Export a batch file based on your marked list with customizable code	x
+Automatic empty folder removal		x	x
+Search filters
+Limit search to certain file types.		x	x
+Limit search within a file size range		x	x
+Limit search to a date range		x	x
+Limit search to image/movie dimensions	Image/Video modes	x
+Built-in search filter library - add your own.		x	x
+Duplicate browsing & selecting
+Browse duplicates by detail list		x	x	x
+Browse duplicates by thumbnail view	Supported thumbnails include all image formats and audio artwork	x	x
+Group, filter and sort files		x	x
+Search within list		x	x
+Create filter from text search		x
+Selection Assistant for help marking duplicate groups	See manual for full list of Selection Assistant functions	x	x
+Selection Assistant for duplicate folders		x	x
+Built-in image preview tool for visual comparison of images		x	x
+Video preview		x
+Built-in audio player for previewing files		x	x
+Safety features
+Don't scan system files/folders.		x	x	x
+Skip hidden folders		x
+Don't follow NTFS mountpoints & junctions		x	x	x
+Skip hard-linked files		x	x	x
+Check if all duplicates in group marked for removal		x	x	x
+Flag folders to protect before starting		x	x	x
+Miscellaneous
+Launch scans using command line parameters.		x	x
+Export CSV file of duplicate files/folders
+
+
+
+
+
+
+
+
+
+
+
+FastDup is a tool for gaining insights from a large image collection. It can find anomalies, duplicate and near duplicate images, 
+clusters of similarity, learn the normal behavior and temporal interactions between images. It can be used for smart subsampling of a 
+higher quality dataset, outlier removal, novelty detection of new information to be sent for tagging. FastDup scales to millions of images running on CPU only.
+
+
+
+
+
+finddupe
+The match candidates are clustered according to the signature of the first 32k, then checked byte for byte.
+
+
+
+
+
+imagededup is a python package that simplifies the task of finding exact and near duplicates in an image collection.
+This package provides functionality to make use of hashing algorithms that are particularly good at finding exact duplicates as well as convolutional neural networks which are also adept at finding near duplicates. An evaluation framework is also provided to judge the quality of deduplication for a given dataset.
+
+Following details the functionality provided by the package:
+Finding duplicates in a directory using one of the following algorithms:
+Convolutional Neural Network (CNN)
+Perceptual hashing (PHash)
+Difference hashing (DHash)
+Wavelet hashing (WHash)
+Average hashing (AHash)
+Generation of encodings for images using one of the above stated algorithms.
+Framework to evaluate effectiveness of deduplication given a ground truth mapping.
+Plotting duplicates found for a given image file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+When I use opencv to extract feature points ,ORB is slower than SIFT.Why? Theoretically,ORB should much faster
+
+*/
+
+
+
+
+/*
+How does SimilarImages find those similar images?
+It uses a somewhat modified version of the "Quadrant RGB" algorithm and futhermore considers some other meta-information provided by the source files.
+This basicially means: the images will be split into quadrants and average RGB values are computed.
+Pairs that have pretty "close" avg. numbers are considered being "similar".
+*/
+
+/*
+imagededup is a python package that simplifies the task of finding exact and near duplicates in an image collection.
+
+
+This package provides functionality to make use of hashing algorithms that are particularly good at finding exact duplicates as well as convolutional neural networks which are also adept at finding near duplicates. An evaluation framework is also provided to judge the quality of deduplication for a given dataset.
+
+Following details the functionality provided by the package:
+
+Finding duplicates in a directory using one of the following algorithms:
+Convolutional Neural Network (CNN)
+Perceptual hashing (PHash)
+Difference hashing (DHash)
+Wavelet hashing (WHash)
+Average hashing (AHash)
+Generation of encodings for images using one of the above stated algorithms.
+*/
+
+/*
+MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications
+Andrew G. Howard, Menglong Zhu, Bo Chen, Dmitry Kalenichenko, Weijun Wang, Tobias Weyand, Marco Andreetto, Hartwig Adam
+We present a class of efficient models called MobileNets for mobile and embedded vision applications. MobileNets are based on a streamlined architecture that uses depth-wise separable convolutions to build light weight deep neural networks. We introduce two simple global hyper-parameters that efficiently trade off between latency and accuracy. These hyper-parameters allow the model builder to choose the right sized model for their application based on the constraints of the problem. We present extensive experiments on resource and accuracy tradeoffs and show strong performance compared to other popular models on ImageNet classification. We then demonstrate the effectiveness of MobileNets across a wide range of applications and use cases including object detection, finegrain classification, face attributes and large scale geo-localization.
+Subjects:	Computer Vision and Pattern Recognition (cs.CV)
+Cite as:	arXiv:1704.04861 [cs.CV]
+	(or arXiv:1704.04861v1 [cs.CV] for this version)
+
+https://doi.org/10.48550/arXiv.1704.04861
+Focus to learn more
+
+*/
+
+/*
+
+So how do you create a perceptual hash? There are a couple of common algorithms, but none are very complicated. (I'm always surprised that the most common algorithms even work, because they seem too simple!) One of the simplest hashes represents a basic average based on the low frequencies.
+
+With pictures, high frequencies give you detail, while low frequencies show you structure. A large, detailed picture has lots of high frequencies. A very small picture lacks details, so it is all low frequencies. To show how the Average Hash algorithm works, I'll use a picture of actress Alyson Hannigan.
+
+
+Reduce size. The fastest way to remove high frequencies and detail is to shrink the image. In this case, shrink it to 8x8 so that there are 64 total pixels. Don't bother keeping the aspect ratio, just crush it down to fit an 8x8 square. This way, the hash will match any variation of the image, regardless of scale or aspect ratio.
+
+Reduce color. The tiny 8x8 picture is converted to a grayscale. This changes the hash from 64 pixels (64 red, 64 green, and 64 blue) to 64 total colors.
+Average the colors. Compute the mean value of the 64 colors.
+Compute the bits. This is the fun part. Each bit is simply set based on whether the color value is above or below the mean.
+Construct the hash. Set the 64 bits into a 64-bit integer. The order does not matter, just as long as you are consistent. (I set the bits from left to right, top to bottom using big-endian.)
+ =  = 8f373714acfcf4d0
+The resulting hash won't change if the image is scaled or the aspect ratio changes. Increasing or decreasing the brightness or contrast, or even altering the colors won't dramatically change the hash value. And best of all: this is FAST!
+
+If you want to compare two images, construct the hash from each image and count the number of bit positions that are different. (This is a Hamming distance.) A distance of zero indicates that it is likely a very similar picture (or a variation of the same picture). A distance of 5 means a few things may be different, but they are probably still close enough to be similar. But a distance of 10 or more? That's probably a very different picture.
+
+Getting Funky With pHash
+While the Average Hash is quick and easy, it may be too rigid of a comparison. For example, it can generate false-misses if there is a gamma correction or a color histogram is applied to the image. This is because the colors move along a non-linear scale -- changing where the "average" is located and therefore changing which bits are above/below the average.
+
+A more robust algorithm is used by pHash. (I use my own variation of the algorithm, but it's the same concept.) The pHash approach extends the average approach to the extreme, using a discrete cosine transform (DCT) to reduce the frequencies.
+Reduce size. Like Average Hash, pHash starts with a small image. However, the image is larger than 8x8; 32x32 is a good size. This is really done to simplify the DCT computation and not because it is needed to reduce the high frequencies.
+
+Reduce color. The image is reduced to a grayscale just to further simplify the number of computations.
+Compute the DCT. The DCT separates the image into a collection of frequencies and scalars. While JPEG uses an 8x8 DCT, this algorithm uses a 32x32 DCT.
+Reduce the DCT. While the DCT is 32x32, just keep the top-left 8x8. Those represent the lowest frequencies in the picture.
+Compute the average value. Like the Average Hash, compute the mean DCT value (using only the 8x8 DCT low-frequency values and excluding the first term since the DC coefficient can be significantly different from the other values and will throw off the average). Thanks to David Starkweather for the added information about pHash. He wrote: "the dct hash is based on the low 2D DCT coefficients starting at the second from lowest, leaving out the first DC term. This excludes completely flat image information (i.e. solid colors) from being included in the hash description."
+Further reduce the DCT. This is the magic step. Set the 64 hash bits to 0 or 1 depending on whether each of the 64 DCT values is above or below the average value. The result doesn't tell us the actual low frequencies; it just tells us the very-rough relative scale of the frequencies to the mean. The result will not vary as long as the overall structure of the image remains the same; this can survive gamma and color histogram adjustments without a problem.
+Construct the hash. Set the 64 bits into a 64-bit integer. The order does not matter, just as long as you are consistent. To see what this fingerprint looks like, simply set the values (this uses +255 and -255 based on whether the bits are 1 or 0) and convert from the 32x32 DCT (with zeros for the high frequencies) back into the 32x32 image:
+ = 8a0303f6df3ec8cd
+At first glance, this might look like some random blobs... but look closer. There is a dark ring around her head and the dark horizontal line in the background (right side of the picture) appears as a dark spot.
+As with the Average Hash, pHash values can be compared using the same Hamming distance algorithm. (Just compare each bit position and count the number of differences.)
+
+Best in Class?
+Since I do a lot of work with digital photo forensics and huge picture collections, I need a way to search for similar pictures. So, I created a picture search tool that uses a couple of different perceptual hash algorithms. In my unscientific but long-term-use experience, I have found that Average Hash is significantly faster than pHash. Average Hash is a great algorithm if you are looking for something specific. For example, if I have a small thumbnail of an image and I know that the big one exists somewhere in my collection, then Average Hash will find it very quickly. However, if there are modifications -- like text was added or a head was spliced into place, then Average Hash probably won't do the job. While pHash is slower, it is very tolerant of minor modifications (minor being less than 25% of the picture).
+
+Then again, if you are running a service like TinEye, then you're not going to compute the pHash every time. I am certain that they have a database of pre-computed hash values. The basic comparison system is extremely fast. (There are some heavily optimized ways to compute a Hamming distance.) So computing the hash is a one-time cost and doing a million comparisons in a few seconds (on one computer) is very realistic.
+
+Variations
+There are variations to the perceptual hash algorithm that can also improve performance. For example, the image can be cropped before being reduced in size. This way, extra empty space around the main part of the image won't make a difference. Also, the image can be segmented. For example, if you have a face detection algorithm, then you can compute hashes for each face. (I suspect that TinEye's algorithm does something similar.)
+
+Other variations can track general coloring (e.g., her hair is more red than blue or green, and the background is closer to white than black) or the relative location of lines.
+
+When you can compare images, then you can start doing really cool things. For example, the search engine GazoPa [now offline] allows you to draw a picture. As with TinEye, I don't know the details about how GazoPa works. However, it appears to use a variation of the perceptual hash. Since the hash reduces everything down to the lowest frequencies, my crappy line drawing of three stick figures can be compared with other pictures -- likely matching photos that contain three people.
+
+About 8 months ago I wrote a blog entry on algorithms for comparing pictures. Basically, if you have a large database of pictures and want to find similar images, then you need an algorithm that generates a weighted comparison. In that blog entry, I described how two of the algorithms work:
+aHash (also called Average Hash or Mean Hash). This approach crushes the image into a grayscale 8x8 image and sets the 64 bits in the hash based on whether the pixel's value is greater than the average color for the image.
+
+pHash (also called "Perceptive Hash"). This algorithm is similar to aHash but use a discrete cosine transform (DCT) and compares based on frequencies rather than color values.
+As a comment to the blog entry, David Oftedal suggested a third option that he called a "difference hash". It took me 6 months to get back to evaluating hash functions and dHash is a definite winner.
+
+dHash
+Like aHash and pHash, dHash is pretty simple to implement and is far more accurate than it has any right to be. As an implementation, dHash is nearly identical to aHash but it performs much better. While aHash focuses on average values and pHash evaluates frequency patterns, dHash tracks gradients. Here's how the algorithm works, using the same Alyson Hannigan image as last time:
+
+Reduce size. The fastest way to remove high frequencies and detail is to shrink the image. In this case, shrink it to 9x8 so that there are 72 total pixels. (I'll get to the "why" for the odd 9x8 size in a moment.) By ignoring the size and aspect ratio, this hash will match any similar picture regardless of how it is stretched.
+Reduce color. Convert the image to a grayscale picture. This changes the hash from 72 pixels to a total of 72 colors. (For optimal performance, either reduce color before scaling or perform the scaling and color reduction at the same time.)
+Compute the difference. The dHash algorithm works on the difference between adjacent pixels. This identifies the relative gradient direction. In this case, the 9 pixels per row yields 8 differences between adjacent pixels. Eight rows of eight differences becomes 64 bits.
+Assign bits. Each bit is simply set based on whether the left pixel is brighter than the right pixel. The order does not matter, just as long as you are consistent. (I use a "1" to indicate that P[x] < P[x+1] and set the bits from left to right, top to bottom using big-endian.)
+ =  = 3a6c6565498da525
+As with aHash, the resulting hash won't change if the image is scaled or the aspect ratio changes. Increasing or decreasing the brightness or contrast, or even altering the colors won't dramatically change the hash value. Even complex adjustments like gamma corrections and color profiles won't impact the result. And best of all: this is FAST! Seriously -- the slowest part of the algorithm is the size reduction step.
+
+The hash values represent the relative change in brightness intensity. To compare two hashes, just count the number of bits that are different. (This is the Hamming distance.) A value of 0 indicates the same hash and likely a similar picture. A value greater than 10 is likely a different image, and a value between 1 and 10 is potentially a variation.
+
+Speed and Accuracy
+From FotoForensics, we now have a testbed of over 150,000 images. I have a couple of test images that occur a known number of times. For example, one picture (needle) appears exactly once in the 150,000 image repository (haystack). Another picture occurs twice. A third test picture currently occurs 32 times.
+
+I've used aHash, pHash, and dHash to search for the various needles in the haystack. For comparisons, I did not pre-cache any of the repository hash values. I also consider a cutoff value of 10 to denote a match or a miss. (If the haystack image differs from the needle image by more than 10 bits, then it is assumed to not match.) Here's the results so far:
+
+No hash. This is a baseline for comparison. It loads each image into memory, and then unloads the image. This tells me how much time is spent just on the file access and loading. (And all images are located on an NFS-mounted directory -- so this includes network transfer times.) The total time is 16 minutes. Without any image comparisons, there is a minimum of 16 minutes needed just to load each image.
+
+No hash, Scale. Every one of these hash algorithms begins by scaling the image smaller. Small pictures scale very quickly, but large pictures can take 10 seconds or more. Just loading and scaling the 150,000 images takes 3.75 hours. (I really need to look into possible methods for optimizing my bilinear scaling algorithm.)
+
+aHash. This algorithm takes about 3.75 hours to run. In other words, it takes more time to load and scale the image than to run the algorithm. Unfortunately, aHash generates a huge number of false positives. It matched all of the expected images, but also matched about 10x more false-positives. For example, the test picture that should have matched 32 times actually matched over 400 images. Worse: some of the misses had a difference of less than 2 bits. In general, aHash is fast but not very accurate.
+
+pHash. This algorithm definitely performed the best with regards to accuracy. No false positives, no false negatives, and every match has a score of 2 or less. I'm sure that a bigger data set (or alternate needle image) will generate false matches, but the number of misses will likely be substantially less than aHash.
+
+The problem with pHash is the performance. It took over 7 hours to complete. This is because the DCT computation uses lots of operations including cosine and sine. If I pre-compute the DCT constants, then this will drop 1-2 hours from the overall runtime. But applying the DCT coefficients still takes time. pHash is accurate, but not very fast.
+
+dHash. Absolutely amazing... Very few false positives. For example, the image with two known matches ended up matching 6 pictures total (4 false positives). The scores were: 10, 0, 8, 10, 0, and 10. The two zeros were the correct matches; all of the false-positive matches had higher scores. As speed goes, dHash is as fast as aHash. Well, technically it is faster since it doesn't need to compute the mean color value. The dHash algorithm has all the speed of aHash with very few false-positives.
+Algorithm Variations
+I have tried a few variations of the dHash algorithm. For example, David's initial proposal used an 8x8 image and wrapped the last comparison (computing the pixel difference between P[0] and P[7] for the 8th comparison). This actually performs a little worse than my 9x8 variation (more false-positives), but only by a little.
+
+Storing values by row or column really doesn't make a difference. Computing both row and column hashes significantly reduces the number of false-positives and is comparable to pHash (almost as accurate). So it maintains speed and gains accuracy as the cost of requiring 128 bits for the hash.
+
+I've also combined pHash with dHash. Basically, I use the really fast dHash as a fast filter. If dHash matches, then I compute the more expensive pHash value. This gives me all the speed of dHash with all the accuracy of pHash.
+
+Finally, I realized that using dHash as a fast filter is good, but I don't need 64-bits for this computation. My 16-bit dHash variant uses a 6x4 reduced image. This gives me 20 difference values. Ignoring the four corners yields a 16-bit hash -- and has the benefit of ignoring the impact from Instagram-like vignetting (corner darkening). If I have a million different images, then I should expect about 15 images per 16-bit dHash. pHash can compare 15 images really quickly. At a billion images, I'm looking at about 15,258 image collisions and that still is a relatively small number.
+
+I can even permit my 16-bit dHash to be sloppy; permitting any 1-bit change to match. Any computed 16-bit dHash would yield 17 possible dHash values to match. A million images should yield about 260 collisions, and a billion becomes about 260,000 collisions. At a billion images, it would be worth storing the 16-bit dHash, 64-bit dHash, and 64-bit pHash values. But a million images? I'm still ahead just by pre-computing the 16-bit dHash and 64-bit pHash values.
+
+Applied Comparisons
+There are two things we want out of a perceptual hash algorithm: speed and accuracy. By combining dHash with pHash, we get both. But even without pHash, dHash is still a significant improvement over aHash and without any notable speed difference.
+*/
+

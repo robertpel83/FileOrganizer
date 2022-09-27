@@ -37,7 +37,7 @@
 #include "atlstr.h"
 #include "comutil.h"
 
-
+#include <cwctype>
 
 #include <dirent.h>
 
@@ -117,77 +117,6 @@ public:
 	}
 };
 
-
-
-std::string convertWideToANSI(const std::wstring& wstr);
-std::wstring convertAnsiToWide(const std::string& str);
-std::string convertWideToUtf8(const std::wstring& wstr);
-std::wstring convertUtf8ToWide(const std::string& str);
-std::wstring convertStringToWStringUsingFilesystem(std::string s);
-std::wstring convertWStringToStringUsingFilesystem(std::wstring w);
-void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data));
-void data_foreach_func(ExifContent* content, void* callback_data);
-
-std::string convertWideToANSI(const std::wstring& wstr)
-{
-	int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
-	std::string str(count, 0);
-	WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
-	return str;
-}
-
-std::wstring convertAnsiToWide(const std::string& str)
-{
-	int count = MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0);
-	std::wstring wstr(count, 0);
-	MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), &wstr[0], count);
-	return wstr;
-}
-
-std::string convertWideToUtf8(const std::wstring& wstr)
-{
-	int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
-	std::string str(count, 0);
-	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
-	return str;
-}
-
-std::wstring convertUtf8ToWide(const std::string& str)
-{
-	int count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), NULL, 0);
-	std::wstring wstr(count, 0);
-	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), &wstr[0], count);
-	return wstr;
-}
-
-std::wstring convertStringToWStringUsingFilesystem(std::string s)
-{
-	return std::filesystem::path(s).wstring();
-}
-
-std::wstring convertWStringToStringUsingFilesystem(std::wstring w)
-{
-	return std::filesystem::path(w).wstring();
-}
-
-void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
-{
-	char buf[2000];
-	exif_entry_get_value(entry, buf, sizeof(buf));
-	std::wcout << convertUtf8ToWide(exif_tag_get_name(entry->tag)) << L" " <<
-		convertUtf8ToWide(exif_format_get_name(entry->format)) << L" " <<
-		entry->size << L" " <<
-		(int)(entry->components) << L" " <<
-		convertUtf8ToWide(exif_entry_get_value(entry, buf, sizeof(buf))) << std::endl;
-}
-
-void data_foreach_func(ExifContent* content, void* callback_data)
-{
-	static unsigned content_count;
-	std::wcout << exif_content_get_ifd(content) << std::endl;
-	exif_content_foreach_entry(content, content_foreach_func, callback_data);
-	++content_count;
-}
 
 
 
@@ -397,6 +326,7 @@ public:
 	}
 	vector<FileDataEntry> fileDataEntries;
 	std::chrono::steady_clock::time_point start;
+	std::chrono::steady_clock::time_point firststart;
 	bool isWindows = false;
 	//#define DB_LOCATION L"locate.db"
 	//FILE* db;
@@ -413,7 +343,7 @@ private:
 	void recursiveDirectoryIteratorIncrement(const wstring startpath, _int64& filecount);
 	void directoryIteratorRecursive(const std::filesystem::path& dir_path, _int64& filecount);
 	void direntScanDirectory(const wstring startPath, _int64& filecount);
-	void ListFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount);
+	void listFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount);
 	__int64 getFileSizeWindows(FileDataEntry* f);
 	BY_HANDLE_FILE_INFORMATION getFileInformationByHandleWindows(wstring fileNameAndPath);
 	__int64 getFileSizeFromHandleFileInformationWindows(FileDataEntry* f);
