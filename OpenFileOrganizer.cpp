@@ -1841,14 +1841,36 @@ void Worker::process()
 								{
 									//store certain duplicates together in a data structure
 
-									FileDataEntry *f1 = fileDataEntries[i];
-									FileDataEntry *f2 = fileDataEntries[j];
+									//get each vector in duplicates
+									//look at file pointers and compare with f1, if it exists in that vector then add f2 to that vector
+									//(f1 would have been f2 in the previous comparison)
+									bool foundFileInDupes = false;
+									for (int b = 0; b < duplicates.size(); b++)
+									{
+										vector<FileDataEntry*> *v = duplicates[b];
 
-									vector<FileDataEntry*> *v = new vector<FileDataEntry*>();
-									v->push_back(f1);
-									v->push_back(f2);
-									duplicates.push_back(v);
+										for (int c = 1; c < v->size(); c++)//small speed up by starting c at 1 since file 0 would usually be f1 from last loop, unless there is already more than 1 duplicate for that file found
+										{
+											FileDataEntry* f = (*v)[c];
+											if (f == f1)
+											{
+												v->push_back(f2);
+												foundFileInDupes = true;
+												c = v->size();
+												break;
+											}
 
+										}
+									}
+
+									//otherwise create a new vector and add to dupes
+									if (foundFileInDupes == false)
+									{
+										vector<FileDataEntry*>* v = new vector<FileDataEntry*>();
+										v->push_back(f1);
+										v->push_back(f2);
+										duplicates.push_back(v);
+									}
 								}
 							}
 						}
@@ -1864,8 +1886,16 @@ void Worker::process()
 	}
 
 
+	std::wcout << L"Found " << duplicates.size() << L" unique files with duplicates." << std::endl;
 
+	long long totalDupes = 0;
+	for (int b = 0; b < duplicates.size(); b++)
+	{
+		vector<FileDataEntry*>* v = duplicates[b];
+		totalDupes += v->size();
+	}
 
+	std::wcout << L"Found " << totalDupes << L" total duplicates." << std::endl;
 
 	//todo:
 
