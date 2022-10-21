@@ -1,0 +1,65 @@
+Exif header 5270 bytes long
+Exif section in Motorola order
+(dir has 9 entries)
+    Make = "Hewlett-Packard Company"
+    Model = "hp PhotoSmart 620"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "Ver V0.610"
+    YCbCrPositioning = 2
+    ExifOffset = 338
+    Exif Dir:(dir has 24 entries)
+        ExposureTime = 33333/1000000
+        FNumber = 289/100
+        ISOSpeedRatings = 140
+        ExifVersion = "0220"
+        DateTimeOriginal = "2004:01:25 13:21:34"
+        DateTimeDigitized = "2004:01:25 13:21:34"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 311/100
+        ShutterSpeedValue = 490/100
+        ApertureValue = 600/100
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 600/100
+        MeteringMode = 2
+        Flash = 1
+        FocalLength = 559/100
+        Maker note:  00 00 00 00 00 00 00 00 00 00 00... (112 bytes)
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 1632
+        ExifImageLength = 1232
+        InteroperabilityOffset = 1750
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        ExposureMode = 0
+        WhiteBalance = 0
+        SceneCaptureType = 0
+    Continued directory (dir has 7 entries)
+        Compression = 6
+        Orientation = 1
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 1780
+        ThumbnailLength = 3482
+Thumbnail size: 3482 bytes
+Approximate quality factor for qtable 0: 75 (scale 50.51, var 0.81)
+Approximate quality factor for qtable 1: 75 (scale 50.52, var 0.19)
+JPEG image is 160w * 121h, 3 color components, 8 bits per sample
+Camera make  : Hewlett-Packard Company
+Camera model : hp PhotoSmart 620
+Date/Time    : 2004:01:25 13:21:34
+Resolution   : 160 x 121
+Flash used   : Yes
+Focal length :  5.6mm
+Exposure time: 0.033 s  (1/30)
+Aperture     : f/2.9
+ISO equiv.   : 140
+Whitebalance : Auto
+Metering Mode: center weight
+JPEG Quality : 75
+

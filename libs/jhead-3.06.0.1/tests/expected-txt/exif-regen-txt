@@ -1,0 +1,36 @@
+Exif header 134 bytes long
+Exif section in Intel order
+(dir has 2 entries)
+    DateTime = "2000:04:01 13:04:48"
+    ExifOffset = 58
+    Exif Dir:(dir has 1 entries)
+        DateTimeOriginal = "2000:04:01 13:04:48"
+    Continued directory (dir has 2 entries)
+        ThumbnailOffset = 126
+        ThumbnailLength = 0
+Thumbnail size: 0 bytes
+Approximate quality factor for qtable 0: 75 (scale 50.51, var 0.81)
+Approximate quality factor for qtable 1: 75 (scale 50.52, var 0.19)
+JPEG image is 160w * 120h, 3 color components, 8 bits per sample
+Date/Time    : 2000:04:01 13:04:48
+Resolution   : 160 x 120
+JPEG Quality : 75
+
+Exif header 4292 bytes long
+Exif section in Intel order
+(dir has 2 entries)
+    DateTime = "2000:04:01 13:04:48"
+    ExifOffset = 58
+    Exif Dir:(dir has 1 entries)
+        DateTimeOriginal = "2000:04:01 13:04:48"
+    Continued directory (dir has 2 entries)
+        ThumbnailOffset = 126
+        ThumbnailLength = 4158
+Thumbnail size: 4158 bytes
+Approximate quality factor for qtable 0: 75 (scale 50.51, var 0.81)
+Approximate quality factor for qtable 1: 75 (scale 50.52, var 0.19)
+JPEG image is 160w * 120h, 3 color components, 8 bits per sample
+Date/Time    : 2000:04:01 13:04:48
+Resolution   : 160 x 120
+JPEG Quality : 75
+

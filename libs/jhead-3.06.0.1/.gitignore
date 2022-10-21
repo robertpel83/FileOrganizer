@@ -1,0 +1,6 @@
+*.bak
+*.o
+tests/results-txt/*
+tests/results-bin/*
+tests/temp/
+tests/movetest/

@@ -1901,6 +1901,7 @@ void Worker::process()
 
 	//store all dates, created/modified, exif, filename
 
+	//maybe do speed test with exif libs
 
 	//use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
 

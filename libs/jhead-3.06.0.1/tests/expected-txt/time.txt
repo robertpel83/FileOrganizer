@@ -1,0 +1,94 @@
+File name    : time.jpg
+File size    : 11839 bytes
+File date    : 2004:05:09 18:00:21
+Camera make  :                          
+Camera model : 3MDSC
+Date/Time    : 2004:05:09 18:00:21
+Resolution   : 160 x 120
+Flash used   : Yes
+Focal length :  6.0mm
+Exposure time: 0.017 s  (1/60)
+Aperture     : f/2.9
+ISO equiv.   : 100
+Metering Mode: average
+JPEG Quality : 50
+
+Camera make  :                          
+Camera model : 3MDSC
+Date/Time    : 2004:05:09 18:00:01
+Resolution   : 160 x 120
+Flash used   : Yes
+Focal length :  6.0mm
+Exposure time: 0.017 s  (1/60)
+Aperture     : f/2.9
+ISO equiv.   : 100
+Metering Mode: average
+JPEG Quality : 50
+
+Camera make  :                          
+Camera model : 3MDSC
+Date/Time    : 2005:05:09 19:01:01
+Resolution   : 160 x 120
+Flash used   : Yes
+Focal length :  6.0mm
+Exposure time: 0.017 s  (1/60)
+Aperture     : f/2.9
+ISO equiv.   : 100
+Metering Mode: average
+JPEG Quality : 50
+
+Camera make  : Canon
+Camera model : Canon PowerShot Pro1
+Date/Time    : 2106:12:23 17:13:31
+Resolution   : 267 x 200
+Flash used   : No
+Focal length : 38.0mm  (35mm equivalent: 155mm)
+CCD width    : 8.81mm
+Exposure time: 0.0040 s  (1/250)
+Aperture     : f/4.0
+Focus dist.  : 5.76m
+ISO equiv.   : 400
+Whitebalance : Manual
+Light Source : Daylight
+Metering Mode: center weight
+JPEG Quality : 85
+
+Modified: badyear.jpg
+Camera make  : Canon
+Camera model : Canon PowerShot Pro1
+Date/Time    : 2006:01:23 18:13:31
+Resolution   : 267 x 200
+Flash used   : No
+Focal length : 38.0mm  (35mm equivalent: 155mm)
+CCD width    : 8.81mm
+Exposure time: 0.0040 s  (1/250)
+Aperture     : f/4.0
+Focus dist.  : 5.76m
+ISO equiv.   : 400
+Whitebalance : Manual
+Light Source : Daylight
+Metering Mode: center weight
+JPEG Quality : 85
+
+Camera make  : DIGITAL CAMERA
+Camera model : 1.0
+Date/Time    : 2008:02:15 17:02:03
+Resolution   : 200 x 160
+Flash used   : No
+Exposure time: 0.034 s  (1/29)
+Aperture     : f/3.5
+ISO equiv.   : 100
+Light Source : Daylight
+Metering Mode: pattern
+Exposure     : aperture priority (semi-auto)
+JPEG Quality : 75
+
+Camera make  : LG Electronics
+Camera model : VX-9700
+Date/Time    : 2009:05:10 11:16:01
+Resolution   : 320 x 240
+Flash used   : No
+Metering Mode: center weight
+Exposure     : program (auto)
+JPEG Quality : 85
+

@@ -1,0 +1,126 @@
+File name    : results-bin/rotate.jpg
+File size    : 10248 bytes
+File date    : 2004:01:08 22:00:22
+Camera make  : Canon
+Camera model : Canon PowerShot S40
+Date/Time    : 2004:01:08 22:00:22
+Resolution   : 160 x 120
+Flash used   : No
+Focal length :  7.1mm  (35mm equivalent: 36mm)
+CCD width    : 7.11mm
+Exposure time: 0.100 s  (1/10)
+Aperture     : f/2.8
+Focus dist.  : 1.77m
+ISO equiv.   : 100
+Metering Mode: center weight
+JPEG Quality : 75
+
+Camera make  : Canon
+Camera model : Canon PowerShot S40
+Date/Time    : 2004:01:08 22:00:22
+Resolution   : 120 x 160
+Flash used   : No
+Focal length :  7.1mm  (35mm equivalent: 36mm)
+CCD width    : 7.11mm
+Exposure time: 0.100 s  (1/10)
+Aperture     : f/2.8
+Focus dist.  : 1.77m
+ISO equiv.   : 100
+Metering Mode: center weight
+JPEG Quality : 74
+
+Camera make  : Canon
+Camera model : Canon PowerShot S40
+Date/Time    : 2004:01:08 22:00:22
+Resolution   : 120 x 160
+Flash used   : No
+Focal length :  7.1mm  (35mm equivalent: 36mm)
+CCD width    : 7.11mm
+Exposure time: 0.100 s  (1/10)
+Aperture     : f/2.8
+Focus dist.  : 1.77m
+ISO equiv.   : 100
+Metering Mode: center weight
+JPEG Quality : 74
+
+Exif header 34540 bytes long
+Exif section in Motorola order
+(dir has 12 entries)
+    ImageDescription = "KONICA MINOLTA DIGITAL CAMERA"
+    Make = "Konica Minolta Camera, Inc."
+    Model = "DiMAGE A2"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "DiMAGE A2 Ver.1.12 "
+    DateTime = "2004:09:08 22:34:10"
+    YCbCrPositioning = 1
+    ExifOffset = 404
+    Exif Dir:(dir has 34 entries)
+        ExposureTime = 1/200
+        FNumber = 71/10
+        ExposureProgram = 2
+        ISOSpeedRatings = 64
+        ExifVersion = "0221"
+        DateTimeOriginal = "2004:09:08 22:34:10"
+        DateTimeDigitized = "2004:09:08 22:34:10"
+        ComponentsConfiguration = "?"
+        BrightnessValue = 90/10
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 362/100
+        MeteringMode = 5
+        LightSource = 0
+        Flash = 16
+        FocalLength = 13004/256
+        SubjectArea = 1704, 1230, 320, 384
+        Maker note:  00 0c 00 00 00 07 00 00 00 04 4d... (30270 bytes)
+        UserComment = "ASCII?"
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 3264
+        ExifImageLength = 2448
+        InteroperabilityOffset = 31256
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        CustomRendered = 0
+        ExposureMode = 0
+        WhiteBalance = 0
+        DigitalZoomRatio = 0/1
+        FocalLengthIn35mmFilm = 200
+        SceneCaptureType = 0
+        GainControl = 0
+        Contrast = 0
+        Saturation = 0
+        Sharpness = 0
+        SubjectDistanceRange = 3
+    Unknown Tag c4a5 Value = "PrintIM?0250?.?'?'?—?'?°?'?'?^?'?‹?'?Ë?'?å?'"
+    Continued directory (dir has 8 entries)
+        Compression = 6
+        Orientation = 1
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 31404
+        ThumbnailLength = 3128
+        YCbCrPositioning = 1
+Thumbnail size: 3128 bytes
+Approximate quality factor for qtable 0: 22 (scale 228.41, var 16385.78)
+Approximate quality factor for qtable 1: 26 (scale 192.04, var 9603.59)
+JPEG image is 120w * 160h, 3 color components, 8 bits per sample
+Camera make  : Konica Minolta Camera, Inc.
+Camera model : DiMAGE A2
+Date/Time    : 2004:09:08 22:34:10
+Resolution   : 120 x 160
+Flash used   : No
+Focal length : 50.8mm  (35mm equivalent: 200mm)
+Exposure time: 0.0050 s  (1/200)
+Aperture     : f/7.1
+ISO equiv.   : 64
+Whitebalance : Auto
+Metering Mode: pattern
+Exposure     : program (auto)
+Focus range  : distant
+JPEG Quality : 22
+

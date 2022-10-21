@@ -1,0 +1,349 @@
+Trying to remove nonexistent:
+JFIF SOI marker: Units: 1 (dots per inch)  X-density=72 Y-density=72
+Exif header 6690 bytes long
+Exif section in Intel order
+(dir has 10 entries)
+    Make = "Panasonic"
+    Model = "DMC-FZ20"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    DateTime = "2007:03:11 15:23:53"
+    YCbCrPositioning = 2
+    ExifOffset = 398
+    Exif Dir:(dir has 34 entries)
+        ExposureTime = 10/1250
+        FNumber = 37/10
+        ExposureProgram = 2
+        ISOSpeedRatings = 80
+        ExifVersion = "0220"
+        DateTimeOriginal = "2007:03:11 15:23:53"
+        DateTimeDigitized = "2007:03:11 15:23:53"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 4/1
+        ExposureBiasValue = 0/100
+        MaxApertureValue = 30/10
+        MeteringMode = 5
+        LightSource = 0
+        Flash = 16
+        FocalLength = 326/10
+        Maker note:  50 61 6e 61 73 6f 6e 69 63 00 00... (5744 bytes)
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 1920
+        ExifImageLength = 2560
+        InteroperabilityOffset = 6652
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        SensingMethod = 2
+        FileSource = ""
+        SceneType = ""
+        CustomRendered = 1
+        ExposureMode = 0
+        WhiteBalance = 1
+        DigitalZoomRatio = 0/10
+        FocalLengthIn35mmFilm = 196
+        SceneCaptureType = 0
+        GainControl = 0
+        Contrast = 0
+        Saturation = 0
+        Sharpness = 0
+    Unknown Tag c4a5 Value = "PrintIM?0250?d?¬?Ä?€?'?'?—?'?°?'?'?^?'?‹?'?Ë?'?å?'?"
+Approximate quality factor for qtable 0: 80 (scale 40.12, var 1.43)
+Approximate quality factor for qtable 1: 80 (scale 40.26, var 0.36)
+JPEG image is 150w * 200h, 3 color components, 8 bits per sample
+Camera make  : Panasonic
+Camera model : DMC-FZ20
+Date/Time    : 2007:03:11 15:23:53
+Resolution   : 150 x 200
+Flash used   : No
+Focal length : 32.6mm  (35mm equivalent: 196mm)
+Exposure time: 0.0080 s  (1/125)
+Aperture     : f/3.7
+ISO equiv.   : 80
+Whitebalance : Manual
+Metering Mode: pattern
+Exposure     : program (auto)
+JPEG Quality : 80
+
+Trying to replacde with no pointers:
+Argument '-rtt' not understood
+Use jhead -h for list of arguments
+JFIF SOI marker: Units: 1 (dots per inch)  X-density=72 Y-density=72
+Exif header 6690 bytes long
+Exif section in Intel order
+(dir has 10 entries)
+    Make = "Panasonic"
+    Model = "DMC-FZ20"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    DateTime = "2007:03:11 15:23:53"
+    YCbCrPositioning = 2
+    ExifOffset = 398
+    Exif Dir:(dir has 34 entries)
+        ExposureTime = 10/1250
+        FNumber = 37/10
+        ExposureProgram = 2
+        ISOSpeedRatings = 80
+        ExifVersion = "0220"
+        DateTimeOriginal = "2007:03:11 15:23:53"
+        DateTimeDigitized = "2007:03:11 15:23:53"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 4/1
+        ExposureBiasValue = 0/100
+        MaxApertureValue = 30/10
+        MeteringMode = 5
+        LightSource = 0
+        Flash = 16
+        FocalLength = 326/10
+        Maker note:  50 61 6e 61 73 6f 6e 69 63 00 00... (5744 bytes)
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 1920
+        ExifImageLength = 2560
+        InteroperabilityOffset = 6652
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        SensingMethod = 2
+        FileSource = ""
+        SceneType = ""
+        CustomRendered = 1
+        ExposureMode = 0
+        WhiteBalance = 1
+        DigitalZoomRatio = 0/10
+        FocalLengthIn35mmFilm = 196
+        SceneCaptureType = 0
+        GainControl = 0
+        Contrast = 0
+        Saturation = 0
+        Sharpness = 0
+    Unknown Tag c4a5 Value = "PrintIM?0250?d?¬?Ä?€?'?'?—?'?°?'?'?^?'?‹?'?Ë?'?å?'?"
+Approximate quality factor for qtable 0: 80 (scale 40.12, var 1.43)
+Approximate quality factor for qtable 1: 80 (scale 40.26, var 0.36)
+JPEG image is 150w * 200h, 3 color components, 8 bits per sample
+Camera make  : Panasonic
+Camera model : DMC-FZ20
+Date/Time    : 2007:03:11 15:23:53
+Resolution   : 150 x 200
+Flash used   : No
+Focal length : 32.6mm  (35mm equivalent: 196mm)
+Exposure time: 0.0080 s  (1/125)
+Aperture     : f/3.7
+ISO equiv.   : 80
+Whitebalance : Manual
+Metering Mode: pattern
+Exposure     : program (auto)
+JPEG Quality : 80
+
+Exif header 864 bytes long
+Exif section in Intel order
+(dir has 11 entries)
+    Make = "FUJIFILM"
+    Model = "DX-10"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "Digital Camera DX-10 Ver1.00"
+    DateTime = "2000:04:01 13:04:48"
+    YCbCrPositioning = 2
+    Copyright = "M.Wandel  "
+    ExifOffset = 258
+    Exif Dir:(dir has 27 entries)
+        FNumber = 42/10
+        ExposureProgram = 2
+        ISOSpeedRatings = 150
+        ExifVersion = "0210"
+        DateTimeOriginal = "2000:04:01 13:04:48"
+        DateTimeDigitized = "2000:04:01 13:04:48"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 2/1
+        ShutterSpeedValue = 33/10
+        ApertureValue = 41/10
+        BrightnessValue = 21/10
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 41/10
+        MeteringMode = 5
+        Flash = 0
+        FocalLength = 58/10
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 640
+        ExifImageLength = 480
+        InteroperabilityOffset = 708
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        FocalPlaneXResolution = 1344/1
+        FocalPlaneYResolution = 1344/1
+        FocalPlaneResolutionUnit = 3
+        SensingMethod = 2
+        FileSource = ""
+        SceneType = ""
+    Continued directory (dir has 8 entries)
+        Compression = 6
+        Orientation = 1
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 856
+        ThumbnailLength = 0
+        YCbCrPositioning = 2
+Thumbnail size: 0 bytes
+Approximate quality factor for qtable 0: 75 (scale 50.51, var 0.81)
+Approximate quality factor for qtable 1: 75 (scale 50.52, var 0.19)
+JPEG image is 160w * 120h, 3 color components, 8 bits per sample
+Camera make  : FUJIFILM
+Camera model : DX-10
+Date/Time    : 2000:04:01 13:04:48
+Resolution   : 160 x 120
+Flash used   : No
+Focal length :  5.8mm  (35mm equivalent: 44mm)
+CCD width    : 4.76mm
+Exposure time: 0.102 s  (1/10)
+Aperture     : f/4.2
+ISO equiv.   : 150
+Metering Mode: pattern
+Exposure     : program (auto)
+JPEG Quality : 75
+
+Exif header 10854 bytes long
+Exif section in Intel order
+(dir has 11 entries)
+    Make = "FUJIFILM"
+    Model = "DX-10"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "Digital Camera DX-10 Ver1.00"
+    DateTime = "2000:04:01 13:04:48"
+    YCbCrPositioning = 2
+    Copyright = "M.Wandel  "
+    ExifOffset = 258
+    Exif Dir:(dir has 27 entries)
+        FNumber = 42/10
+        ExposureProgram = 2
+        ISOSpeedRatings = 150
+        ExifVersion = "0210"
+        DateTimeOriginal = "2000:04:01 13:04:48"
+        DateTimeDigitized = "2000:04:01 13:04:48"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 2/1
+        ShutterSpeedValue = 33/10
+        ApertureValue = 41/10
+        BrightnessValue = 21/10
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 41/10
+        MeteringMode = 5
+        Flash = 0
+        FocalLength = 58/10
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 640
+        ExifImageLength = 480
+        InteroperabilityOffset = 708
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        FocalPlaneXResolution = 1344/1
+        FocalPlaneYResolution = 1344/1
+        FocalPlaneResolutionUnit = 3
+        SensingMethod = 2
+        FileSource = ""
+        SceneType = ""
+    Continued directory (dir has 8 entries)
+        Compression = 6
+        Orientation = 1
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 856
+        ThumbnailLength = 9990
+        YCbCrPositioning = 2
+Thumbnail size: 9990 bytes
+Approximate quality factor for qtable 0: 75 (scale 50.51, var 0.81)
+Approximate quality factor for qtable 1: 75 (scale 50.52, var 0.19)
+JPEG image is 160w * 120h, 3 color components, 8 bits per sample
+Camera make  : FUJIFILM
+Camera model : DX-10
+Date/Time    : 2000:04:01 13:04:48
+Resolution   : 160 x 120
+Flash used   : No
+Focal length :  5.8mm  (35mm equivalent: 44mm)
+CCD width    : 4.76mm
+Exposure time: 0.102 s  (1/10)
+Aperture     : f/4.2
+ISO equiv.   : 150
+Metering Mode: pattern
+Exposure     : program (auto)
+JPEG Quality : 75
+
+Exif header 12010 bytes long
+Exif section in Intel order
+(dir has 11 entries)
+    ImageDescription = "OLYMPUS DIGITAL CAMERA         "
+    Make = "OLYMPUS OPTICAL CO.,LTD"
+    Model = "C830L,D340R"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "v85-73"
+    DateTime = "1999:07:18 20:41:25"
+    YCbCrPositioning = 2
+    ExifOffset = 284
+    Exif Dir:(dir has 22 entries)
+        ExposureTime = 1/31
+        FNumber = 28/10
+        ISOSpeedRatings = 100
+        ExifVersion = "0210"
+        DateTimeOriginal = "1999:07:18 20:41:25"
+        DateTimeDigitized = "1999:07:18 20:41:25"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 1/1
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 3/1
+        MeteringMode = 1
+        LightSource = 0
+        Flash = 0
+        FocalLength = 55/10
+        Maker note:  4f 4c 59 4d 50 00 01 00 0b 00 00... (406 bytes)
+        UserComment = "?"
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 640
+        ExifImageLength = 480
+        InteroperabilityOffset = 862
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        FileSource = ""
+    Continued directory (dir has 6 entries)
+        Compression = 6
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 2012
+        ThumbnailLength = 9990
+Thumbnail size: 9990 bytes
+Approximate quality factor for qtable 0: 75 (scale 50.51, var 0.81)
+Approximate quality factor for qtable 1: 75 (scale 50.52, var 0.19)
+JPEG image is 160w * 120h, 3 color components, 8 bits per sample
+Camera make  : OLYMPUS OPTICAL CO.,LTD
+Camera model : C830L,D340R
+Date/Time    : 1999:07:18 20:41:25
+Resolution   : 160 x 120
+Flash used   : No
+Focal length :  5.5mm
+Exposure time: 0.032 s  (1/31)
+Aperture     : f/2.8
+ISO equiv.   : 100
+Metering Mode: average
+JPEG Quality : 75
+

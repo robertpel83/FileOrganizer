@@ -1,0 +1,69 @@
+Exif header 48550 bytes long
+Exif section in Motorola order
+(dir has 9 entries)
+    Make = "Asahi Optical Co.,Ltd. "
+    Model = "PENTAX Optio 230   "
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "Optio 230 Ver 1.10 "
+    DateTime = "2002:08:17 14:51:01"
+    YCbCrPositioning = 1
+    ExifOffset = 226
+    Exif Dir:(dir has 28 entries)
+        ExposureTime = 1/250
+        FNumber = 48/10
+        ExifVersion = "0220"
+        DateTimeOriginal = "2002:08:17 14:51:01"
+        DateTimeDigitized = "2002:08:17 14:51:01"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 4/1
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 28/10
+        MeteringMode = 5
+        Flash = 9
+        FocalLength = 58/10
+        Maker note:  41 4f 43 00 20 20 00 29 00 01 00... (40960 bytes)
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 1600
+        ExifImageLength = 1200
+        InteroperabilityOffset = 41626
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        CustomRendered = 0
+        ExposureMode = 0
+        WhiteBalance = 0
+        DigitalZoomRatio = 0/100
+        FocalLengthIn35mmFilm = 38
+        SceneCaptureType = 0
+        Contrast = 0
+        Saturation = 0
+        Sharpness = 0
+        SubjectDistanceRange = 3
+    Continued directory (dir has 6 entries)
+        Compression = 6
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 41752
+        ThumbnailLength = 6790
+Thumbnail size: 6790 bytes
+Approximate quality factor for qtable 0: 92 (scale 16.45, var 3.43)
+Approximate quality factor for qtable 1: 91 (scale 17.29, var -4.30)
+Jpeg section marker 0xdd size 4
+JPEG image is 1600w * 1200h, 3 color components, 8 bits per sample
+Camera make  : Asahi Optical Co.,Ltd. 
+Camera model : PENTAX Optio 230   
+Date/Time    : 2002:08:17 14:51:01
+Resolution   : 1600 x 1200
+Flash used   : Yes (manual)
+Focal length :  5.8mm  (35mm equivalent: 38mm)
+Exposure time: 0.0040 s  (1/250)
+Aperture     : f/4.8
+Whitebalance : Auto
+Metering Mode: pattern
+Focus range  : distant
+JPEG Quality : 92
+

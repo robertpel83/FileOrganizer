@@ -1,0 +1,63 @@
+Exif header 6068 bytes long
+Exif section in Intel order
+(dir has 11 entries)
+    ImageDescription = "OLYMPUS DIGITAL CAMERA         "
+    Make = "OLYMPUS OPTICAL CO.,LTD"
+    Model = "C830L,D340R"
+    Orientation = 1
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "v85-73"
+    DateTime = "1999:07:18 20:41:25"
+    YCbCrPositioning = 2
+    ExifOffset = 284
+    Exif Dir:(dir has 22 entries)
+        ExposureTime = 1/31
+        FNumber = 28/10
+        ISOSpeedRatings = 100
+        ExifVersion = "0210"
+        DateTimeOriginal = "1999:07:18 20:41:25"
+        DateTimeDigitized = "1999:07:18 20:41:25"
+        ComponentsConfiguration = "?"
+        CompressedBitsPerPixel = 1/1
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 3/1
+        MeteringMode = 1
+        LightSource = 0
+        Flash = 0
+        FocalLength = 55/10
+        Maker note:  4f 4c 59 4d 50 00 01 00 0b 00 00... (406 bytes)
+        UserComment = "?"
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 640
+        ExifImageLength = 480
+        InteroperabilityOffset = 862
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        FileSource = ""
+    Continued directory (dir has 6 entries)
+        Compression = 6
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 2012
+        ThumbnailLength = 4048
+Thumbnail size: 4048 bytes
+Approximate quality factor for qtable 0: 75 (scale 50.51, var 0.81)
+Approximate quality factor for qtable 1: 75 (scale 50.52, var 0.19)
+JPEG image is 160w * 120h, 3 color components, 8 bits per sample
+Camera make  : OLYMPUS OPTICAL CO.,LTD
+Camera model : C830L,D340R
+Date/Time    : 1999:07:18 20:41:25
+Resolution   : 160 x 120
+Flash used   : No
+Focal length :  5.5mm
+Exposure time: 0.032 s  (1/31)
+Aperture     : f/2.8
+ISO equiv.   : 100
+Metering Mode: average
+JPEG Quality : 75
+

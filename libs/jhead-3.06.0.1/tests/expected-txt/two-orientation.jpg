@@ -1,0 +1,82 @@
+Exif header 34737 bytes long
+Exif section in Motorola order
+(dir has 12 entries)
+    ImageDescription = "KONICA MINOLTA DIGITAL CAMERA"
+    Make = "Konica Minolta Camera, Inc."
+    Model = "DiMAGE A2"
+    Orientation = 8
+    XResolution = 72/1
+    YResolution = 72/1
+    ResolutionUnit = 2
+    Software = "DiMAGE A2 Ver.1.12 "
+    DateTime = "2004:09:08 22:34:10"
+    YCbCrPositioning = 1
+    ExifOffset = 404
+    Exif Dir:(dir has 34 entries)
+        ExposureTime = 1/200
+        FNumber = 71/10
+        ExposureProgram = 2
+        ISOSpeedRatings = 64
+        ExifVersion = "0221"
+        DateTimeOriginal = "2004:09:08 22:34:10"
+        DateTimeDigitized = "2004:09:08 22:34:10"
+        ComponentsConfiguration = "?"
+        BrightnessValue = 90/10
+        ExposureBiasValue = 0/10
+        MaxApertureValue = 362/100
+        MeteringMode = 5
+        LightSource = 0
+        Flash = 16
+        FocalLength = 13004/256
+        SubjectArea = 1704, 1230, 320, 384
+        Maker note:  00 0c 00 00 00 07 00 00 00 04 4d... (30270 bytes)
+        UserComment = "ASCII?"
+        FlashPixVersion = "0100"
+        ColorSpace = 1
+        ExifImageWidth = 3264
+        ExifImageLength = 2448
+        InteroperabilityOffset = 31256
+        Interop Dir:(dir has 2 entries)
+            InteropIndex = "R98"
+            InteropVersion = "0100"
+        CustomRendered = 0
+        ExposureMode = 0
+        WhiteBalance = 0
+        DigitalZoomRatio = 0/1
+        FocalLengthIn35mmFilm = 200
+        SceneCaptureType = 0
+        GainControl = 0
+        Contrast = 0
+        Saturation = 0
+        Sharpness = 0
+        SubjectDistanceRange = 3
+    Unknown Tag c4a5 Value = "PrintIM?0250?.?'?'?—?'?°?'?'?^?'?‹?'?Ë?'?å?'"
+    Continued directory (dir has 8 entries)
+        Compression = 6
+        Orientation = 8
+        XResolution = 72/1
+        YResolution = 72/1
+        ResolutionUnit = 2
+        ThumbnailOffset = 31404
+        ThumbnailLength = 3085
+        YCbCrPositioning = 1
+Thumbnail size: 3085 bytes
+Approximate quality factor for qtable 0: 22 (scale 226.47, var 15116.62)
+Approximate quality factor for qtable 1: 26 (scale 195.58, var 9269.55)
+JPEG image is 160w * 120h, 3 color components, 8 bits per sample
+Camera make  : Konica Minolta Camera, Inc.
+Camera model : DiMAGE A2
+Date/Time    : 2004:09:08 22:34:10
+Resolution   : 160 x 120
+Orientation  : rotate 270
+Flash used   : No
+Focal length : 50.8mm  (35mm equivalent: 200mm)
+Exposure time: 0.0050 s  (1/200)
+Aperture     : f/7.1
+ISO equiv.   : 64
+Whitebalance : Auto
+Metering Mode: pattern
+Exposure     : program (auto)
+Focus range  : distant
+JPEG Quality : 22
+
