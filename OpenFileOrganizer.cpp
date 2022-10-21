@@ -150,10 +150,10 @@ void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64
 				{
 					filecount++;
 
-					FileDataEntry f;
-					f.nameAndPath = (*v).path().wstring();
-					f.name = (*v).path().filename().wstring();
-					f.path = (*v).path().parent_path().wstring();
+					FileDataEntry* f = new FileDataEntry();
+					(*f).nameAndPath = (*v).path().wstring();
+					(*f).name = (*v).path().filename().wstring();
+					(*f).path = (*v).path().parent_path().wstring();
 					fileDataEntries.push_back(f);
 
 				}
@@ -215,10 +215,10 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 					{
 						filecount++;
 
-						FileDataEntry f;
-						f.nameAndPath = itr->path().wstring();
-						f.name = itr->path().filename().wstring();
-						f.path = path;
+						FileDataEntry *f = new FileDataEntry();
+						f->nameAndPath = itr->path().wstring();
+						f->name = itr->path().filename().wstring();
+						f->path = path;
 						fileDataEntries.push_back(f);
 					}
 				}
@@ -259,10 +259,10 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 				{
 					filecount++;
 
-					FileDataEntry f;
-					f.nameAndPath = path + L"\\" + ent->d_name;
-					f.name = ent->d_name;
-					f.path = path;
+					FileDataEntry* f = new FileDataEntry();
+					f->nameAndPath = path + L"\\" + ent->d_name;
+					f->name = ent->d_name;
+					f->path = path;
 					fileDataEntries.push_back(f);
 				}
 				break;
@@ -344,10 +344,10 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 					else
 					{
 						filecount++;
-						FileDataEntry f;
-						f.nameAndPath = path + L"\\" + ffd.cFileName;
-						f.name = ffd.cFileName;
-						f.path = path;
+						FileDataEntry* f = new FileDataEntry();
+						f->nameAndPath = path + L"\\" + ffd.cFileName;
+						f->name = ffd.cFileName;
+						f->path = path;
 						fileDataEntries.push_back(f);
 					}
 				}
@@ -560,7 +560,7 @@ void Worker::getSizeForAllFiles()
 			start = std::chrono::steady_clock::now();
 			for (int i = 0; i < fileDataEntries.size(); i++)
 			{
-				FileDataEntry* f = &(fileDataEntries[i]);
+				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeWindows(f);
 			}
 			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
@@ -575,7 +575,7 @@ void Worker::getSizeForAllFiles()
 			size = 0;
 			for (int i = 0; i < fileDataEntries.size(); i++)
 			{
-				FileDataEntry* f = &(fileDataEntries[i]);
+				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeFromHandleFileInformationWindows(f);
 			}
 			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
@@ -590,7 +590,7 @@ void Worker::getSizeForAllFiles()
 			size = 0;
 			for (int i = 0; i < fileDataEntries.size(); i++)
 			{
-				FileDataEntry* f = &(fileDataEntries[i]);
+				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeFromFileAttributesWindows(f);
 			}
 			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
@@ -611,7 +611,7 @@ void Worker::getSizeForAllFiles()
 			size = 0;
 			for (int i = 0; i < fileDataEntries.size(); i++)
 			{
-				FileDataEntry* f = &(fileDataEntries[i]);
+				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeWStat(f);
 			}
 			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
@@ -627,7 +627,7 @@ void Worker::getSizeForAllFiles()
 			size = 0;
 			for (int i = 0; i < fileDataEntries.size(); i++)
 			{
-				FileDataEntry* f = &(fileDataEntries[i]);
+				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeFilesystem(f);
 			}
 			std::wcout << "Total size:" << size << " bytes (" << std::fixed << std::setprecision(2) << (((double)size) / 1024. / 1024. / 1024.) << " GBytes)" << std::endl;
@@ -743,7 +743,7 @@ void Worker::getCreatedAndLastModifiedDateForAllFiles()
 		start = std::chrono::steady_clock::now();
 		for (int i = 0; i < fileDataEntries.size(); i++)
 		{
-			FileDataEntry* f = &(fileDataEntries[i]);
+			FileDataEntry* f = fileDataEntries[i];
 			getFileCreatedModifiedDateWindows(f);
 		}
 		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
@@ -757,7 +757,7 @@ void Worker::getCreatedAndLastModifiedDateForAllFiles()
 		start = std::chrono::steady_clock::now();
 		for (int i = 0; i < fileDataEntries.size(); i++)
 		{
-			FileDataEntry* f = &(fileDataEntries[i]);
+			FileDataEntry* f = fileDataEntries[i];
 			getFileCreatedModifiedDateWStat(f);
 		}
 		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
@@ -954,7 +954,7 @@ void Worker::getFastHashForAllFiles()
 
 	for (int i = 0; i < fileDataEntries.size(); i++)
 	{
-		FileDataEntry* f = &(fileDataEntries[i]);
+		FileDataEntry* f = fileDataEntries[i];
 
 		getFastHash(f);
 
@@ -966,7 +966,7 @@ void Worker::getDateFromFilenameForAllFiles()
 {
 	for (int i = 0; i < fileDataEntries.size(); i++)
 	{
-		FileDataEntry* f = &(fileDataEntries[i]);
+		FileDataEntry* f = fileDataEntries[i];
 
 
 		//get date from filename, detect year, detect date format, extract and convert
@@ -1462,7 +1462,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	//libexif
 	for (int i = 0; i < fileDataEntries.size(); i++)
 	{
-		FileDataEntry* f = &(fileDataEntries[i]);
+		FileDataEntry* f = fileDataEntries[i];
 
 		std::wstring lowerName = f->name;
 		transform(
@@ -1518,7 +1518,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	//TinyEXIF
 	for (int i = 0; i < fileDataEntries.size(); i++)
 	{
-		FileDataEntry* f = &(fileDataEntries[i]);
+		FileDataEntry* f = fileDataEntries[i];
 		std::wstring lowerName = f->name;
 		transform(
 			lowerName.begin(), lowerName.end(),
@@ -1687,65 +1687,69 @@ void Worker::process()
 		start = std::chrono::steady_clock::now();
 		for (int i = 0; i < fileDataEntries.size(); i++)
 		{
-			__int64 size = fileDataEntries[i].size;
+			FileDataEntry* f1 = fileDataEntries[i];
+			
+			__int64 size = f1->size;
 
 			if (size > 1024 * 1024)
 				for (int j = i + 1; j < fileDataEntries.size(); j++)
 				{
-					if (size == fileDataEntries[j].size)
+					FileDataEntry* f2 = fileDataEntries[j];
+
+					if (size == f2->size)
 					{
 						//got a match
 
 						//check hash
-						getFastHash(&(fileDataEntries[i]));
-						getFastHash(&(fileDataEntries[j]));
+						getFastHash(f1);
+						getFastHash(f2);
 
 						//compare hash
 						if (
 							(
-								fileDataEntries[i].crc32.empty() == false &&
-								fileDataEntries[i].md5.empty() == false &&
-								fileDataEntries[i].sha1.empty() == false &&
-								fileDataEntries[i].sha2.empty() == false &&
-								fileDataEntries[i].keccak.empty() == false &&
-								fileDataEntries[i].sha3.empty() == false &&
+								f1->crc32.empty()  == false &&
+								f1->md5.empty()    == false &&
+								f1->sha1.empty()   == false &&
+								f1->sha2.empty()   == false &&
+								f1->keccak.empty() == false &&
+								f1->sha3.empty()   == false &&
 
-								fileDataEntries[j].crc32.empty() == false &&
-								fileDataEntries[j].md5.empty() == false &&
-								fileDataEntries[j].sha1.empty() == false &&
-								fileDataEntries[j].sha2.empty() == false &&
-								fileDataEntries[j].keccak.empty() == false &&
-								fileDataEntries[j].sha3.empty() == false
+								f2->crc32.empty() == false  &&
+								f2->md5.empty() == false    &&
+								f2->sha1.empty() == false   &&
+								f2->sha2.empty() == false   &&
+								f2->keccak.empty() == false &&
+								f2->sha3.empty() == false
 								)
 							&&
 							(
-								fileDataEntries[i].crc32 == fileDataEntries[j].crc32 ||
-								fileDataEntries[i].md5 == fileDataEntries[j].md5 ||
-								fileDataEntries[i].sha1 == fileDataEntries[j].sha1 ||
-								fileDataEntries[i].sha2 == fileDataEntries[j].sha2 ||
-								fileDataEntries[i].keccak == fileDataEntries[j].keccak ||
-								fileDataEntries[i].sha3 == fileDataEntries[j].sha3
+								f1->crc32  == f2->crc32  ||
+								f1->md5    == f2->md5    ||
+								f1->sha1   == f2->sha1   ||
+								f1->sha2   == f2->sha2   ||
+								f1->keccak == f2->keccak ||
+								f1->sha3   == f2->sha3
 								)
 							)
 						{
-							//std::wcout << L"Possible match: " << fileDataEntries[i].nameAndPath << L" " << fileDataEntries[j].nameAndPath << L" " << fileDataEntries[i].size << std::endl;
+							//std::wcout << L"Possible match: " << f1->nameAndPath << L" " << f2->nameAndPath << L" " << f1->size << std::endl;
 
-							if (fileDataEntries[i].name == fileDataEntries[j].name)
+							if (f1->name == f2->name)
 							{
-								//std::wcout << L"Same filename " << fileDataEntries[i].name << std::endl; 
+								//std::wcout << L"Same filename " << f1->name << std::endl; 
 							}
 							else
 							{
-								//std::wcout << L"Different filename " << fileDataEntries[i].name << L" " << fileDataEntries[j].name << std::endl;
+								//std::wcout << L"Different filename " << f1->name << L" " << f2->name << std::endl;
 							}
 
 							if (
-								fileDataEntries[i].crc32 == fileDataEntries[j].crc32 &&
-								fileDataEntries[i].md5 == fileDataEntries[j].md5 &&
-								fileDataEntries[i].sha1 == fileDataEntries[j].sha1 &&
-								fileDataEntries[i].sha2 == fileDataEntries[j].sha2 &&
-								fileDataEntries[i].keccak == fileDataEntries[j].keccak &&
-								fileDataEntries[i].sha3 == fileDataEntries[j].sha3
+								f1->crc32  == f2->crc32  &&
+								f1->md5    == f2->md5    &&
+								f1->sha1   == f2->sha1   &&
+								f1->sha2   == f2->sha2   &&
+								f1->keccak == f2->keccak &&
+								f1->sha3   == f2->sha3
 								)
 							{
 								//std::wcout << L"All hashes match!" << std::endl;
@@ -1758,17 +1762,17 @@ void Worker::process()
 								{
 									std::wcout << L"Hashes match, doing byte comparison" << std::endl;
 
-									if (fileDataEntries[i].size == fileDataEntries[j].size)
+									if (f1->size == f2->size)
 									{
-										char* buffer1 = new char[fileDataEntries[i].size];
-										char* buffer2 = new char[fileDataEntries[j].size];
+										char* buffer1 = new char[f1->size];
+										char* buffer2 = new char[f2->size];
 
 										try
 										{
-											if (std::ifstream is{ fileDataEntries[i].nameAndPath, std::ios::in | std::ios::binary })
+											if (std::ifstream is{ f1->nameAndPath, std::ios::in | std::ios::binary })
 											{
 												is.exceptions(is.failbit);
-												is.read(buffer1, fileDataEntries[i].size);
+												is.read(buffer1, f1->size);
 												is.exceptions(is.failbit);
 												std::size_t numBytesRead = size_t(is.gcount());
 												//std::wcout << L"File size " << f->size << std::endl;
@@ -1783,10 +1787,10 @@ void Worker::process()
 
 										try
 										{
-											if (std::ifstream is{ fileDataEntries[j].nameAndPath, std::ios::in | std::ios::binary })
+											if (std::ifstream is{ f2->nameAndPath, std::ios::in | std::ios::binary })
 											{
 												is.exceptions(is.failbit);
-												is.read(buffer2, fileDataEntries[j].size);
+												is.read(buffer2, f2->size);
 												is.exceptions(is.failbit);
 												std::size_t numBytesRead = size_t(is.gcount());
 												//std::wcout << L"File size " << f->size << std::endl;
@@ -1800,13 +1804,13 @@ void Worker::process()
 										}
 
 										bool byteMatch = true;
-										for (long long a = 0; a < fileDataEntries[i].size; a++)
+										for (long long a = 0; a < f1->size; a++)
 										{
 											if (buffer1[a] != buffer2[a])
 											{
 												byteMatch = false;
 												std::wcout << L"Byte comparison failed at index " << a << L", not a match!" << std::endl;
-												a = fileDataEntries[i].size;
+												a = f1->size;
 												break;
 											}
 										}
@@ -1837,7 +1841,13 @@ void Worker::process()
 								{
 									//store certain duplicates together in a data structure
 
+									FileDataEntry *f1 = fileDataEntries[i];
+									FileDataEntry *f2 = fileDataEntries[j];
 
+									vector<FileDataEntry*> *v = new vector<FileDataEntry*>();
+									v->push_back(f1);
+									v->push_back(f2);
+									duplicates.push_back(v);
 
 								}
 							}

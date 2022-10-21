@@ -324,7 +324,8 @@ public:
 		//std::wcout << L"Hello this is a test" << std::endl;
 		//db = NULL;
 	}
-	vector<FileDataEntry> fileDataEntries;
+	vector<FileDataEntry*> fileDataEntries;
+	vector<vector<FileDataEntry*>*> duplicates;
 	std::chrono::steady_clock::time_point start;
 	std::chrono::steady_clock::time_point firststart;
 	bool isWindows = false;
