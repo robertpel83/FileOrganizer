@@ -100,6 +100,7 @@ public:
 	wstring createdDateString;
 	wstring modifiedDateString;
 	wstring fileNameDateString;
+	wstring exifDateString;
 	wstring crc32;
 	wstring md5;
 	wstring sha1;

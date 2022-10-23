@@ -283,33 +283,6 @@
     <ClCompile Include="OpenFileOrganizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\exif.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\gpsinfo.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\iptc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\jhead.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\jpgfile.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\makernote.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\myglob.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\paths.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\jhead-3.06.0.1\jpgqguess.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\dirent-1.23.2\include\dirent.h">
@@ -595,12 +568,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\libexif-0.6.24\config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\jhead-3.06.0.1\jhead.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\jhead-3.06.0.1\iptc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

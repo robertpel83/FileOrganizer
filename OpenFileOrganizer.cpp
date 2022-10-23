@@ -748,7 +748,7 @@ void Worker::getCreatedAndLastModifiedDateForAllFiles()
 		}
 		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 	}
-
+	else
 	if (isWindows == false)
 	{
 		//both of these are pretty comparable
@@ -1183,6 +1183,12 @@ void Worker::getDateFromFilenameForAllFiles()
 
 		};
 
+		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+		time_t tt = std::chrono::system_clock::to_time_t(now);
+		tm utc_tm = *gmtime(&tt);
+		tm local_tm = *localtime(&tt);
+		int currentYear = utc_tm.tm_year + 1900;
+		std::wcout << L"Current year: " << currentYear << std::endl;
 
 		string s(convertWideToUtf8(f->name));
 		//if(false)
@@ -1200,32 +1206,41 @@ void Worker::getDateFromFilenameForAllFiles()
 			if (!matches.empty())
 			{
 				for (int n = 0; n < matches.size(); n++)
-					std::wcout << L"yyyy_mm_dd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
-
-
-				int n = (int)(matches[0].str().find_first_of("0123456789"));
-
-				std::istringstream is(matches[0].str().substr(n, 4));
-				if (is >> y)
-				{
-					if (y < 1900)
+					if (matches[n].str().length() > 1)
 					{
-						if (y > 70)y += 1900;
-						if (y < 50)y += 2000;
+
+						size_t k = matches[n].str().find_first_of("0123456789");
+
+						std::istringstream is(matches[n].str().substr(k, 4));
+						if (is >> y)
+						{
+							if (y < 1900)
+							{
+								if (y > 70)y += 1900;
+								if (y < 50)y += 2000;
+							}
+						}
+
+						{
+							std::istringstream is(matches[n].str().substr(k + 5, 2));
+							is >> m;
+						}
+						{
+							std::istringstream is(matches[n].str().substr(k + 8, 2));
+							is >> d;
+						}
+						if (y <= currentYear)
+						{
+							std::wcout << L"yyyy_mm_dd " << n << L" " << convertUtf8ToWide(matches[n].str()) << L" found in " << f->name << std::endl;
+							std::wcout << y << L" " << m << L" " << d << std::endl;
+						}
+						else
+						{
+							y = 0;
+							m = 0;
+							d = 0;
+						}
 					}
-				}
-
-				{
-					std::istringstream is(matches[0].str().substr(n + 5, 2));
-					is >> m;
-				}
-				{
-					std::istringstream is(matches[0].str().substr(n + 8, 2));
-					is >> d;
-				}
-
-				std::wcout << y << L" " << m << L" " << d << std::endl;
-
 
 			}
 			else
@@ -1235,61 +1250,14 @@ void Worker::getDateFromFilenameForAllFiles()
 				if (!matches.empty())
 				{
 					for (int n = 0; n < matches.size(); n++)
-						std::wcout << L"yyyymmdd " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
-
-					int n = (int)(matches[0].str().find_first_of("0123456789"));
-
-
-					std::istringstream is(matches[0].str().substr(n, 4));
-					if (is >> y)
-					{
-						if (y < 1900)
+						if (matches[n].str().length() > 1)
 						{
-							if (y > 70)y += 1900;
-							if (y < 50)y += 2000;
-						}
-					}
+							
 
-					{
-						std::istringstream is(matches[0].str().substr(n + 4, 2));
-						is >> m;
-					}
-					{
-						std::istringstream is(matches[0].str().substr(n + 6, 2));
-						is >> d;
-					}
+							size_t k = matches[n].str().find_first_of("0123456789");
 
-					std::wcout << y << L" " << m << L" " << d << std::endl;
 
-				}
-				else
-				{
-					std::regex_search(s, matches, mm_dd_yy);
-					if (!matches.empty())
-					{
-						for (int n = 0; n < matches.size(); n++)
-							std::wcout << L"mm dd [yy]yy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
-
-						int n = (int)(matches[0].str().find_first_of("0123456789"));
-
-						{
-							std::istringstream is(matches[0].str().substr(n, 2));
-							is >> m;
-						}
-
-						{
-							std::istringstream is(matches[0].str().substr(n + 3, 2));
-							is >> d;
-						}
-
-						if (matches[0].str().substr(n + 6, 2) == "19" || matches[0].str().substr(n + 6, 2) == "20")
-						{
-							std::istringstream is(matches[0].str().substr(n + 6, 4));
-							is >> y;
-						}
-						else
-						{
-							std::istringstream is(matches[0].str().substr(n + 6, 2));
+							std::istringstream is(matches[n].str().substr(k, 4));
 							if (is >> y)
 							{
 								if (y < 1900)
@@ -1298,112 +1266,224 @@ void Worker::getDateFromFilenameForAllFiles()
 									if (y < 50)y += 2000;
 								}
 							}
-						}
 
-						std::wcout << y << L" " << m << L" " << d << std::endl;
-
-					}
-					else
-					{
-						std::regex_search(s, matches, yyyy);
-						if (!matches.empty())
-						{
-							//for (int n = 0; n < matches.size(); n++)
-								//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
-
-							int n = (int)(matches[0].str().find_first_of("0123456789"));
-
-							if (matches[0].str().substr(n, 1) != "1" && matches[0].str().substr(n, 1) != "2")
 							{
-								if (matches[0].str().substr(n + 1, 1) != "1" && matches[0].str().substr(n + 1, 1) != "2")
-								{
-									//can't parse?
-								}
-								else
-								{
-									std::istringstream is(matches[0].str().substr(n + 1, 4));
-									is >> y;
-								}
+								std::istringstream is(matches[n].str().substr(k + 4, 2));
+								is >> m;
 							}
-							else
 							{
-								std::istringstream is(matches[0].str().substr(n, 4));
-								is >> y;
+								std::istringstream is(matches[n].str().substr(k + 6, 2));
+								is >> d;
 							}
 
-							std::regex_search(s, matches, monthmondaythday);
-							if (!matches.empty())
+							if (y <= currentYear)
 							{
-								for (int n = 0; n < matches.size(); n++)
-									std::wcout << L"monthmondaythday " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
-
-								if (matches[0].str().find("Jan") != string::npos)m = 1;
-								if (matches[0].str().find("Feb") != string::npos)m = 2;
-								if (matches[0].str().find("Mar") != string::npos)m = 3;
-								if (matches[0].str().find("Apr") != string::npos)m = 4;
-								if (matches[0].str().find("May") != string::npos)m = 5;
-								if (matches[0].str().find("Jun") != string::npos)m = 6;
-								if (matches[0].str().find("Jul") != string::npos)m = 7;
-								if (matches[0].str().find("Aug") != string::npos)m = 8;
-								if (matches[0].str().find("Sep") != string::npos)m = 9;
-								if (matches[0].str().find("Oct") != string::npos)m = 10;
-								if (matches[0].str().find("Nov") != string::npos)m = 11;
-								if (matches[0].str().find("Dec") != string::npos)m = 12;
-
-								int n = (int)(matches[0].str().find_first_of("0123456789"));
-								{
-									if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
-									{
-										std::istringstream is(matches[0].str().substr(n, 2));
-										is >> d;
-									}
-									else
-									{
-										std::istringstream is(matches[0].str().substr(n, 1));
-										is >> d;
-									}
-								}
-
+								std::wcout << L"yyyymmdd " << n << L" " << convertUtf8ToWide(matches[n].str()) << L" found in " << f->name << std::endl;
 								std::wcout << y << L" " << m << L" " << d << std::endl;
 							}
 							else
 							{
+								y = 0;
+								m = 0;
+								d = 0;
+							}
+						}
 
-								std::regex_search(s, matches, daythdaymonthmon);
-								if (!matches.empty())
+				}
+				else
+				{
+					std::regex_search(s, matches, mm_dd_yy);
+					if (!matches.empty())
+					{
+						for (int n = 0; n < matches.size(); n++)
+							if (matches[n].str().length() > 1)
+							{
+								
+
+								size_t k = matches[n].str().find_first_of("0123456789");
+
 								{
-									for (int n = 0; n < matches.size(); n++)
-										std::wcout << L"daythdaymonthmon " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+									std::istringstream is(matches[n].str().substr(k, 2));
+									is >> m;
+								}
 
-									int n = (int)(matches[0].str().find_first_of("0123456789"));
+								{
+									std::istringstream is(matches[n].str().substr(k + 3, 2));
+									is >> d;
+								}
 
-									if (matches[0].str().find_first_of("0123456789", n + 1) == n + 1)
+								if (matches[n].str().substr(k + 6, 2) == "19" || matches[n].str().substr(k + 6, 2) == "20")
+								{
+									std::istringstream is(matches[n].str().substr(k + 6, 4));
+									is >> y;
+								}
+								else
+								{
+									std::istringstream is(matches[n].str().substr(k + 6, 2));
+									if (is >> y)
 									{
-										std::istringstream is(matches[0].str().substr(n, 2));
-										is >> d;
+										if (y < 1900)
+										{
+											if (y > 70)y += 1900;
+											if (y < 50)y += 2000;
+										}
+									}
+
+									//TODO: this is the sketchiest detected date and i need to see how common it actually is
+
+								}
+
+								if (y <= currentYear)
+								{
+									std::wcout << L"mm dd [yy]yy " << n << L" " << convertUtf8ToWide(matches[n].str()) << L" found in " << f->name << std::endl;
+									std::wcout << y << L" " << m << L" " << d << std::endl;
+								}
+								else
+								{
+									y = 0;
+									m = 0;
+									d = 0;
+								}
+							}
+
+					}
+					else
+					{
+						bool foundyyyy = false;
+						std::regex_search(s, matches, yyyy);
+						if (!matches.empty())
+						{
+							for (int n = 0; n < matches.size(); n++)
+								if (matches[n].str().length() > 1)
+								{
+									//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(matches[n].str()) << std::endl;
+
+									size_t k = matches[n].str().find_first_of("12");//yyyy must start with 1 or 2
+
+									if (matches[n].str().substr(k, 1) != "1" && matches[n].str().substr(k, 1) != "2")
+									{
+										//can't parse? this should never happen because the regex
 									}
 									else
 									{
-										std::istringstream is(matches[0].str().substr(n, 1));
-										is >> d;
+										std::istringstream is(matches[n].str().substr(k, 4));
+										is >> y;
+
+										if (y <= currentYear)
+										{
+											foundyyyy = true;
+										}
+										else
+										{
+											y = 0;
+										}
 									}
-
-									if (matches[0].str().find("Jan") != string::npos)m = 1;
-									if (matches[0].str().find("Feb") != string::npos)m = 2;
-									if (matches[0].str().find("Mar") != string::npos)m = 3;
-									if (matches[0].str().find("Apr") != string::npos)m = 4;
-									if (matches[0].str().find("May") != string::npos)m = 5;
-									if (matches[0].str().find("Jun") != string::npos)m = 6;
-									if (matches[0].str().find("Jul") != string::npos)m = 7;
-									if (matches[0].str().find("Aug") != string::npos)m = 8;
-									if (matches[0].str().find("Sep") != string::npos)m = 9;
-									if (matches[0].str().find("Oct") != string::npos)m = 10;
-									if (matches[0].str().find("Nov") != string::npos)m = 11;
-									if (matches[0].str().find("Dec") != string::npos)m = 12;
-
-									std::wcout << y << L" " << m << L" " << d << std::endl;
 								}
-							}
+						}
+
+						if(foundyyyy==true)
+						{
+									
+									std::regex_search(s, matches, monthmondaythday);
+									if (!matches.empty())
+									{
+										for (int n = 0; n < matches.size(); n++)
+											if (matches[n].str().length() > 1)
+											{
+												
+
+												if (matches[n].str().find("Jan") != string::npos)m = 1;
+												if (matches[n].str().find("Feb") != string::npos)m = 2;
+												if (matches[n].str().find("Mar") != string::npos)m = 3;
+												if (matches[n].str().find("Apr") != string::npos)m = 4;
+												if (matches[n].str().find("May") != string::npos)m = 5;
+												if (matches[n].str().find("Jun") != string::npos)m = 6;
+												if (matches[n].str().find("Jul") != string::npos)m = 7;
+												if (matches[n].str().find("Aug") != string::npos)m = 8;
+												if (matches[n].str().find("Sep") != string::npos)m = 9;
+												if (matches[n].str().find("Oct") != string::npos)m = 10;
+												if (matches[n].str().find("Nov") != string::npos)m = 11;
+												if (matches[n].str().find("Dec") != string::npos)m = 12;
+
+												size_t k = matches[n].str().find_first_of("0123456789");
+												{
+													if (matches[n].str().find_first_of("0123456789", k + 1) == k + 1)
+													{
+														std::istringstream is(matches[n].str().substr(k, 2));
+														is >> d;
+													}
+													else
+													{
+														std::istringstream is(matches[n].str().substr(k, 1));
+														is >> d;
+													}
+												}
+
+												if (y <= currentYear)
+												{
+													std::wcout << L"monthmondaythday " << n << L" " << convertUtf8ToWide(matches[n].str()) << L" found in " << f->name << std::endl;
+													std::wcout << y << L" " << m << L" " << d << std::endl;
+												}
+												else
+												{
+													y = 0;
+													m = 0;
+													d = 0;
+												}
+											}
+									}
+									else
+									{
+
+										std::regex_search(s, matches, daythdaymonthmon);
+										if (!matches.empty())
+										{
+											for (int n = 0; n < matches.size(); n++)
+												if (matches[n].str().length() > 1)
+												{
+													
+
+													size_t k = matches[n].str().find_first_of("0123456789");
+
+													if (matches[n].str().find_first_of("0123456789", k + 1) == k + 1)
+													{
+														std::istringstream is(matches[n].str().substr(k, 2));
+														is >> d;
+													}
+													else
+													{
+														std::istringstream is(matches[n].str().substr(k, 1));
+														is >> d;
+													}
+
+													if (matches[n].str().find("Jan") != string::npos)m = 1;
+													if (matches[n].str().find("Feb") != string::npos)m = 2;
+													if (matches[n].str().find("Mar") != string::npos)m = 3;
+													if (matches[n].str().find("Apr") != string::npos)m = 4;
+													if (matches[n].str().find("May") != string::npos)m = 5;
+													if (matches[n].str().find("Jun") != string::npos)m = 6;
+													if (matches[n].str().find("Jul") != string::npos)m = 7;
+													if (matches[n].str().find("Aug") != string::npos)m = 8;
+													if (matches[n].str().find("Sep") != string::npos)m = 9;
+													if (matches[n].str().find("Oct") != string::npos)m = 10;
+													if (matches[n].str().find("Nov") != string::npos)m = 11;
+													if (matches[n].str().find("Dec") != string::npos)m = 12;
+
+													if (y <= currentYear)
+													{
+														std::wcout << L"daythdaymonthmon " << n << L" " << convertUtf8ToWide(matches[n].str()) << L" found in " << f->name << std::endl;
+														std::wcout << y << L" " << m << L" " << d << std::endl;
+													}
+													else
+													{
+														y = 0;
+														m = 0;
+														d = 0;
+													}
+												}
+										}
+									}
+								
 						}
 					}
 				}
@@ -1658,11 +1738,12 @@ void Worker::process()
 	if (false)
 		getFastHashForAllFiles();
 
-	if (false)
+	//if (false)
 		getDateFromFilenameForAllFiles();
 
 	if (false)
 		getDatesFromEXIFDataForAllFiles();
+
 
 
 
@@ -1734,15 +1815,6 @@ void Worker::process()
 						{
 							//std::wcout << L"Possible match: " << f1->nameAndPath << L" " << f2->nameAndPath << L" " << f1->size << std::endl;
 
-							if (f1->name == f2->name)
-							{
-								//std::wcout << L"Same filename " << f1->name << std::endl; 
-							}
-							else
-							{
-								//std::wcout << L"Different filename " << f1->name << L" " << f2->name << std::endl;
-							}
-
 							if (
 								f1->crc32  == f2->crc32  &&
 								f1->md5    == f2->md5    &&
@@ -1754,14 +1826,24 @@ void Worker::process()
 							{
 								//std::wcout << L"All hashes match!" << std::endl;
 
+								bool doByteComparison = false;
+
 								bool isDuplicate = false;
 
-								bool doByteComparison = true;
+								if (f1->modifiedTime == f2->modifiedTime)
+								{
+									//std::wcout << L"Same modified time " << f1->name << L" and " << f2->name << std::endl; 
+									//std::wcout << L"Same size, same modified time, hashes match, skipping byte comparison for " << f1->name << std::endl;
+								}
+								else
+								{
+									//std::wcout << L"Different modified time for " << f1->name << L" and " << f2->name << std::endl;
+									std::wcout << L"Same size (" << f1->size << "), hashes match, but different modified time, doing byte comparison for " << f1->name << " and " << f2->name << std::endl;
+									doByteComparison = true;
+								}
 
 								if (doByteComparison == true)
 								{
-									std::wcout << L"Hashes match, doing byte comparison" << std::endl;
-
 									if (f1->size == f2->size)
 									{
 										char* buffer1 = new char[f1->size];
@@ -1809,7 +1891,7 @@ void Worker::process()
 											if (buffer1[a] != buffer2[a])
 											{
 												byteMatch = false;
-												std::wcout << L"Byte comparison failed at index " << a << L", not a match!" << std::endl;
+												std::wcout << L"Byte comparison failed at index " << a << L" in " << f1->name << L" and " << f2->name << ", not a match!" << std::endl;
 												a = f1->size;
 												break;
 											}
@@ -1820,7 +1902,7 @@ void Worker::process()
 
 										if (byteMatch == true)
 										{
-											std::wcout << L"Absolutely definitely a duplicate!" << std::endl;
+											//std::wcout << L"Absolutely definitely a duplicate!" << std::endl;
 											isDuplicate = true;
 										}
 									}
@@ -1832,7 +1914,7 @@ void Worker::process()
 								}
 								else
 								{
-									std::wcout << L"Probably a duplicate but only checked hashes" << std::endl;
+									//std::wcout << L"Probably a duplicate but only checked size, filename, and hashes" << std::endl;
 									isDuplicate = true;
 								}
 
@@ -1851,8 +1933,8 @@ void Worker::process()
 
 										for (int c = 1; c < v->size(); c++)//small speed up by starting c at 1 since file 0 would usually be f1 from last loop, unless there is already more than 1 duplicate for that file found
 										{
-											FileDataEntry* f = (*v)[c];
-											if (f == f1)
+											FileDataEntry* f0 = (*v)[c];
+											if (f0 == f1)
 											{
 												v->push_back(f2);
 												foundFileInDupes = true;
@@ -1872,6 +1954,10 @@ void Worker::process()
 										duplicates.push_back(v);
 									}
 								}
+							}
+							else
+							{
+								std::wcout << L"One or more hash matches but not all in " << f1->name << L" and " << f2->name << std::endl;
 							}
 						}
 					}
@@ -1900,8 +1986,18 @@ void Worker::process()
 	//todo:
 
 	//store all dates, created/modified, exif, filename
+	//parse time from filename if has date?
+	//need to check common filename formats
 
 	//maybe do speed test with exif libs
+
+
+
+	//connect gui elements, do tooltips and info and options and stuff
+
+	//maybe get gtk working
+
+
 
 	//use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
 

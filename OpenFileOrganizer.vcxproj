@@ -106,15 +106,6 @@
     <QtRcc Include="OpenFileOrganizer.qrc" />
     <QtUic Include="OpenFileOrganizer.ui" />
     <QtMoc Include="OpenFileOrganizer.h" />
-    <ClCompile Include="libs\jhead-3.06.0.1\exif.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\gpsinfo.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\iptc.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\jhead.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\jpgfile.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\jpgqguess.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\makernote.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\myglob.c" />
-    <ClCompile Include="libs\jhead-3.06.0.1\paths.c" />
     <ClCompile Include="OpenFileOrganizer.cpp">
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
@@ -299,8 +290,6 @@
     <ClInclude Include="libs\hash-library-master\sha1.h" />
     <ClInclude Include="libs\hash-library-master\sha256.h" />
     <ClInclude Include="libs\hash-library-master\sha3.h" />
-    <ClInclude Include="libs\jhead-3.06.0.1\iptc.h" />
-    <ClInclude Include="libs\jhead-3.06.0.1\jhead.h" />
     <ClInclude Include="libs\libexif-0.6.24\config.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
