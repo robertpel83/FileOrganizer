@@ -964,6 +964,16 @@ void Worker::getFastHashForAllFiles()
 
 void Worker::getDateFromFilenameForAllFiles()
 {
+
+
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+	time_t tt = std::chrono::system_clock::to_time_t(now);
+	tm utc_tm = *gmtime(&tt);
+	tm local_tm = *localtime(&tt);
+	int currentYear = utc_tm.tm_year + 1900;
+	//std::wcout << L"Current year: " << currentYear << std::endl;
+
+
 	for (int i = 0; i < fileDataEntries.size(); i++)
 	{
 		FileDataEntry* f = fileDataEntries[i];
@@ -989,11 +999,11 @@ void Worker::getDateFromFilenameForAllFiles()
 			"(?!19[0-7])"//not 190x-197x
 			"(?!2[3-9])"//not 23xx
 			"[12][09][0-9][0-9]"//1000-2999
-			"[_. ,mMyY-]"//any separator including m M y Y
+			"[!0-9a-ln-xzA-LN-XZ]"//not a number, not a letter except for m or M or y or Y
 			"(?!00)"//month cannot be 00
 			"(?!1[3-9])"//month cannot be 13-19
 			"[01][0-9]"//month only begins with 0 or 1
-			"[_. ,mMdD-]"//any separator including m M d D
+			"[!0-9a-ce-ln-zA-CE-LN-Z]"//not a number, not a letter except for m or M or d or D
 			"(?!00)"//day cannot be 00
 			"(?!3[3-9])"//day cannot be 33-39
 			"[0123][0-9]"//day only begins with 0 1 2 3
@@ -1005,10 +1015,17 @@ void Worker::getDateFromFilenameForAllFiles()
 			+ regex_yyyy_mm_dd +
 			")"
 			"|"//or
-			"[^0-9]"//not a number
+			"[!0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
 			"("
 			+ regex_yyyy_mm_dd +
 			")"
+			"[!0-9a-ce-gi-zA-CE-GI-Z]"//not a number, not a letter except for d or D or h H
+			"|"
+			"[!0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+			"("
+			+ regex_yyyy_mm_dd + //at the end beginning with non number
+			")"
+			"$"
 			;
 
 
@@ -1032,10 +1049,17 @@ void Worker::getDateFromFilenameForAllFiles()
 			+ regex_yyyymmdd +
 			")"
 			"|"//or
-			"[^0-9]"//not a number
+			"[!0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
 			"("
 			+ regex_yyyymmdd +
 			")"
+			"[!0-9a-ce-gi-zA-CE-GI-Z]"//not a number, not a letter except for d or D or h H
+			"|"
+			"[!0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+			"("
+			+ regex_yyyymmdd + //at the end beginning with non number
+			")"
+			"$"
 			;
 
 
@@ -1061,11 +1085,11 @@ void Worker::getDateFromFilenameForAllFiles()
 			"(?!00)"//month cannot be 00
 			"(?!1[3-9])"//month cannot be 13-19
 			"[01][0-9]"//month only begins with 0 or 1
-			"[_. ,mMdD-]"//any separator including m M d D
+			"[!0-9a-ce-ln-zA-CE-LN-Z]"//not a number, not a letter except for m or M or d or D
 			"(?!00)"//day cannot be 00
 			"(?!3[3-9])"//day cannot be 33-39
 			"[0123][0-9]"//day only begins with 0 1 2 3
-			"[_. ,dDyY-]"//any separator including d D y Y
+			"[!0-9a-ce-xzA-CE-XZ]"//not a number, not a letter except for d or D or y or Y
 			"[12]?[90]?[012789][0-9]"//year [19-20]70-29
 			;
 		std::string smm_dd_yy =
@@ -1074,10 +1098,17 @@ void Worker::getDateFromFilenameForAllFiles()
 			+ regex_mm_dd_yy +
 			")"
 			"|"//or
-			"[_. ,mM-]"//any separator including m M
+			"[!0-9a-ln-zA-LN-Z]"//not a number, not a letter except for m or M
 			"("
 			+ regex_mm_dd_yy +
 			")"
+			"[!0-9a-gi-xzA-GI-XZ]"//not a number, not a letter except for y or Y or h H
+			"|"
+			"[!0-9a-ln-zA-LN-Z]"//not a number, not a letter except for m or M
+			"("
+			+ regex_mm_dd_yy + //at the end beginning with non number
+			")"
+			"$"
 			;
 
 		std::regex mm_dd_yy(smm_dd_yy);// \d{2}:\d{2}:\d{2}.\d{3}
@@ -1183,12 +1214,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 		};
 
-		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-		time_t tt = std::chrono::system_clock::to_time_t(now);
-		tm utc_tm = *gmtime(&tt);
-		tm local_tm = *localtime(&tt);
-		int currentYear = utc_tm.tm_year + 1900;
-		std::wcout << L"Current year: " << currentYear << std::endl;
+
 
 		string s(convertWideToUtf8(f->name));
 		//if(false)
@@ -1938,7 +1964,7 @@ void Worker::process()
 											{
 												v->push_back(f2);
 												foundFileInDupes = true;
-												c = v->size();
+												c = (int)v->size();
 												break;
 											}
 
