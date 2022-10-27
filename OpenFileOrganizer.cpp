@@ -1025,6 +1025,8 @@ void Worker::getDateFromFilenameForAllFiles()
 		"$"
 		;
 
+	std::regex yyyy_mm_dd(syyyy_mm_dd);
+
 
 	std::string regex_yyyymmdd =
 		"(?!1[0-8])"//not 10xx-18xx
@@ -1061,7 +1063,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 
 
-	std::regex yyyy_mm_dd(syyyy_mm_dd);
+	
 	std::regex yyyymmdd(syyyymmdd);
 
 	//yyyy-mm-d?
@@ -1227,7 +1229,9 @@ void Worker::getDateFromFilenameForAllFiles()
 		if (!matches.empty())
 		{
 			string str;
-			for (int n = 0; n < matches.size(); n++)str = str + matches[n].str();
+			for (int n = 0; n < matches.size(); n++)
+				str = str + matches[n].str();
+
 			{
 				size_t k = str.find_first_of("0123456789");
 
@@ -1269,7 +1273,9 @@ void Worker::getDateFromFilenameForAllFiles()
 			if (!matches.empty())
 			{
 				string str;
-				for (int n = 0; n < matches.size(); n++)str = str + matches[n].str();
+				for (int n = 0; n < matches.size(); n++)
+					str = str + matches[n].str();
+
 				{
 					size_t k = str.find_first_of("0123456789");
 
@@ -1312,7 +1318,9 @@ void Worker::getDateFromFilenameForAllFiles()
 				if (!matches.empty())
 				{
 					string str;
-					for (int n = 0; n < matches.size(); n++)str = str + matches[n].str();
+					for (int n = 0; n < matches.size(); n++)
+						str = str + matches[n].str();
+
 					{
 
 						size_t k = str.find_first_of("0123456789");
@@ -1368,7 +1376,9 @@ void Worker::getDateFromFilenameForAllFiles()
 					if (!matches.empty())
 					{
 						string str;
-						for (int n = 0; n < matches.size(); n++)str = str + matches[n].str();
+						for (int n = 0; n < matches.size(); n++)
+							str = str + matches[n].str();
+
 						{
 							//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(str) << std::endl;
 
@@ -1402,7 +1412,9 @@ void Worker::getDateFromFilenameForAllFiles()
 						if (!matches.empty())
 						{
 							string str;
-							for (int n = 0; n < matches.size(); n++)str = str + matches[n].str();
+							for (int n = 0; n < matches.size(); n++)
+								str = str + matches[n].str();
+
 							{
 
 								if (str.find("Jan") != string::npos)m = 1;
@@ -1453,7 +1465,9 @@ void Worker::getDateFromFilenameForAllFiles()
 							{
 								string str;
 
-								for (int n = 0; n < matches.size(); n++)str = str + matches[n].str();
+								for (int n = 0; n < matches.size(); n++)
+									str = str + matches[n].str();
+
 								{
 									size_t k = str.find_first_of("0123456789");
 
@@ -1552,58 +1566,97 @@ bool Worker::extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int
 	return false;
 }
 
+
+
 void Worker::getDatesFromEXIFDataForAllFiles()
 {
 
 	//if file is an image get exif data, timestamps
 	//look at all possible timestamp values in exif
 
-	//libexif
-	for (int i = 0; i < fileDataEntries.size(); i++)
-	{
-		FileDataEntry* f = fileDataEntries[i];
 
-		std::wstring lowerName = f->name;
-		transform(
-			lowerName.begin(), lowerName.end(),
-			lowerName.begin(),
-			towlower);
 
-		if (lowerName.find(L".jpg") != std::wstring::npos || lowerName.find(L".jpeg") != std::wstring::npos)
-		{
-			ExifData* d;
-			d = exif_data_new_from_file(convertWideToUtf8(f->nameAndPath).c_str());
-			if (!d)
-			{
-				std::wcout << L"Could not load data from " << f->name << std::endl;
-			}
-			else
-			{
-				void* callback_data = NULL;
+	std::string regex_yyyy_mm_dd =
+		"(?!1[0-8])"//not 10xx-18xx
+		"(?!19[0-7])"//not 190x-197x
+		"(?!2[3-9])"//not 23xx
+		"[12][09][0-9][0-9]"//1000-2999
+		"[^0-9a-ln-xzA-LN-XZ]"//not a number, not a letter except for m or M or y or Y
+		"(?!00)"//month cannot be 00
+		"(?!1[3-9])"//month cannot be 13-19
+		"[01][0-9]"//month only begins with 0 or 1
+		"[^0-9a-ce-ln-zA-CE-LN-Z]"//not a number, not a letter except for m or M or d or D
+		"(?!00)"//day cannot be 00
+		"(?!3[3-9])"//day cannot be 33-39
+		"[0123][0-9]"//day only begins with 0 1 2 3
+		;
 
-				exif_data_foreach_content(d, data_foreach_func, callback_data);
+	std::regex yyyy_mm_dd(regex_yyyy_mm_dd);
 
-				ExifMnoteData* mn = exif_data_get_mnote_data(d);
-				if (mn) {
-					char buf[2000];
-					int i;
-					int num = exif_mnote_data_count(mn);
-					std::wcout << L"  MakerNote" << std::endl;
-					for (i = 0; i < num; ++i) {
-						if (exif_mnote_data_get_value(mn, i, buf, sizeof(buf))) {
-							const char* name = exif_mnote_data_get_name(mn, i);
-							unsigned int id = exif_mnote_data_get_id(mn, i);
-							if (!name)
-								name = "(unknown)";
-							std::wcout << convertUtf8ToWide(name) << L" " << convertUtf8ToWide(buf) << std::endl;
-						}
-					}
-				}
-
-				exif_data_unref(d);
-			}
-		}
-	}
+	////libexif
+	//for (int i = 0; i < fileDataEntries.size(); i++)
+	//{
+	//	FileDataEntry* f = fileDataEntries[i];
+	//
+	//	std::wstring lowerName = f->name;
+	//	transform(
+	//		lowerName.begin(), lowerName.end(),
+	//		lowerName.begin(),
+	//		towlower);
+	//
+	//	if (lowerName.find(L".jpg") != std::wstring::npos || 
+	//		lowerName.find(L".jpeg") != std::wstring::npos 
+	//		)
+	//	{
+	//		ExifData* d;
+	//		d = exif_data_new_from_file(convertWideToUtf8(f->nameAndPath).c_str());
+	//		if (!d)
+	//		{
+	//			std::wcout << L"Could not load data from " << f->name << std::endl;
+	//		}
+	//		else
+	//		{
+	//			void* callback_data = NULL;
+	//
+	//			exif_data_foreach_content(d, data_foreach_func, callback_data);
+	//
+	//			ExifMnoteData* mn = exif_data_get_mnote_data(d);
+	//			if (mn) 
+	//			{
+	//				char buf[2000];
+	//				int i;
+	//				int num = exif_mnote_data_count(mn);
+	//				//std::wcout << L"  MakerNote" << std::endl;
+	//				for (i = 0; i < num; ++i) 
+	//				{
+	//					//if (exif_mnote_data_get_value(mn, i, buf, sizeof(buf))) 
+	//					{
+	//						//const char* 
+							//string name(exif_mnote_data_get_name(mn, i));
+	//						//unsigned int id = exif_mnote_data_get_id(mn, i);
+	//						//if (!name)
+	//							//name = "(unknown)";
+	//
+	//							//if(
+	//							//	name=="DateTime"||
+	//							//	name=="DateTimeOriginal"||
+	//							//	name=="DateTimeDigitized"||
+	//							//	name=="Date"||
+	//							//	name=="Time"||
+	//							//	name=="GPSDateStamp"||
+	//							//	name=="GPSTimeStamp"
+	//							//)
+	//
+	//						//std::wcout << convertUtf8ToWide(name) << std::endl;
+	//						//std::wcout << convertUtf8ToWide(buf) << std::endl;
+	//					}
+	//				}
+	//			}
+	//
+	//			exif_data_unref(d);
+	//		}
+	//	}
+	//}
 
 	//DateTime
 	//DateTimeOriginal
@@ -1631,7 +1684,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 			
 			)
 		{
-			// open a stream to read just the necessary parts of the image file
+			//open a stream to read just the necessary parts of the image file
 			std::ifstream stream(f->nameAndPath, std::ios::binary);
 			if (stream)
 			{
@@ -1642,12 +1695,77 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 
 				}
 
+				//if (!imageEXIF.DateTime.empty())
+				//	std::wcout << L"DateTime " << convertUtf8ToWide(imageEXIF.DateTime) << std::endl;
+				//if (!imageEXIF.DateTimeOriginal.empty())
+				//	std::wcout << L"DateTimeOriginal " << convertUtf8ToWide(imageEXIF.DateTimeOriginal) << std::endl;
+				//if (!imageEXIF.DateTimeDigitized.empty())
+				//	std::wcout << L"DateTimeDigitized " << convertUtf8ToWide(imageEXIF.DateTimeDigitized) << std::endl;
+				
+				string dateString = "";
 				if (!imageEXIF.DateTime.empty())
-					std::wcout << L"DateTime " << convertUtf8ToWide(imageEXIF.DateTime) << std::endl;
-				if (!imageEXIF.DateTimeOriginal.empty())
-					std::wcout << L"DateTimeOriginal " << convertUtf8ToWide(imageEXIF.DateTimeOriginal) << std::endl;
-				if (!imageEXIF.DateTimeDigitized.empty())
-					std::wcout << L"DateTimeDigitized " << convertUtf8ToWide(imageEXIF.DateTimeDigitized) << std::endl;
+				{
+					dateString = imageEXIF.DateTime;
+				}
+				else if (!imageEXIF.DateTimeOriginal.empty())
+				{
+					dateString = imageEXIF.DateTimeOriginal;
+				}
+				else if (!imageEXIF.DateTimeDigitized.empty())
+				{
+					dateString = imageEXIF.DateTimeDigitized;
+				}
+
+				if (dateString.length() > 1)
+				{
+					int y = 0;
+					int m = 0;
+					int d = 0;
+					int hour = 0;
+					int min = 0;
+					int sec = 0;
+
+					std::smatch matches;
+					std::regex_search(dateString, matches, yyyy_mm_dd);
+
+					if (!matches.empty())
+					{
+						string str;
+						for (int n = 0; n < matches.size(); n++)
+							str = str + matches[n].str();
+
+						
+						size_t k = str.find_first_of("0123456789");
+
+						std::istringstream is(str.substr(k, 4));
+						is >> y;
+
+						std::istringstream is(str.substr(k + 5, 2));
+						is >> m;
+							
+						std::istringstream is(str.substr(k + 8, 2));
+						is >> d;
+
+						std::istringstream is(str.substr(k + 11, 2));
+						is >> hour;
+
+						std::istringstream is(str.substr(k + 14, 2));
+						is >> min;
+
+						std::istringstream is(str.substr(k + 17, 2));
+						is >> sec;
+							
+						if (y != 0 && m != 0 && d != 0)
+						{
+							wchar_t buffer[100];
+							swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", y, m, d, hour, min, sec);
+							f->exifDateString = wstring(buffer);
+
+						}
+
+						
+					}
+				}
 
 			}
 		}
@@ -1760,15 +1878,11 @@ void Worker::process()
 	//if(false)
 		getDateFromFilenameForAllFiles();
 
-	if(false)
+	//if(false)
 		getDatesFromEXIFDataForAllFiles();
 
 
-	//for (int i = 0; i < fileDataEntries.size(); i++)
-	//{
-	//	FileDataEntry* f1 = fileDataEntries[i];
-	//	std::wcout << L"Name: " << f1->name << L" " << L"Size: " << f1->size << std::endl;
-	//}
+
 
 	//You can use std::swap to swap two values.
 	//And also you may want to compare to std::sort(which is typically an introsort : a quick sort + insertion sort for small sizes),
@@ -1785,11 +1899,7 @@ void Worker::process()
 		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 	}
 
-	//for (int i = 0; i < fileDataEntries.size(); i++)
-	//{
-	//	FileDataEntry* f1 = fileDataEntries[i];
-	//	std::wcout << L"Name: " << f1->name << L" " << L"Size: " << f1->size << std::endl;
-	//}
+
 
 
 	//for each entry, check to see if there are duplicates ahead
@@ -2026,15 +2136,10 @@ void Worker::process()
 									}
 								}
 							}
-
-
 						}
-
 					}
-
 				}
 			}
-
 		}
 
 		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
@@ -2057,9 +2162,6 @@ void Worker::process()
 	//todo:
 
 
-	//do speed test with exif libs
-	
-	//store exif dates found
 
 
 	//compare all dates, try to decide correct date
