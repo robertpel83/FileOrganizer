@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcapimin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcapistd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jccoefct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jccolor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcdctmgr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jchuff.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcicc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcinit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcmainct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcmarker.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcmaster.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcomapi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcparam.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcphuff.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcprepct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcsample.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jctrans.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdapimin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdapistd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdatadst.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdatasrc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdcoefct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdcolor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jddctmgr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdhuff.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdicc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdinput.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmainct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmarker.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmaster.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmerge.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdphuff.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdpostct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdsample.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdtrans.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jerror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jfdctflt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jfdctfst.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jfdctint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctflt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctfst.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctred.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jquant1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jquant2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jutils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jmemmgr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jmemnobs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jaricom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcarith.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdarith.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\sharedlib\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\win\jpeg62-memsrcdst.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\simd.dir\$(Configuration)\jsimd.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jsimdcpu.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctflt-sse.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jccolor-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcgray-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jchuff-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcphuff-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcsample-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdcolor-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdmerge-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdsample-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctfst-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctint-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctflt-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctfst-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctint-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctred-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jquantf-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jquanti-sse2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jccolor-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcgray-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcsample-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdcolor-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdmerge-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdsample-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctint-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctint-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jquanti-avx2.asm.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\win\jpeg.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Object Files">
+      <UniqueIdentifier>{765284D7-CE68-3790-870B-4DD0B708CCA0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object Libraries">
+      <UniqueIdentifier>{445E5323-25B3-3E68-BCE3-93F5BAB7D7A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{029AB873-02DB-3425-91CE-8AFB04AD9928}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

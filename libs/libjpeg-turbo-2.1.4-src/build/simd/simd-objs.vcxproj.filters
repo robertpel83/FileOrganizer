@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jccolor-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jccolor-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jcgray-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jcgray-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jchuff-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jcphuff-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jcsample-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jcsample-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jdcolor-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jdcolor-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jdmerge-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jdmerge-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jdsample-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jdsample-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jfdctflt-sse.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jfdctfst-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jfdctint-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jfdctint-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jidctflt-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jidctfst-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jidctint-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jidctint-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jidctred-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jquantf-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jquanti-avx2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jquanti-sse2.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\1a6016acb4ed67d8e99eba16d8b68a68\jsimdcpu.asm.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\CMakeFiles\2cb2685ef4d1ee5da00e20778a2d5455\simd-objs.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\simd\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\CMakeFiles\simd-objs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{C905645E-0ECC-3839-86CB-E9898189128B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

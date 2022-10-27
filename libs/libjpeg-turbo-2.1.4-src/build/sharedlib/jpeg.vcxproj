@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{75E62404-159C-3376-8624-4AC53AECA997}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>jpeg</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\sharedlib\jpeg.dir\nasm.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">jpeg.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">jpeg62</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">jpeg.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">jpeg62</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">jpeg.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">jpeg62</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">jpeg.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">jpeg62</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="Debug";jpeg_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR=\"Debug\";jpeg_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <NASM>
+      <IncludePaths>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>-f</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="Debug";jpeg_EXPORTS</PreprocessorDefinitions>
+    </NASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/Debug/jpeg.lib</ImportLibrary>
+      <ModuleDefinitionFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/win/jpeg62-memsrcdst.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/Debug/jpeg62.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="Release";jpeg_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR=\"Release\";jpeg_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <NASM>
+      <IncludePaths>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>-f</AdditionalOptions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="Release";jpeg_EXPORTS</PreprocessorDefinitions>
+    </NASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/Release/jpeg.lib</ImportLibrary>
+      <ModuleDefinitionFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/win/jpeg62-memsrcdst.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/Release/jpeg62.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="MinSizeRel";jpeg_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\";jpeg_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <NASM>
+      <IncludePaths>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>-f</AdditionalOptions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="MinSizeRel";jpeg_EXPORTS</PreprocessorDefinitions>
+    </NASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/MinSizeRel/jpeg.lib</ImportLibrary>
+      <ModuleDefinitionFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/win/jpeg62-memsrcdst.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/MinSizeRel/jpeg62.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="RelWithDebInfo";jpeg_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR=\"RelWithDebInfo\";jpeg_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <NASM>
+      <IncludePaths>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>-f</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;CMAKE_INTDIR="RelWithDebInfo";jpeg_EXPORTS</PreprocessorDefinitions>
+    </NASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/RelWithDebInfo/jpeg.lib</ImportLibrary>
+      <ModuleDefinitionFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/win/jpeg62-memsrcdst.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/RelWithDebInfo/jpeg62.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\sharedlib\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/sharedlib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src -BF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build --check-stamp-file F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/sharedlib/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.24\Templates\MSBuild\nasm.props.in;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\win\jpeg.rc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\sharedlib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/sharedlib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src -BF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build --check-stamp-file F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/sharedlib/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.24\Templates\MSBuild\nasm.props.in;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\win\jpeg.rc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\sharedlib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/sharedlib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src -BF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build --check-stamp-file F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/sharedlib/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.24\Templates\MSBuild\nasm.props.in;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\win\jpeg.rc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\sharedlib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/sharedlib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src -BF:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build --check-stamp-file F:/OpenFileOrganizer/libs/libjpeg-turbo-2.1.4-src/build/sharedlib/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.24\Templates\MSBuild\nasm.props.in;F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\win\jpeg.rc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\sharedlib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcapimin.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcapistd.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jccoefct.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jccolor.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcdctmgr.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jchuff.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcicc.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcinit.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcmainct.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcmarker.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcmaster.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcomapi.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcparam.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcphuff.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcprepct.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcsample.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jctrans.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdapimin.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdapistd.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdatadst.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdatasrc.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdcoefct.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdcolor.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jddctmgr.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdhuff.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdicc.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdinput.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmainct.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmarker.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmaster.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdmerge.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdphuff.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdpostct.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdsample.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdtrans.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jerror.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jfdctflt.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jfdctfst.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jfdctint.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctflt.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctfst.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctint.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jidctred.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jquant1.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jquant2.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jutils.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jmemmgr.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jmemnobs.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jaricom.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jcarith.c" />
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\jdarith.c" />
+    <ResourceCompile Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\win\jpeg.rc" />
+    <None Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\win\jpeg62-memsrcdst.def" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\simd.dir\$(Configuration)\jsimd.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jsimdcpu.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctflt-sse.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jccolor-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcgray-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jchuff-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcphuff-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcsample-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdcolor-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdmerge-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdsample-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctfst-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctint-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctflt-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctfst-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctint-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctred-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jquantf-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jquanti-sse2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jccolor-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcgray-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jcsample-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdcolor-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdmerge-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jdsample-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jfdctint-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jidctint-avx2.asm.obj" />
+    <Object Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\$(Configuration)\jquanti-avx2.asm.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\ZERO_CHECK.vcxproj">
+      <Project>{BDE7AE4D-D996-3D31-9DE1-E161245A1292}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="F:\OpenFileOrganizer\libs\libjpeg-turbo-2.1.4-src\build\simd\simd.vcxproj">
+      <Project>{6654760F-22E3-30C5-B7CA-FDE0EDD240A1}</Project>
+      <Name>simd</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="C:\Program Files\CMake\share\cmake-3.24\Templates\MSBuild\nasm.targets" />
+  </ImportGroup>
+</Project>
