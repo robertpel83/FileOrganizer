@@ -570,5 +570,8 @@
     <ClInclude Include="libs\libexif-0.6.24\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="libs\imageinfo-master\imageinfo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

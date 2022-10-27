@@ -85,6 +85,7 @@ using std::wstring;
 
 #include "TinyEXIF.h"
 
+#include "imageinfo.hpp"
 
 std::string convertWideToANSI(const std::wstring& wstr);
 

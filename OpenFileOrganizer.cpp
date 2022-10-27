@@ -1682,7 +1682,33 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	//Time
 	//GPSDateStamp
 	//GPSTimeStamp
+	for (int i = 0; i < fileDataEntries.size(); i++)
+	{
+		FileDataEntry* f = fileDataEntries[i];
 
+		auto info = getImageInfo<IIFilePathReader>(f->nameAndPath);
+		std::wcout << L"File: " << f->nameAndPath << std::endl;
+		if (info.getErrorCode() != II_ERR_OK) 
+		{
+			std::wcout << L"Error: " << info.getErrorMsg() << std::endl;
+		}
+		else 
+		{
+			std::wcout << L"Format: " << info.getFormat() << std::endl;
+			std::wcout << L"Ext: " << info.getExt() << std::endl;
+			std::wcout << L"Full Ext: " << info.getFullExt() << std::endl;
+			std::wcout << L"Width: " << info.getWidth() << std::endl;
+			std::wcout << L"Height: " << info.getHeight() << std::endl;
+			std::wcout << L"Mimetype: " << info.getMimetype() << std::endl;
+			std::wcout << L"Entries: " << std::endl;
+
+			for (const auto& entrySize : info.getEntrySizes()) 
+			{
+				std::wcout << L"Width: " << entrySize[0] << std::endl;
+				std::wcout << L"Height: " << entrySize[1] << std::endl;
+			}
+		}
+	}
 
 	//TinyEXIF
 	for (int i = 0; i < fileDataEntries.size(); i++)
@@ -1698,7 +1724,6 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 			lowerName.find(L".jpg") != std::wstring::npos ||
 			lowerName.find(L".jpeg") != std::wstring::npos ||
 			lowerName.find(L".png") != std::wstring::npos 
-			
 			)
 		{
 			//open a stream to read just the necessary parts of the image file
@@ -1742,16 +1767,9 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 					int min = 0;
 					int sec = 0;
 
-					//std::smatch matches;
-					//std::regex_search(dateString, matches, yyyy_mm_dd);
 
-					//if (!matches.empty())
-					//{
 					string str = string(dateString);
-						//for (int n = 0; n < matches.size(); n++)
-							//str = str + matches[n].str();
 
-						
 						size_t k = str.find_first_of("0123456789");
 
 						{std::istringstream is(str.substr(k, 4));
@@ -1777,11 +1795,8 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 							wchar_t buffer[100];
 							swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", y, m, d, hour, min, sec);
 							f->exifDateString = wstring(buffer);
-
 						}
 
-						
-					//}
 				}
 				else
 				{
@@ -2205,22 +2220,26 @@ void Worker::process()
 		{
 			if ((*v)[c]->createdDateString.length() > 2) 
 			{ 
-				//std::wcout << (*v)[c]->createdDateString << std::endl; 
+				//std::wcout << (*v)[c]->createdDateString << std::endl;
+
 				dateStrings.push_back(((*v)[c]->createdDateString));
 			}
 			if ((*v)[c]->modifiedDateString.length() > 2) 
 			{ 
-				//std::wcout << (*v)[c]->modifiedDateString << std::endl; 
+				//std::wcout << (*v)[c]->modifiedDateString << std::endl;
+
 				dateStrings.push_back(((*v)[c]->modifiedDateString));
 			}
 			if ((*v)[c]->fileNameDateString.length() > 2) 
 			{ 
-				//std::wcout << (*v)[c]->fileNameDateString << std::endl; 
+				//std::wcout << (*v)[c]->fileNameDateString << std::endl;
+
 				dateStrings.push_back(((*v)[c]->fileNameDateString));
 			}
 			if ((*v)[c]->exifDateString.length() > 2) 
 			{ 
-				//std::wcout << (*v)[c]->exifDateString << std::endl; 
+				//std::wcout << (*v)[c]->exifDateString << std::endl;
+
 				dateStrings.push_back(((*v)[c]->exifDateString));
 			}
 		}
@@ -2241,7 +2260,6 @@ void Worker::process()
 
 
 
-	//compare all dates, try to decide correct date
 
 	
 
@@ -2249,26 +2267,28 @@ void Worker::process()
 
 
 
-	//use library to compare images with fuzzy comparison, different resolution comparison, use different methods to ensure accuracy
+	//use library to compare images with fuzzy comparison, different resolution comparison, 
+	//use different methods to ensure accuracy
 
+
+
+
+
+	
+
+
+
+
+
+
+
+	//compare all dates, try to decide correct date
+	//maybe set that date as created for dupes that don't have it
 	//compare dates and filenames for duplicates
 
 	//connect gui elements, do tooltips and info and options and stuff
 
 	//maybe get gtk working
-
-
-
-	
-
-
-
-
-
-
-
-
-
 
 
 
