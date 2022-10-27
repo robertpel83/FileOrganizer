@@ -240,7 +240,8 @@ mnote_olympus_tag_get_title (MnoteOlympusTag t)
 {
 	unsigned int i;
 
-	(void) bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	//(void) 
+		bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	for (i = 0; i < sizeof (table) / sizeof (table[0]); i++)
 		if (table[i].tag == t) return (_(table[i].title));
 	return NULL;
@@ -255,7 +256,8 @@ mnote_olympus_tag_get_description (MnoteOlympusTag t)
 		if (table[i].tag == t) {
 			if (!table[i].description || !*table[i].description)
 				return "";
-			(void) bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+			//(void) 
+				bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 			return _(table[i].description);
 		}
 	return NULL;

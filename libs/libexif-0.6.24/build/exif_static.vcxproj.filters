@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-byte-order.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-content.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-data.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-format.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-gps-ifd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-ifd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-loader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-log.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-mem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-mnote-data.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\apple\exif-mnote-data-apple.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\apple\mnote-apple-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\apple\mnote-apple-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\canon\exif-mnote-data-canon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\canon\mnote-canon-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\canon\mnote-canon-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\fuji\mnote-fuji-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\fuji\exif-mnote-data-fuji.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\fuji\mnote-fuji-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\olympus\mnote-olympus-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\olympus\exif-mnote-data-olympus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\olympus\mnote-olympus-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\pentax\mnote-pentax-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\pentax\exif-mnote-data-pentax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\pentax\mnote-pentax-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif-mnote-data-priv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\exif.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\i18n.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\apple\exif-mnote-data-apple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\apple\mnote-apple-entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\apple\mnote-apple-tag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\canon\exif-mnote-data-canon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\canon\mnote-canon-entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\canon\mnote-canon-tag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\fuji\mnote-fuji-entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\fuji\exif-mnote-data-fuji.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\fuji\mnote-fuji-tag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\olympus\mnote-olympus-entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\olympus\exif-mnote-data-olympus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\olympus\mnote-olympus-tag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\pentax\mnote-pentax-entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\pentax\exif-mnote-data-pentax.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\libexif\pentax\mnote-pentax-tag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\OpenFileOrganizer\libs\libexif-0.6.24\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{15751658-7589-3AE7-9381-5742B3510BC8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{C9A12221-7858-34AD-B3D5-02400511B433}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -86,6 +86,10 @@ using std::wstring;
 #include "TinyEXIF.h"
 
 #include "imageinfo.hpp"
+#define II_DISABLE_HEADER_CACHE
+
+#include "jpeglib.h"
+#include <setjmp.h>
 
 std::string convertWideToANSI(const std::wstring& wstr);
 

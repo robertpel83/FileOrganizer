@@ -54,7 +54,8 @@ exif_format_get_name (ExifFormat format)
 {
 	unsigned int i;
 
-	(void) bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	//(void) 
+		bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 
 	for (i = 0; ExifFormatTable[i].name; i++)
 		if (ExifFormatTable[i].format == format)

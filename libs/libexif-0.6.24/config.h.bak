@@ -82,13 +82,35 @@
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#undef LT_OBJDIR
 
+/* Name of package */
+#undef PACKAGE
 
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
-
+/* Version number of package */
+#undef VERSION
 
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE
@@ -101,7 +123,14 @@
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
 
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#undef inline
+#endif
 
+   // dummy object to make compiler happy
+#define GETTEXT_PACKAGE "Patera"
 
 #define strdup _strdup
 #define strncasecmp _strnicmp
@@ -109,43 +138,3 @@
 
 #include <basetsd.h>
 typedef SSIZE_T ssize_t;
-
-/* Define to 1 if translation of program messages to the user's native language is requested. */
-#define GETTEXT_PACKAGE "libexif-12"
-#define LOCALEDIR ""
-
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
-#define LT_OBJDIR ".libs/"
-
-/* Name of package */
-#define PACKAGE "libexif"
-
-/* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "libexif-devel@lists.sourceforge.net"
-
-/* Define to the full name of this package. */
-#define PACKAGE_NAME "EXIF library"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "EXIF library 0.6.24"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "libexif"
-
-/* Define to the home page for this package. */
-#define PACKAGE_URL ""
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "0.6.24"
-
-/* Version number of package */
-#define VERSION "0.6.24"
-
-/* Define to empty if `const' does not conform to ANSI C. */
-/* #undef const */
-
-/* Define to `__inline__' or `__inline' if that's what the C compiler
-   calls it, or to nothing if 'inline' is not supported under any name.  */
-#ifndef __cplusplus
-/* #undef inline */
-#endif

@@ -1,0 +1,5 @@
+F:/OpenFileOrganizer/libs/libexif-0.6.24/build/CMakeFiles/exif_shared.dir
+F:/OpenFileOrganizer/libs/libexif-0.6.24/build/CMakeFiles/exif_static.dir
+F:/OpenFileOrganizer/libs/libexif-0.6.24/build/CMakeFiles/INSTALL.dir
+F:/OpenFileOrganizer/libs/libexif-0.6.24/build/CMakeFiles/ALL_BUILD.dir
+F:/OpenFileOrganizer/libs/libexif-0.6.24/build/CMakeFiles/ZERO_CHECK.dir
