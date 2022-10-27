@@ -86,6 +86,19 @@ using std::wstring;
 #include "TinyEXIF.h"
 
 
+std::string convertWideToANSI(const std::wstring& wstr);
+
+
+std::wstring convertAnsiToWide(const std::string& str);
+
+
+std::string convertWideToUtf8(const std::wstring& wstr);
+
+
+std::wstring convertUtf8ToWide(const std::string& str);
+
+
+
 class DateData
 {
 public:
@@ -106,25 +119,25 @@ public:
 	
 		size_t k = str.find_first_of("0123456789");
 
-		std::istringstream is(str.substr(k, 4));
-		is >> year;
+		{std::istringstream is(str.substr(k, 4));
+		is >> year; }
 
-		std::istringstream is(str.substr(k + 5, 2));
-		is >> month;
+		{std::istringstream is(str.substr(k + 5, 2));
+		is >> month; }
 
-		std::istringstream is(str.substr(k + 8, 2));
-		is >> day;
+		{std::istringstream is(str.substr(k + 8, 2));
+		is >> day; }
 		if (str.length() > k + 11) 
 		{
 
-			std::istringstream is(str.substr(k + 11, 2));
-			is >> hour;
+			{std::istringstream is(str.substr(k + 11, 2));
+			is >> hour; }
 
-			std::istringstream is(str.substr(k + 14, 2));
-			is >> minute;
+			{std::istringstream is(str.substr(k + 14, 2));
+			is >> minute; }
 
-			std::istringstream is(str.substr(k + 17, 2));
-			is >> second;
+			{std::istringstream is(str.substr(k + 17, 2));
+			is >> second; }
 		}
 
 	}

@@ -662,7 +662,7 @@ void Worker::getFileCreatedModifiedDateWindows(FileDataEntry* f)
 		SYSTEMTIME systemTime;
 		FileTimeToSystemTime(&ct, &systemTime);
 		wchar_t buffer[100];
-		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", systemTime.wYear, systemTime.wMonth, systemTime.wDay, systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
+		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", systemTime.wYear, systemTime.wMonth, systemTime.wDay, systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
 		createdDateString = wstring(buffer);
 	}
 
@@ -670,7 +670,7 @@ void Worker::getFileCreatedModifiedDateWindows(FileDataEntry* f)
 		SYSTEMTIME systemTime;
 		FileTimeToSystemTime(&mt, &systemTime);
 		wchar_t buffer[100];
-		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", systemTime.wYear, systemTime.wMonth, systemTime.wDay, systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
+		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", systemTime.wYear, systemTime.wMonth, systemTime.wDay, systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
 		modifiedDateString = wstring(buffer);
 	}
 
@@ -706,13 +706,13 @@ void Worker::getFileCreatedModifiedDateWStat(FileDataEntry* f)
 
 		{
 			wchar_t buffer[100];
-			wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S\n", gmtime(&result.st_ctime));
+			wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S", gmtime(&result.st_ctime));
 			createdDateString = wstring(buffer);
 		}
 
 		{
 			wchar_t buffer[100];
-			wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S\n", gmtime(&result.st_mtime));
+			wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S", gmtime(&result.st_mtime));
 			modifiedDateString = wstring(buffer);
 		}
 
@@ -1733,7 +1733,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 					dateString = imageEXIF.DateTimeDigitized;
 				}
 
-				if (dateString.length() > 1)
+				if (dateString.length() > 4)
 				{
 					int y = 0;
 					int m = 0;
@@ -1742,35 +1742,35 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 					int min = 0;
 					int sec = 0;
 
-					std::smatch matches;
-					std::regex_search(dateString, matches, yyyy_mm_dd);
+					//std::smatch matches;
+					//std::regex_search(dateString, matches, yyyy_mm_dd);
 
-					if (!matches.empty())
-					{
-						string str;
-						for (int n = 0; n < matches.size(); n++)
-							str = str + matches[n].str();
+					//if (!matches.empty())
+					//{
+					string str = string(dateString);
+						//for (int n = 0; n < matches.size(); n++)
+							//str = str + matches[n].str();
 
 						
 						size_t k = str.find_first_of("0123456789");
 
-						std::istringstream is(str.substr(k, 4));
-						is >> y;
+						{std::istringstream is(str.substr(k, 4));
+						is >> y; }
 
-						std::istringstream is(str.substr(k + 5, 2));
-						is >> m;
+						{std::istringstream is(str.substr(k + 5, 2));
+						is >> m; }
 							
-						std::istringstream is(str.substr(k + 8, 2));
-						is >> d;
+						{std::istringstream is(str.substr(k + 8, 2));
+						is >> d; }
 
-						std::istringstream is(str.substr(k + 11, 2));
-						is >> hour;
+						{std::istringstream is(str.substr(k + 11, 2));
+						is >> hour; }
 
-						std::istringstream is(str.substr(k + 14, 2));
-						is >> min;
+						{std::istringstream is(str.substr(k + 14, 2));
+						is >> min; }
 
-						std::istringstream is(str.substr(k + 17, 2));
-						is >> sec;
+						{std::istringstream is(str.substr(k + 17, 2));
+						is >> sec; }
 							
 						if (y != 0 && m != 0 && d != 0)
 						{
@@ -1781,7 +1781,11 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 						}
 
 						
-					}
+					//}
+				}
+				else
+				{
+					std::wcout << L"Bad exif date string " << convertUtf8ToWide(dateString) << std::endl;
 				}
 
 			}
@@ -1815,7 +1819,7 @@ void Worker::process()
 	//}
 
 
-	wstring startpath = L"F:\\_games\\mario64\\";
+	wstring startpath = L"F:\\_games\\";
 	_int64 filecount = 0;
 	LARGE_INTEGER li;
 
@@ -2197,22 +2201,22 @@ void Worker::process()
 		std::wcout << L"All dates for duplicate " << b << std::endl;
 		for (int c = 0; c < v->size(); c++)
 		{
-			if ((*v)[c]->createdDateString.length() > 1) 
+			if ((*v)[c]->createdDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->createdDateString << std::endl; 
 				dateStrings.push_back(((*v)[c]->createdDateString));
 			}
-			if ((*v)[c]->modifiedDateString.length() > 1) 
+			if ((*v)[c]->modifiedDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->modifiedDateString << std::endl; 
 				dateStrings.push_back(((*v)[c]->modifiedDateString));
 			}
-			if ((*v)[c]->fileNameDateString.length() > 1) 
+			if ((*v)[c]->fileNameDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->fileNameDateString << std::endl; 
 				dateStrings.push_back(((*v)[c]->fileNameDateString));
 			}
-			if ((*v)[c]->exifDateString.length() > 1) 
+			if ((*v)[c]->exifDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->exifDateString << std::endl; 
 				dateStrings.push_back(((*v)[c]->exifDateString));
