@@ -470,6 +470,9 @@ WIN32_FILE_ATTRIBUTE_DATA Worker::getFileAttributesWindows(wstring fileNameAndPa
 			else if (error == ERROR_SHARING_VIOLATION)std::wcout << L"GetFileAttributesExW Error: " << error << L" ERROR_SHARING_VIOLATION " << fileNameAndPath.c_str() << std::endl;
 			else if (error == ERROR_CANT_ACCESS_FILE)std::wcout << L"GetFileAttributesExW Error: " << error << L" ERROR_CANT_ACCESS_FILE " << fileNameAndPath.c_str() << std::endl;
 			else std::wcout << L"GetFileAttributesExW Error: " << error << L" " << fileNameAndPath.c_str() << std::endl;
+
+			fileInfo.nFileSizeHigh = 0;
+			fileInfo.nFileSizeLow = 0;
 		}
 	}
 	/*
@@ -872,11 +875,8 @@ void Worker::getFastHash(FileDataEntry* f)
 			if (std::ifstream is{ f->nameAndPath, std::ios::in | std::ios::binary })
 			{
 				is.exceptions(is.failbit);
-
 				is.read(buffer, f->size);
-
 				is.exceptions(is.failbit);
-
 				std::size_t numBytesRead = size_t(is.gcount());
 
 				//std::wcout << L"File size " << f->size << std::endl;
@@ -1720,15 +1720,15 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 				//	std::wcout << L"DateTimeDigitized " << convertUtf8ToWide(imageEXIF.DateTimeDigitized) << std::endl;
 				
 				string dateString = "";
-				if (!imageEXIF.DateTime.empty())
+				if (!imageEXIF.DateTime.empty() && imageEXIF.DateTime.length()>4)
 				{
 					dateString = imageEXIF.DateTime;
 				}
-				else if (!imageEXIF.DateTimeOriginal.empty())
+				else if (!imageEXIF.DateTimeOriginal.empty() && imageEXIF.DateTimeOriginal.length() > 4)
 				{
 					dateString = imageEXIF.DateTimeOriginal;
 				}
-				else if (!imageEXIF.DateTimeDigitized.empty())
+				else if (!imageEXIF.DateTimeDigitized.empty() && imageEXIF.DateTimeDigitized.length() > 4)
 				{
 					dateString = imageEXIF.DateTimeDigitized;
 				}
@@ -1785,7 +1785,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 				}
 				else
 				{
-					std::wcout << L"Bad exif date string " << convertUtf8ToWide(dateString) << std::endl;
+					//std::wcout << L"Bad exif date string " << convertUtf8ToWide(dateString) << std::endl;
 				}
 
 			}
@@ -1933,7 +1933,7 @@ void Worker::process()
 			FileDataEntry* f1 = fileDataEntries[i];
 			
 
-			if (f1->size > 1024 * 1024)
+			if (f1->size > 1024 * 1024)//10kb
 			{
 				for (int j = i + 1; j < fileDataEntries.size(); j++)
 				{
@@ -2195,6 +2195,8 @@ void Worker::process()
 		{
 			std::wcout << (*v)[c]->name << std::endl;
 		}
+
+		std::wcout << L"Size for duplicate " << b << L" " << (*v)[0]->size << std::endl;
 
 		vector<wstring> dateStrings;
 
