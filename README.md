@@ -1,5 +1,5 @@
 
-It's maybe the best file organizer program.
+It's (maybe eventually) the best file organizer program.
 
 Cross platform C++ with Qt UI.
 Every function optimized for maximum speed and compatibility.
