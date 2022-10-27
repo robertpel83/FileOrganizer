@@ -1575,6 +1575,23 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	//look at all possible timestamp values in exif
 
 
+	std::string regex_yyyy_mm_dd_hh_mm_ss =
+		"(?!1[0-8])"//not 10xx-18xx
+		"(?!19[0-7])"//not 190x-197x
+		"(?!2[3-9])"//not 23xx
+		"[12][09][0-9][0-9]"//1000-2999
+		"[^0-9a-ln-xzA-LN-XZ]"//not a number, not a letter except for m or M or y or Y
+		"(?!00)"//month cannot be 00
+		"(?!1[3-9])"//month cannot be 13-19
+		"[01][0-9]"//month only begins with 0 or 1
+		"[^0-9a-ce-ln-zA-CE-LN-Z]"//not a number, not a letter except for m or M or d or D
+		"(?!00)"//day cannot be 00
+		"(?!3[3-9])"//day cannot be 33-39
+		"[0123][0-9]"//day only begins with 0 1 2 3
+		"[^0-9a-ce-gi-zA-CE-GI-Z]"//not a number, not a letter except for h or H or d or D
+		;
+
+	std::regex yyyy_mm_dd_hh_mm_ss(regex_yyyy_mm_dd_hh_mm_ss);
 
 	std::string regex_yyyy_mm_dd =
 		"(?!1[0-8])"//not 10xx-18xx
@@ -2158,6 +2175,60 @@ void Worker::process()
 	}
 
 	std::wcout << L"Found " << totalDupes << L" total duplicates." << std::endl;
+
+
+
+
+
+	
+	for (int b = 0; b < duplicates.size(); b++)
+	{
+		vector<FileDataEntry*>* v = duplicates[b];
+		
+		std::wcout << L"All names for duplicate " << b << std::endl;
+
+		for (int c = 0; c < v->size(); c++)
+		{
+			std::wcout << (*v)[c]->name << std::endl;
+		}
+
+		vector<wstring> dateStrings;
+
+		std::wcout << L"All dates for duplicate " << b << std::endl;
+		for (int c = 0; c < v->size(); c++)
+		{
+			if ((*v)[c]->createdDateString.length() > 1) 
+			{ 
+				//std::wcout << (*v)[c]->createdDateString << std::endl; 
+				dateStrings.push_back(((*v)[c]->createdDateString));
+			}
+			if ((*v)[c]->modifiedDateString.length() > 1) 
+			{ 
+				//std::wcout << (*v)[c]->modifiedDateString << std::endl; 
+				dateStrings.push_back(((*v)[c]->modifiedDateString));
+			}
+			if ((*v)[c]->fileNameDateString.length() > 1) 
+			{ 
+				//std::wcout << (*v)[c]->fileNameDateString << std::endl; 
+				dateStrings.push_back(((*v)[c]->fileNameDateString));
+			}
+			if ((*v)[c]->exifDateString.length() > 1) 
+			{ 
+				//std::wcout << (*v)[c]->exifDateString << std::endl; 
+				dateStrings.push_back(((*v)[c]->exifDateString));
+			}
+		}
+
+		for (int i = 0; i < dateStrings.size(); i++)
+		{
+			//count instances of identical dates, with and without timestamp
+			//determine most likely correct date
+			std::wcout << dateStrings[i] << std::endl;
+		}
+
+	}
+
+
 
 	//todo:
 

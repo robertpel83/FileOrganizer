@@ -86,6 +86,73 @@ using std::wstring;
 #include "TinyEXIF.h"
 
 
+class DateData
+{
+public:
+
+	wstring dateString;
+	int year = 0;
+	int month = 0;
+	int day = 0;
+	int hour = 0;
+	int minute = 0;
+	int second = 0;
+
+	DateData(wstring dateString)
+	{
+		this->dateString = dateString;
+
+		string str = convertWideToUtf8(dateString);
+	
+		size_t k = str.find_first_of("0123456789");
+
+		std::istringstream is(str.substr(k, 4));
+		is >> year;
+
+		std::istringstream is(str.substr(k + 5, 2));
+		is >> month;
+
+		std::istringstream is(str.substr(k + 8, 2));
+		is >> day;
+		if (str.length() > k + 11) 
+		{
+
+			std::istringstream is(str.substr(k + 11, 2));
+			is >> hour;
+
+			std::istringstream is(str.substr(k + 14, 2));
+			is >> minute;
+
+			std::istringstream is(str.substr(k + 17, 2));
+			is >> second;
+		}
+
+	}
+
+	DateData(int year,
+			int month,
+			int day,
+			int hour=0,
+			int minute=0,
+			int second=0
+	)
+	{
+		this->year = year;
+		this->month = month;
+		this->day = day;
+		this->hour = hour;
+		this->hour = hour;
+		this->minute = minute;
+		this->second = second;
+
+		wchar_t buffer[100];
+		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", year, month, day, hour, minute, second);
+		this->dateString = wstring(buffer);
+	}
+
+
+
+};
 
 
 class FileDataEntry
