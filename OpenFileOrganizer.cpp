@@ -1680,7 +1680,7 @@ void Worker::process()
 	//}
 
 
-	wstring startpath = L"F:\\_games\\";
+	wstring startpath = L"F:\\_games\\mario64\\";
 	_int64 filecount = 0;
 	LARGE_INTEGER li;
 
@@ -1754,17 +1754,21 @@ void Worker::process()
 
 	getCreatedAndLastModifiedDateForAllFiles();
 
-	if (false)
+	if(false)
 		getFastHashForAllFiles();
 
-	//if (false)
+	//if(false)
 		getDateFromFilenameForAllFiles();
 
-	if (false)
+	if(false)
 		getDatesFromEXIFDataForAllFiles();
 
 
-
+	//for (int i = 0; i < fileDataEntries.size(); i++)
+	//{
+	//	FileDataEntry* f1 = fileDataEntries[i];
+	//	std::wcout << L"Name: " << f1->name << L" " << L"Size: " << f1->size << std::endl;
+	//}
 
 	//You can use std::swap to swap two values.
 	//And also you may want to compare to std::sort(which is typically an introsort : a quick sort + insertion sort for small sizes),
@@ -1775,11 +1779,18 @@ void Worker::process()
 		std::wcout << L"Start sort by size" << std::endl;
 		start = std::chrono::steady_clock::now();
 
-		//std::sort(fileDataEntries.begin(), fileDataEntries.end());//56s 494k files
-		std::stable_sort(fileDataEntries.begin(), fileDataEntries.end());//53s 494k files
+		//std::sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//56s 494k files
+		std::stable_sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//53s 494k files
 
 		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 	}
+
+	//for (int i = 0; i < fileDataEntries.size(); i++)
+	//{
+	//	FileDataEntry* f1 = fileDataEntries[i];
+	//	std::wcout << L"Name: " << f1->name << L" " << L"Size: " << f1->size << std::endl;
+	//}
+
 
 	//for each entry, check to see if there are duplicates ahead
 	{
@@ -1787,61 +1798,72 @@ void Worker::process()
 		start = std::chrono::steady_clock::now();
 		for (int i = 0; i < fileDataEntries.size(); i++)
 		{
+
 			FileDataEntry* f1 = fileDataEntries[i];
 			
-			__int64 size = f1->size;
 
-			if (size > 1024 * 1024)
+			if (f1->size > 1024 * 1024)
+			{
 				for (int j = i + 1; j < fileDataEntries.size(); j++)
 				{
 					FileDataEntry* f2 = fileDataEntries[j];
 
-					if (size == f2->size)
+					if (f1->size != f2->size)
+					{
+						j = (int)(fileDataEntries.size());
+						break;
+					}
+					else
 					{
 						//got a match
 
 						//check hash
-						getFastHash(f1);
-						getFastHash(f2);
+						if (f1->crc32.empty())getFastHash(f1);
+						if (f2->crc32.empty())getFastHash(f2);
 
 						//compare hash
 						if (
+							//(
+							//	f1->crc32.empty()  == false &&
+							//	f1->md5.empty()    == false &&
+							//	f1->sha1.empty()   == false &&
+							//	f1->sha2.empty()   == false &&
+							//	f1->keccak.empty() == false &&
+							//	f1->sha3.empty()   == false &&
+							//
+							//	f2->crc32.empty() == false  &&
+							//	f2->md5.empty() == false    &&
+							//	f2->sha1.empty() == false   &&
+							//	f2->sha2.empty() == false   &&
+							//	f2->keccak.empty() == false &&
+							//	f2->sha3.empty() == false
+							//	)
+							//&&
 							(
-								f1->crc32.empty()  == false &&
-								f1->md5.empty()    == false &&
-								f1->sha1.empty()   == false &&
-								f1->sha2.empty()   == false &&
-								f1->keccak.empty() == false &&
-								f1->sha3.empty()   == false &&
-
-								f2->crc32.empty() == false  &&
-								f2->md5.empty() == false    &&
-								f2->sha1.empty() == false   &&
-								f2->sha2.empty() == false   &&
-								f2->keccak.empty() == false &&
-								f2->sha3.empty() == false
-								)
-							&&
-							(
-								f1->crc32  == f2->crc32  ||
-								f1->md5    == f2->md5    ||
-								f1->sha1   == f2->sha1   ||
-								f1->sha2   == f2->sha2   ||
+								f1->crc32 == f2->crc32 ||
+								f1->md5 == f2->md5 ||
+								f1->sha1 == f2->sha1 ||
+								f1->sha2 == f2->sha2 ||
 								f1->keccak == f2->keccak ||
-								f1->sha3   == f2->sha3
+								f1->sha3 == f2->sha3
 								)
 							)
 						{
 							//std::wcout << L"Possible match: " << f1->nameAndPath << L" " << f2->nameAndPath << L" " << f1->size << std::endl;
 
-							if (
-								f1->crc32  == f2->crc32  &&
-								f1->md5    == f2->md5    &&
-								f1->sha1   == f2->sha1   &&
-								f1->sha2   == f2->sha2   &&
-								f1->keccak == f2->keccak &&
-								f1->sha3   == f2->sha3
-								)
+							if
+								(
+									f1->crc32 != f2->crc32 ||
+									f1->md5 != f2->md5 ||
+									f1->sha1 != f2->sha1 ||
+									f1->sha2 != f2->sha2 ||
+									f1->keccak != f2->keccak ||
+									f1->sha3 != f2->sha3
+									)
+							{
+								std::wcout << L"One or more hash matches but not all in " << f1->name << L" and " << f2->name << std::endl;
+							}
+							else
 							{
 								//std::wcout << L"All hashes match!" << std::endl;
 
@@ -1865,8 +1887,8 @@ void Worker::process()
 								{
 									if (f1->size == f2->size)
 									{
-										char* buffer1 = new char[f1->size];
-										char* buffer2 = new char[f2->size];
+										char* buffer1 = new char[f1->size](0);
+										char* buffer2 = new char[f2->size](0);
 
 										try
 										{
@@ -1937,9 +1959,10 @@ void Worker::process()
 									isDuplicate = true;
 								}
 
-								
+
 								if (isDuplicate == true)
 								{
+
 									//store certain duplicates together in a data structure
 
 									//get each vector in duplicates
@@ -1948,54 +1971,49 @@ void Worker::process()
 									bool foundFileInDupes = false;
 									for (int b = 0; b < duplicates.size(); b++)
 									{
-										vector<FileDataEntry*> *v = duplicates[b];
+										vector<FileDataEntry*>* v = duplicates[b];
 
-										for (int c = 0; c < v->size(); c++)//can maybe do small speed up by starting c at 1 since file 0 would usually be f1 from last loop, unless there is already more than 1 duplicate for that file found
+
+										if (std::find(v->begin(), v->end(), f1) != v->end())
 										{
+											foundFileInDupes = true;
 
-											if (std::find(v->begin(), v->end(), f1) != v->end())
+											//found 1
+											if (std::find(v->begin(), v->end(), f2) != v->end())
 											{
-												foundFileInDupes = true;
 
-												if (std::find(v->begin(), v->end(), f2) != v->end())
-												{
-													std::wcout << L"Should never happen 1" << std::endl;
-												}
-												else
-												{
-													v->push_back(f2);
-												}
+												//found 1 and 2
+
 											}
 											else
 											{
-												if (std::find(v->begin(), v->end(), f2) != v->end())
-												{
-													std::wcout << L"Should never happen 2" << std::endl;
-													foundFileInDupes = true;
-													
-													v->push_back(f1);
-												}
-												else
-												{
-													//not found
-												}
+												//didn't find 2, add it
+												v->push_back(f2);
 											}
-
-											if (foundFileInDupes)
-											{
-												c = (int)v->size();
-												break;
-											}
-											//FileDataEntry* f0 = (*v)[c];
-											//if (f0 == f1)
-											//{
-											//	v->push_back(f2);
-											//	foundFileInDupes = true;
-											//	c = (int)v->size();
-											//	break;
-											//}
 
 										}
+										else
+										{
+											//didn't find 1
+
+											if (std::find(v->begin(), v->end(), f2) != v->end())
+											{
+
+												std::wcout << L"Should never happen" << std::endl;
+
+												//found 2 but not 1, add 1
+												foundFileInDupes = true;
+
+												v->push_back(f1);
+
+											}
+											else
+											{
+												//not found 1 or 2 in this node
+											}
+
+										}
+
 									}
 
 									//otherwise create a new vector and add to dupes
@@ -2008,20 +2026,19 @@ void Worker::process()
 									}
 								}
 							}
-							else
-							{
-								std::wcout << L"One or more hash matches but not all in " << f1->name << L" and " << f2->name << std::endl;
-							}
+
+
 						}
+
 					}
-					else
-					{
-						j = (int)(fileDataEntries.size());
-						break;
-					}
+
 				}
+			}
+
 		}
+
 		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
 	}
 
 

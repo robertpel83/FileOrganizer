@@ -108,6 +108,8 @@ public:
 	wstring keccak;
 	wstring sha3;
 
+	static bool comparePtrToFileDataEntry(FileDataEntry* a, FileDataEntry* b) { return (*a < *b); }
+
 	bool operator < (const FileDataEntry& f) const
 	{
 		return (size < f.size);
