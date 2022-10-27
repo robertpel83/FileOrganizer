@@ -4,7 +4,7 @@
 /* MSVC hacks */
 #ifdef _MSC_VER
 #define ssize_t int64_t
-#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
 #if _MSC_VER < 1900
 #define snprintf(buffer, count, format, ...) _snprintf_s(buffer, count, count, format, __VA_ARGS__)
 #endif

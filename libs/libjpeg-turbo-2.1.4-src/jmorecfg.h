@@ -41,20 +41,20 @@
  * arrays is very slow on your hardware, you might want to change these.
  */
 
-#if BITS_IN_JSAMPLE == 8
-/* JSAMPLE should be the smallest type that will hold the values 0..255.
- */
+//#if BITS_IN_JSAMPLE == 8
+///* JSAMPLE should be the smallest type that will hold the values 0..255.
+// */
+//
+//typedef unsigned char JSAMPLE;
+//#define GETJSAMPLE(value)  ((int)(value))
+//
+//#define MAXJSAMPLE      255
+//#define CENTERJSAMPLE   128
+//
+//#endif /* BITS_IN_JSAMPLE == 8 */
 
-typedef unsigned char JSAMPLE;
-#define GETJSAMPLE(value)  ((int)(value))
 
-#define MAXJSAMPLE      255
-#define CENTERJSAMPLE   128
-
-#endif /* BITS_IN_JSAMPLE == 8 */
-
-
-#if BITS_IN_JSAMPLE == 12
+//#if BITS_IN_JSAMPLE == 12
 /* JSAMPLE should be the smallest type that will hold the values 0..4095.
  * On nearly all machines "short" will do nicely.
  */
@@ -65,7 +65,7 @@ typedef short JSAMPLE;
 #define MAXJSAMPLE      4095
 #define CENTERJSAMPLE   2048
 
-#endif /* BITS_IN_JSAMPLE == 12 */
+//#endif /* BITS_IN_JSAMPLE == 12 */
 
 
 /* Representation of a DCT frequency coefficient.

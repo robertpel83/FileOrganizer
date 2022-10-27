@@ -208,6 +208,45 @@
     <ClCompile Include="libs\libexif-0.6.24\libexif\canon\mnote-canon-tag.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\exif-mnote-data-fuji.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\exif-mnote-data-olympus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\mnote-olympus-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\mnote-olympus-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\exif-mnote-data-pentax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\TinyEXIF-master\TinyEXIF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\tinyxml2-master\tinyxml2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenFileOrganizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="getopt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-byte-order.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -245,42 +284,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-utils.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\exif-mnote-data-fuji.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-entry.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-tag.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\exif-mnote-data-olympus.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\mnote-olympus-entry.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\olympus\mnote-olympus-tag.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\exif-mnote-data-pentax.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-entry.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\libexif-0.6.24\libexif\pentax\mnote-pentax-tag.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\TinyEXIF-master\TinyEXIF.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\tinyxml2-master\tinyxml2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenFileOrganizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -571,6 +574,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\imageinfo-master\imageinfo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unistd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

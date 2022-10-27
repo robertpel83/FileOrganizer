@@ -1685,27 +1685,39 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	for (int i = 0; i < fileDataEntries.size(); i++)
 	{
 		FileDataEntry* f = fileDataEntries[i];
+		std::wstring lowerName = f->name;
+		transform(
+			lowerName.begin(), lowerName.end(),
+			lowerName.begin(),
+			towlower);
 
-		auto info = getImageInfo<IIFilePathReader>(f->nameAndPath);
-		std::wcout << L"File: " << f->nameAndPath << std::endl;
-		if (info.getErrorCode() != II_ERR_OK) 
+		if (
+			lowerName.find(L".jpg") != std::wstring::npos ||
+			lowerName.find(L".jpeg") != std::wstring::npos ||
+			lowerName.find(L".png") != std::wstring::npos
+			)
 		{
-			std::wcout << L"Error: " << info.getErrorMsg() << std::endl;
-		}
-		else 
-		{
-			std::wcout << L"Format: " << info.getFormat() << std::endl;
-			std::wcout << L"Ext: " << info.getExt() << std::endl;
-			std::wcout << L"Full Ext: " << info.getFullExt() << std::endl;
-			std::wcout << L"Width: " << info.getWidth() << std::endl;
-			std::wcout << L"Height: " << info.getHeight() << std::endl;
-			std::wcout << L"Mimetype: " << info.getMimetype() << std::endl;
-			std::wcout << L"Entries: " << std::endl;
-
-			for (const auto& entrySize : info.getEntrySizes()) 
+			ImageInfo info = getImageInfo(convertWideToUtf8(f->nameAndPath));
+			std::wcout << L"File: " << f->nameAndPath << std::endl;
+			if (info.getErrorCode() != II_ERR_OK)
 			{
-				std::wcout << L"Width: " << entrySize[0] << std::endl;
-				std::wcout << L"Height: " << entrySize[1] << std::endl;
+				std::wcout << L"Error: " << info.getErrorMsg() << std::endl;
+			}
+			else
+			{
+				std::wcout << L"Format: " << info.getFormat() << std::endl;
+				std::wcout << L"Ext: " << info.getExt() << std::endl;
+				std::wcout << L"Full Ext: " << info.getFullExt() << std::endl;
+				std::wcout << L"Width: " << info.getWidth() << std::endl;
+				std::wcout << L"Height: " << info.getHeight() << std::endl;
+				std::wcout << L"Mimetype: " << info.getMimetype() << std::endl;
+				std::wcout << L"Entries: " << std::endl;
+
+				for (const auto& entrySize : info.getEntrySizes())
+				{
+					std::wcout << L"Width: " << entrySize[0] << std::endl;
+					std::wcout << L"Height: " << entrySize[1] << std::endl;
+				}
 			}
 		}
 	}

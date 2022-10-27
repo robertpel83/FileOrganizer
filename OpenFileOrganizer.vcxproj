@@ -22,13 +22,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
@@ -65,21 +65,21 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>.\libs\libjpeg-turbo-2.1.4-src\build\Release;.\libs\libexif-0.6.24\build\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>jpeg-static.lib;turbojpeg-static.lib;exif.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jpeg-static.lib;turbojpeg-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>.\libs\libjpeg-turbo-2.1.4-src\build\Release;.\libs\libexif-0.6.24\build\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>jpeg-static.lib;turbojpeg-static.lib;exif.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jpeg-static.lib;turbojpeg-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -91,7 +91,7 @@
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,7 +107,7 @@
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -118,6 +118,20 @@
     <QtRcc Include="OpenFileOrganizer.qrc" />
     <QtUic Include="OpenFileOrganizer.ui" />
     <QtMoc Include="OpenFileOrganizer.h" />
+    <ClCompile Include="getopt.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-byte-order.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-content.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-data.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-entry.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-format.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-gps-ifd.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-ifd.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-loader.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-log.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-mem.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-mnote-data.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-tag.c" />
+    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-utils.c" />
     <ClCompile Include="OpenFileOrganizer.cpp">
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
@@ -182,19 +196,6 @@
     <ClCompile Include="libs\libexif-0.6.24\libexif\canon\exif-mnote-data-canon.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\canon\mnote-canon-entry.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\canon\mnote-canon-tag.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-byte-order.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-content.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-data.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-entry.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-format.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-gps-ifd.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-ifd.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-loader.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-log.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-mem.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-mnote-data.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-tag.c" />
-    <ClCompile Include="libs\libexif-0.6.24\libexif\exif-utils.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\exif-mnote-data-fuji.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-entry.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\fuji\mnote-fuji-tag.c" />
@@ -304,6 +305,7 @@
     <ClInclude Include="libs\hash-library-master\sha3.h" />
     <ClInclude Include="libs\imageinfo-master\imageinfo.hpp" />
     <ClInclude Include="libs\libexif-0.6.24\config.h" />
+    <ClInclude Include="unistd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

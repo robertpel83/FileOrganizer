@@ -80,6 +80,7 @@ using std::wstring;
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
+#include "libexif/exif.h"
 #include "libexif/exif-data.h"
 #include "libexif/exif-system.h"
 

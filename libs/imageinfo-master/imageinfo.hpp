@@ -376,7 +376,7 @@ public:
         } else if (offset < m_headerCache.size() && m_headerCache.size() - offset >= (II_HEADER_CACHE_SIZE / 4)) {
             size_t head = m_headerCache.size() - offset;
             memcpy(buffer.data(), m_headerCache.data() + offset, head);
-            read(buffer.data() + head, offset + head, size - head);
+            read(buffer.data() + head, (off_t)(offset + head), size - head);
         } else {
             read(buffer.data(), offset, size);
         }
@@ -1451,15 +1451,26 @@ private:
     std::vector<std::array<int64_t, 2>> m_entrySizes;
 };
 
-template<typename ReaderType, typename InputType>
+
 static inline ImageInfo
-getImageInfo(InputType file, IIFormat likelyFormat = II_FORMAT_UNKNOWN, bool mustBe = false) {
-    ReaderType fileReader(file);
+getImageInfo(string filepath, IIFormat likelyFormat = II_FORMAT_UNKNOWN, bool mustBe = false) {
+    IIFilePathReader fileReader(filepath);
     size_t length = fileReader.size();
     IIReadFunc read = [&](void *buf, off_t offset, size_t size) { fileReader.read(buf, offset, size); };
     IIReadInterface ri(read, length);
     return ImageInfo(ri, likelyFormat, mustBe);
 }
+
+
+//template<typename ReaderType, typename InputType>
+//static inline ImageInfo
+//getImageInfo(InputType file, IIFormat likelyFormat = II_FORMAT_UNKNOWN, bool mustBe = false) {
+//    ReaderType fileReader(file);
+//    size_t length = fileReader.size();
+//    IIReadFunc read = [&](void *buf, off_t offset, size_t size) { fileReader.read(buf, offset, size); };
+//    IIReadInterface ri(read, length);
+//    return ImageInfo(ri, likelyFormat, mustBe);
+//}
 
 #ifdef __clang__
 #pragma clang diagnostic pop
