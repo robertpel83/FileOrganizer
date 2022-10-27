@@ -6,6 +6,8 @@ Every function optimized for maximum speed and compatibility.
 Unicode support.
 
 Scans your files, gets all the metadata and info it can from the filesystem, does a "fast hash" (hashes five 16kb chunks, beginning, middle, end) on them with all the hash algorithms.
+If the hashes match, the size matches, and the modified date matches, it considers it a match.
+If the modified date differs, it does a byte-by-byte comparison.
 
 Uses regex to get any date info from the filename.
 Uses exif to get any embedded dates in images.

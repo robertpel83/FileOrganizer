@@ -9,17 +9,17 @@
 /* libjpeg-turbo version in integer form */
 #define LIBJPEG_TURBO_VERSION_NUMBER  @LIBJPEG_TURBO_VERSION_NUMBER@
 
-/* Support arithmetic encoding */
-#cmakedefine C_ARITH_CODING_SUPPORTED 1
+/* Support arithmetic encoding *///cmakedefine
+#define C_ARITH_CODING_SUPPORTED 1
 
-/* Support arithmetic decoding */
-#cmakedefine D_ARITH_CODING_SUPPORTED 1
+/* Support arithmetic decoding *///cmakedefine
+#define D_ARITH_CODING_SUPPORTED 1
 
-/* Support in-memory source/destination managers */
-#cmakedefine MEM_SRCDST_SUPPORTED 1
+/* Support in-memory source/destination managers *///cmakedefine
+#define MEM_SRCDST_SUPPORTED 1
 
-/* Use accelerated SIMD routines. */
-#cmakedefine WITH_SIMD 1
+/* Use accelerated SIMD routines. *///cmakedefine
+#define WITH_SIMD 1
 
 /*
  * Define BITS_IN_JSAMPLE as either
@@ -34,7 +34,7 @@
 
 /* Define if your (broken) compiler shifts signed values as if they were
    unsigned. */
-#cmakedefine RIGHT_SHIFT_IS_UNSIGNED 1
+#define RIGHT_SHIFT_IS_UNSIGNED 1//cmakedefine
 
 
 /*

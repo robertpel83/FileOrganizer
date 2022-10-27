@@ -361,7 +361,7 @@ public:
             : m_readFunc(readFunc),
               m_length(length) {
 #ifndef II_DISABLE_HEADER_CACHE
-        m_headerCache.alloc(std::min((size_t) II_HEADER_CACHE_SIZE, length));
+        m_headerCache.alloc((std::min)((size_t) II_HEADER_CACHE_SIZE, length));
         read(m_headerCache.data(), 0, m_headerCache.size());
 #endif
     }
@@ -843,7 +843,7 @@ static const std::vector<IIDetector> s_ii_detectors = { // NOLINT(cert-err58-cpp
                         uint32_t entrySize = buffer.readU32BE(4);
                         int64_t s = TYPE_SIZE_MAP.at(type);
                         entrySizes.push_back({s, s});
-                        maxSize = std::max(maxSize, s);
+                        maxSize = (std::max)(maxSize, s);
                         offset += entrySize;
                     }
 
