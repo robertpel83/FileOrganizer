@@ -1,0 +1,15 @@
+[wrap-file]
+directory = expat-2.2.9
+
+
+source_url = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.xz
+source_filename = expat-2.2.9.tar.bz2
+source_hash = 1ea6965b15c2106b6bbe883397271c80dfa0331cdf821b2c319591b55eadc0a4
+
+patch_url = https://github.com/mesonbuild/expat/releases/download/2.2.9-3/expat.zip
+patch_filename = expat.zip
+patch_hash = E9AAACE62E9A158B5E96F5C38C9F81F369179206ACD87697653D777C0D3975D3
+
+[provide]
+dependency_names = expat
+expat = expat_dep

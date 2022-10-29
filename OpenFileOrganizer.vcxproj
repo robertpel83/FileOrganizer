@@ -91,7 +91,7 @@
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories);.\;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;.\libs\heif-master;.\libs\libvips-8.13.2;.\libs\opencv-4.6.0-vc14_vc15\sources</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,7 +107,7 @@
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);.\;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;.\libs\heif-master;.\libs\libvips-8.13.2;.\libs\opencv-4.6.0-vc14_vc15\sources</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,6 +119,134 @@
     <QtUic Include="OpenFileOrganizer.ui" />
     <QtMoc Include="OpenFileOrganizer.h" />
     <ClCompile Include="getopt.c" />
+    <ClCompile Include="libs\heif-master\srcs\common\accessibilitytext.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\arraydatatype.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\audiosampleentrybox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\auxiliarytypeinfobox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\auxiliarytypeproperty.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\avcconfigurationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\avcdecoderconfigrecord.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\avcparser.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\avcsampleentry.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\bbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\bitstream.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\boxfactory.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\brandandcompatiblebrandsbasebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\channellayoutbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\chunkoffsetbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\cleanaperturebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\codingconstraintsbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\colourinformationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\compositionoffsetbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\compositiontodecodebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\creationtimeinformation.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\customallocator.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\datainformationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\datareferencebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\decodepts.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\directreferencesampleslist.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\editbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\elementarystreamdescriptorbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\entitytogroupbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\extendedtypebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\filetypebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\fourccint.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\freespacebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\fullbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\groupslistbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\handlerbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\hevcconfigurationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\hevcdecoderconfigrecord.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\hevcsampleentry.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\imagegrid.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\imagemirror.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\imageoverlay.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\imagerelativelocationproperty.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\imagerotation.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\imagescaling.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\imagespatialextentsproperty.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\itemdatabox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\iteminfobox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\itemlocationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\itempropertiesbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\itempropertyassociation.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\itempropertycontainer.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\itemprotectionbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\itemreferencebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\jpegconfigurationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\jpegparser.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\log.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\mediabox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\mediadatabox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\mediaheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\mediainformationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\metabox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\modificationtimeinformation.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\moviebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\movieextendsbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\movieextendsheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\moviefragmentbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\moviefragmentheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\movieheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\mp4audiodecoderconfigrecord.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\mp4audiosampleentrybox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\nalutil.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\nullmediaheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\pixelaspectratiobox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\pixelinformationproperty.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\primaryitembox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\protectionschemeinfobox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\rawpropertybox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\requiredreferencetypesproperty.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\sampledescriptionbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\sampleentrybox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\samplegroupdescriptionbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\samplegroupdescriptionentry.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\samplesizebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\sampletablebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\sampletochunkbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\sampletogroupbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\sampletometadataitementry.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\samplingratebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\segmentindexbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\segmenttypebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\soundmediaheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\syncsamplebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\timetosamplebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackextendsbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackfragmentbasemediadecodetimebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackfragmentbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackfragmentheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackgroupbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackgrouptypebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackreferencebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackreferencetypebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\trackrunbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\tracktypebox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\typecombinationbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\userdescriptionproperty.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\videomediaheaderbox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\visualequivalenceentry.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\common\visualsampleentrybox.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifreaderaccessors.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifreaderimpl.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifreadersegment.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifstreamfile.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifstreamgeneric.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifstreaminterface.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifstreaminternal.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\reader\heifstreamlinux.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\fileoutputstream_std.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\fileoutputstream_win32.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\idgenerators.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\refsgroup.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\samplegroup.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\timeutility.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\writerimpl.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\writermetaimpl.cpp" />
+    <ClCompile Include="libs\heif-master\srcs\writer\writermoovimpl.cpp" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-byte-order.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-content.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-data.c" />

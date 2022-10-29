@@ -1,0 +1,8 @@
+#[wrap-redirect]
+#filename = gobject-introspection-1.0\subprojects\glib.wrap
+
+[wrap-git]
+directory=glib-2.0
+url=https://gitlab.gnome.org/GNOME/glib.git
+revision=main
+depth=1

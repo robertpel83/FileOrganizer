@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['datasettype',['datasetType',['../d9/de0/group__datasets__hpe.html#ga570cd866657e421a9d34fd891214cdac',1,'cv::datasets']]],
+  ['decoder_5fmode',['decoder_mode',['../d8/df2/group__text__recognize.html#gac013d7b1a6a1b7d739b89474c20ec086',1,'cv::text']]],
+  ['decomptypes',['DecompTypes',['../d2/de8/group__core__array.html#gaaf9ea5dcc392d5ae04eacb9920b9674c',1,'cv']]],
+  ['deinterlacemode',['DeinterlaceMode',['../d0/d61/group__cudacodec.html#ga6c02a3afe6fcceabf1b1dc644596583c',1,'cv::cudacodec']]],
+  ['demosaictypes',['DemosaicTypes',['../db/d8c/group__cudaimgproc__color.html#gaa9e40b798350356f45667e609d5d82f9',1,'cv::cuda']]],
+  ['depth_5fcleaner_5fmethod',['DEPTH_CLEANER_METHOD',['../d9/d5e/classcv_1_1rgbd_1_1DepthCleaner.html#a09e7960316b2f21d6529aa3b937b6185',1,'cv::rgbd::DepthCleaner']]],
+  ['depthmask',['DepthMask',['../d2/d9e/classcv_1_1__OutputArray.html#a9aa5a028921acff4607a7a5bb370fc39',1,'cv::_OutputArray']]],
+  ['descriptorstorageformat',['DescriptorStorageFormat',['../d5/d33/structcv_1_1HOGDescriptor.html#a0931e149238b27ba63357cbde12dcf1a',1,'cv::HOGDescriptor']]],
+  ['descriptortype',['DescriptorType',['../d8/d30/classcv_1_1AKAZE.html#a6f44619b9c9a25be4526de5b665ca690',1,'cv::AKAZE']]],
+  ['detectortype',['DetectorType',['../df/d74/classcv_1_1FastFeatureDetector.html#a4654f6fb0aa4b8e9123b223bfa0e2a08',1,'cv::FastFeatureDetector::DetectorType()'],['../d7/d19/classcv_1_1AgastFeatureDetector.html#ae9a22560b2cc9c99b3a3de82ac4af7d3',1,'cv::AgastFeatureDetector::DetectorType()']]],
+  ['dftflags',['DftFlags',['../d2/de8/group__core__array.html#gaf4dde112b483b38175621befedda1f1c',1,'cv']]],
+  ['diffusivitytype',['DiffusivityType',['../d3/d61/classcv_1_1KAZE.html#a95fa590c085aad08adca9e2d962bad3d',1,'cv::KAZE']]],
+  ['distance_5ftype',['DISTANCE_TYPE',['../de/df4/group__color__correction.html#gae636a2cf3bab4499df34ddbb028d92b1',1,'cv::ccm']]],
+  ['distancefunction',['DistanceFunction',['../d0/d74/classcv_1_1xfeatures2d_1_1PCTSignatures.html#afbfb1e721fa42ab53fe6cd733a51af9c',1,'cv::xfeatures2d::PCTSignatures']]],
+  ['distancetransformlabeltypes',['DistanceTransformLabelTypes',['../d7/d1b/group__imgproc__misc.html#ga3fe343d63844c40318ee627bd1c1c42f',1,'cv']]],
+  ['distancetransformmasks',['DistanceTransformMasks',['../d7/d1b/group__imgproc__misc.html#gaaa68392323ccf7fad87570e41259b497',1,'cv']]],
+  ['distancetypes',['DistanceTypes',['../d7/d1b/group__imgproc__misc.html#gaa2bfbebbc5c320526897996aafa1d8eb',1,'cv']]],
+  ['distype',['DisType',['../da/d09/classcv_1_1FaceRecognizerSF.html#a6501674e36c7283491db853ed6599b58',1,'cv::FaceRecognizerSF']]],
+  ['drawmatchesflags',['DrawMatchesFlags',['../d4/d5d/group__features2d__draw.html#ga2c2ede79cd5141534ae70a3fd9f324c8',1,'cv']]]
+];

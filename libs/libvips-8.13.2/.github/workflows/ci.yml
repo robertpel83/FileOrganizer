@@ -1,0 +1,143 @@
+name: CI
+
+on: [ push, pull_request, workflow_dispatch ]
+
+jobs:
+  CI:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Linux x64 (Ubuntu 22.04) - GCC 11"
+            os: ubuntu-22.04
+            build: { cc: gcc, cxx: g++, linker: ld }
+            shell: bash
+
+          - name: "Linux x64 (Ubuntu 22.04) - Clang 14 with ASan and UBSan"
+            os: ubuntu-22.04
+            build: { cc: clang-14, cxx: clang++-14, linker: ld.lld-14, sanitize: true }
+            shell: bash
+
+          - name: "macOS (11.6) - Xcode 13.2.1"
+            os: macos-11
+            build: { cc: clang, cxx: clang++, linker: ld.lld }
+            shell: bash
+
+          # TODO: Re-enable self-hosted M1 runner provided by MacStadium
+          #- name: "macOS (10.15) - Xcode 12.4 - M1"
+          #  os: macos-m1
+          #  build: { cc: clang, cxx: clang++, linker: ld.lld }
+          #  shell: "/usr/bin/arch -arch arm64e /bin/bash -l {0}"
+
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+
+    env:
+      CC: ${{ matrix.build.cc }}
+      CXX: ${{ matrix.build.cxx }}
+      LD: ${{ matrix.build.linker }}
+      CPPFLAGS: -Wall
+      DEBIAN_FRONTEND: noninteractive
+      HOMEBREW_NO_AUTO_UPDATE: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update apt
+        if: runner.os == 'Linux'
+        run: sudo -E apt-get update -qq -o Acquire::Retries=3
+
+      - name: Install Ubuntu dependencies
+        if: runner.os == 'Linux'
+        run:
+          sudo -E apt-get install --fix-missing -qq -o Acquire::Retries=3
+            meson
+            python3-pip python3-setuptools python3-wheel
+            libfftw3-dev libexif-dev libjpeg-turbo8-dev
+            libpng-dev libwebp-dev libtiff5-dev
+            libheif-dev libexpat1-dev libcfitsio-dev
+            libmatio-dev libnifti-dev liborc-0.4-dev
+            liblcms2-dev libpoppler-glib-dev librsvg2-dev
+            libopenexr-dev libpango1.0-dev libgsf-1-dev
+            libopenslide-dev libffi-dev libopenjp2-7-dev
+            libimagequant-dev libcgif-dev
+
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install meson ninja fftw fontconfig glib libexif libgsf little-cms2 orc pango
+          brew install cfitsio libheif libimagequant libjpeg-turbo libmatio librsvg libspng libtiff openexr openjpeg openslide poppler webp cgif
+
+      - name: Install Clang 14
+        if: runner.os == 'Linux' && matrix.build.cc == 'clang-14'
+        run:
+          sudo -E apt-get install --fix-missing -qq -o Acquire::Retries=3
+            clang-14 libomp-14-dev lld-14 llvm-14
+
+      - name: Prepare Ubuntu environment
+        if: runner.os == 'Linux'
+        run: echo "JOBS=$(nproc)" >> $GITHUB_ENV
+
+      - name: Prepare macOS environment
+        if: runner.os == 'macOS'
+        run: |
+          echo "JOBS=$(sysctl -n hw.logicalcpu)" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=$(brew --prefix jpeg-turbo)/lib/pkgconfig:$(brew --prefix libxml2)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+
+      - name: Prepare sanitizers
+        if: matrix.build.sanitize
+        env:
+          LLVM_PREFIX: /usr/lib/llvm-14
+        run: |
+          ASAN_DSO=`$CC -print-file-name=libclang_rt.asan-x86_64.so`
+          echo "LDSHARED=$CC -shared" >> $GITHUB_ENV
+          echo "CPPFLAGS=-g -fsanitize=address,undefined -fno-omit-frame-pointer -fopenmp -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION" >> $GITHUB_ENV
+          echo "LDFLAGS=-g -fsanitize=address,undefined -shared-libasan -fopenmp=libomp" >> $GITHUB_ENV
+          echo "ASAN_DSO=$ASAN_DSO" >> $GITHUB_ENV
+          # Glib is built without -fno-omit-frame-pointer. We need
+          # to disable the fast unwinder to get full stacktraces.
+          echo "ASAN_OPTIONS=suppressions=${{ github.workspace }}/suppressions/asan.supp:fast_unwind_on_malloc=0:allocator_may_return_null=1" >> $GITHUB_ENV
+          echo "LSAN_OPTIONS=suppressions=${{ github.workspace }}/suppressions/lsan.supp:fast_unwind_on_malloc=0" >> $GITHUB_ENV
+          echo "TSAN_OPTIONS=suppressions=${{ github.workspace }}/suppressions/tsan.supp" >> $GITHUB_ENV
+          # Ensure UBSan issues causes the program to abort.
+          echo "UBSAN_OPTIONS=suppressions=${{ github.workspace }}/suppressions/ubsan.supp:halt_on_error=1:abort_on_error=1:print_stacktrace=1" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$LLVM_PREFIX/lib:`dirname $ASAN_DSO`" >> $GITHUB_ENV
+          echo "$LLVM_PREFIX/bin" >> $GITHUB_PATH
+          # Workaround for https://github.com/google/sanitizers/issues/89
+          # otherwise libIlmImf-2_3.so ends up as <unknown module>.
+          echo "DLCLOSE_PRELOAD=${{ github.workspace }}/dlclose.so" >> $GITHUB_ENV
+          echo -e '#include <stdio.h>\nint dlclose(void*handle){return 0;}' | $CC -shared -xc -odlclose.so -
+
+      - name: Configure libvips
+        run:
+          meson setup build
+            -Ddebug=true
+            -Ddeprecated=false
+            -Dintrospection=false
+          || (cat build/meson-logs/meson-log.txt && exit 1)
+
+      - name: Build libvips
+        run: ninja -C build
+
+      - name: Check libvips
+        run: ninja -C build test
+
+      - name: Install libvips
+        run: sudo ninja -C build install
+
+      - name: Rebuild the shared library cache
+        if: runner.os == 'Linux'
+        run: sudo ldconfig
+
+      - name: Install pyvips
+        run: pip3 install pyvips[test]
+
+      - name: Run test suite
+        env:
+          VIPS_LEAK: 1
+          LD_PRELOAD: ${{ env.ASAN_DSO }} ${{ env.DLCLOSE_PRELOAD }}
+        run: python3 -m pytest -sv --log-cli-level=WARNING test/test-suite
