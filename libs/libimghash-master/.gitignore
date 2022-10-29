@@ -1,0 +1,4 @@
+*.user
+*~
+python/build
+*.autosave

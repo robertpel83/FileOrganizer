@@ -1,0 +1,30 @@
+libimghash (0.1.6) raring; urgency=low
+
+  * performance fix
+
+ -- Roman Grebennikov <grebennikov.roman@gmail.com>  Fri, 31 Jan 2014 17:03:18 +0400
+
+libimghash (0.1.5) raring; urgency=low
+
+  * spit away python binding
+
+ -- Roman Grebennikov <grebennikov.roman@gmail.com>  Wed, 30 Oct 2013 19:04:28 +0400
+
+libimghash (0.1.4) raring; urgency=low
+
+  * wrap all C code with try-catch
+
+ -- Roman Grebennikov <grebennikov.roman@gmail.com>  Wed, 30 Oct 2013 19:04:28 +0400
+
+libimghash (0.1.2) quantal; urgency=low
+
+  * update
+
+ -- Roman Grebennikov <grebennikov.roman@gmail.com>  Wed, 15 Sep 2013 19:04:28 +0400
+
+
+libimghash (0.1) quantal; urgency=low
+
+  * initial release
+
+ -- Roman Grebennikov <grebennikov.roman@gmail.com>  Wed, 11 Sep 2013 19:04:28 +0400

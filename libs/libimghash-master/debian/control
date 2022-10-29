@@ -1,0 +1,18 @@
+Source: libimghash
+Section: libs
+Priority: extra
+Maintainer: Roman Grebennikov <grebennikov.roman@gmail.com>
+Build-Depends: imagemagick, libmagick++-dev, cmake, debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+
+Package: libimghash-dev
+Section: libdevel
+Architecture: any
+Depends: imagemagick (>= 6.6), libmagick++5, libmagick++-dev, libimghash
+Description: libimghash development stuff
+
+Package: libimghash
+Section: libs
+Architecture: any
+Depends: imagemagick (>= 6.6), libmagick++5
+Description: Image hashing library

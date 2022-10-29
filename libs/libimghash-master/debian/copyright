@@ -1,0 +1,7 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libimghash
+Source: <https://github.com/shuttie/libimghash>
+
+Files: *
+Copyright: 2013 Grebennikov Roman <grebennikov.roman@gmail.com>
+License: LGPL-3+
