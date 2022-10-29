@@ -1,0 +1,30 @@
+syntax: glob
+*.ncb
+*.suo
+*.lnt
+*.ilk
+Visual Lint/*
+objfre_*
+objchk_*
+BuildLog.htm
+BuildLog_*.html
+buildfre_*.log
+buildchk_*.log
+*.user
+bin/*
+buildfre_*.wrn
+buildchk_*.wrn
+intermediate/**
+*.zip
+*.zip.asc
+*.bak
+hgid.h
+*_release.vs8.sln
+lsads_release/**
+*_release.vs8.vcproj
+buildlog.html
+*.7z
+*.7z.asc
+.vs/**
+lsads.vs15.*
+.git/
