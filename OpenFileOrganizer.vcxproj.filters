@@ -244,7 +244,7 @@
     <ClCompile Include="OpenFileOrganizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="getopt.c">
+    <ClCompile Include="libs\getopt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-byte-order.c">
@@ -960,7 +960,7 @@
     <ClInclude Include="libs\imageinfo-master\imageinfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="unistd.h">
+    <ClInclude Include="libs\unistd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

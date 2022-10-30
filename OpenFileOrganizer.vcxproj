@@ -118,7 +118,7 @@
     <QtRcc Include="OpenFileOrganizer.qrc" />
     <QtUic Include="OpenFileOrganizer.ui" />
     <QtMoc Include="OpenFileOrganizer.h" />
-    <ClCompile Include="getopt.c" />
+    <ClCompile Include="libs\getopt.c" />
     <ClCompile Include="libs\heif-master\srcs\common\accessibilitytext.cpp" />
     <ClCompile Include="libs\heif-master\srcs\common\arraydatatype.cpp" />
     <ClCompile Include="libs\heif-master\srcs\common\audiosampleentrybox.cpp" />
@@ -433,7 +433,7 @@
     <ClInclude Include="libs\hash-library-master\sha3.h" />
     <ClInclude Include="libs\imageinfo-master\imageinfo.hpp" />
     <ClInclude Include="libs\libexif-0.6.24\config.h" />
-    <ClInclude Include="unistd.h" />
+    <ClInclude Include="libs\unistd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
