@@ -1,52 +1,34 @@
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <wchar.h>
-#include <fstream>
-#include <string>
+#include <chrono>
+#include <cstdint>
+#include <ctime>
+#include <filesystem>
+#include <fstream>  // std::ifstream
+#include <functional>
+#include <iomanip>  // std::setprecision
+#include <iostream> // std::cout
 #include <limits>
-#include <stdexcept>
-#include <vector>
 #include <memory>
 #include <regex>
 #include <sstream>
-#include <ctime>
-#include <string>
-#include <filesystem>
-#include <chrono>
-#include <unordered_set>
 #include <stack>
-#include <vector>
-#include <iostream> // std::cout
-#include <fstream>  // std::ifstream
-#include <vector>   // std::vector
-#include <iomanip>  // std::setprecision
-#include <functional>
-#include <sstream>
-#include <cstdint>
-#include "stdio.h"
-#include "iostream"
-#include <iostream>
+#include <stdexcept>
+#include <stdio.h>
+#include <stdlib.h>
 #include <streambuf>
+#include <string.h>
 #include <string>
+#include <unordered_set>
+#include <vector>   // std::vector
+#include <wchar.h>
 
-#include <io.h>
-#include <fcntl.h>
+
 #include "atlbase.h"
 #include "atlstr.h"
 #include "comutil.h"
 
 #include <cwctype>
 
-#include <dirent.h>
 
-#include "crc32.h"
-#include "md5.h"
-#include "sha1.h"
-#include "sha256.h"
-#include "keccak.h"
-#include "sha3.h"
 
 
 
@@ -79,6 +61,16 @@ using std::wstring;
 //#endif
 
 #define _CRT_SECURE_NO_WARNINGS 1
+
+
+#include <dirent.h>
+
+#include "crc32.h"
+#include "md5.h"
+#include "sha1.h"
+#include "sha256.h"
+#include "keccak.h"
+#include "sha3.h"
 
 #include "libexif/exif.h"
 #include "libexif/exif-data.h"
