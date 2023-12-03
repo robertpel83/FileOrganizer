@@ -44,7 +44,7 @@ void OpenFileOrganizer::handleButton()
 	QThread* thread = new QThread;
 	Worker* worker = new Worker();
 	worker->moveToThread(thread);
-	//connect( worker, &Worker::error, this, &OpenFileOrganizer::errorString);
+	//connect( worker, &error, this, &OpenFileOrganizer::errorString);
 	connect(thread, &QThread::started, worker, &Worker::process);
 	connect(worker, &Worker::finished, thread, &QThread::quit);
 	connect(worker, &Worker::finished, worker, &Worker::deleteLater);
@@ -120,7 +120,7 @@ void data_foreach_func(ExifContent* content, void* callback_data)
 
 
 
-
+//C++ subdirectory file list using recursiveDirectoryIteratorIncrement
 //std::unordered_set<wstring> recursiveDirectoryIteratorIncrementPaths;
 //for whatever reason, recursive_directory_iterator cannot read "All Users" folder, but directory_iterator can. weird.
 void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64& filecount)
@@ -173,7 +173,7 @@ void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64
 
 
 
-
+//C++ subdirectory file list using directoryIteratorIncrement
 void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _int64& filecount)
 {
 	if (!exists(dir_path))
@@ -233,7 +233,7 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 
 }
 
-
+//C subdirectory file list using dirent.h library
 // Find files recursively 
 void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wchar_t* dirname
 {
@@ -291,9 +291,8 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 }
 
 
-
+//C++ subdirectory file list using Windows FindFirstFileExW
 //std::unordered_set<wstring> findFirstFilePaths;
-
 void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount)
 {
 
@@ -1824,6 +1823,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 
 
 void Worker::process()
+//void ok()
 {
 
 
@@ -2429,7 +2429,7 @@ void Worker::process()
 	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - firststart) << std::endl;
 
 
-	emit finished();
+	//emit finished();
 
 }
 

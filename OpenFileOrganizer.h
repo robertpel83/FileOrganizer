@@ -29,7 +29,7 @@
 #include <cwctype>
 
 
-
+//void ok();
 
 
 using std::runtime_error;
@@ -60,8 +60,9 @@ using std::wstring;
 //#define stat _stat
 //#endif
 
-#define _CRT_SECURE_NO_WARNINGS 1
 
+
+#define _CRT_SECURE_NO_WARNINGS 1
 
 #include <dirent.h>
 
@@ -83,6 +84,11 @@ using std::wstring;
 
 #include "jpeglib.h"
 #include <setjmp.h>
+
+
+
+
+
 
 std::string convertWideToANSI(const std::wstring& wstr);
 
@@ -450,3 +456,31 @@ private:
 };
 
 
+
+
+
+
+	//void recursiveDirectoryIteratorIncrement(const wstring startpath, _int64& filecount);
+	//void directoryIteratorRecursive(const std::filesystem::path& dir_path, _int64& filecount);
+	//void direntScanDirectory(const wstring startPath, _int64& filecount);
+	//void listFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount);
+	//__int64 getFileSizeWindows(FileDataEntry* f);
+	//BY_HANDLE_FILE_INFORMATION getFileInformationByHandleWindows(wstring fileNameAndPath);
+	//__int64 getFileSizeFromHandleFileInformationWindows(FileDataEntry* f);
+	//WIN32_FILE_ATTRIBUTE_DATA getFileAttributesWindows(wstring fileNameAndPath);
+	//__int64 getFileSizeFromFileAttributesWindows(FileDataEntry* f);
+	//long long getFileSizeWStat(FileDataEntry* f);
+	//long long getFileSizeFStat(int _FileHandle);
+	//uintmax_t getFileSizeFilesystem(FileDataEntry* f);
+	//uintmax_t getFileSizeFilesystemDirectoryEntry(FileDataEntry* f);
+	//long long getFileSizeWithIfstream(wstring name);
+	//void getSizeForAllFiles();
+	//void getFileCreatedModifiedDateWindows(FileDataEntry* f);
+	//void getFileCreatedModifiedDateFilesystem(FileDataEntry* f);
+	//void getFileCreatedModifiedDateWStat(FileDataEntry* f);
+	//void getCreatedAndLastModifiedDateForAllFiles();
+	//void getFastHash(FileDataEntry* f);
+	//void getFastHashForAllFiles();
+	//void getDateFromFilenameForAllFiles();
+	//bool extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int& y);
+	//void getDatesFromEXIFDataForAllFiles();

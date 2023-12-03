@@ -23,17 +23,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="OpenFileOrganizer.qrc">
-      <Filter>Resource Files</Filter>
-    </QtRcc>
-    <QtUic Include="OpenFileOrganizer.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtMoc Include="OpenFileOrganizer.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -579,5 +568,23 @@
     <ClInclude Include="libs\unistd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="getopt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="OpenFileOrganizer.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="OpenFileOrganizer.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="OpenFileOrganizer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>
