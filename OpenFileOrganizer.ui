@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>979</width>
-    <height>939</height>
+    <width>1066</width>
+    <height>949</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,6 +19,12 @@
      <layout class="QVBoxLayout" name="mainVerticalLayout">
       <item>
        <widget class="QGroupBox" name="scanDirsGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string>Directories to scan</string>
         </property>
@@ -26,23 +32,31 @@
          <item>
           <layout class="QHBoxLayout" name="scanDirsHorizontalLayout">
            <item>
-            <widget class="QPlainTextEdit" name="scanDirsPlainTextEdit">
-             <property name="plainText">
-              <string>C:\</string>
+            <widget class="QListWidget" name="listWidget">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
+             <item>
+              <property name="text">
+               <string>F:\\_games\\</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item>
             <layout class="QVBoxLayout" name="dirButtonsVBoxLayout">
              <item>
-              <widget class="QPushButton" name="removeDirPushButton">
+              <widget class="QPushButton" name="addDirPushButton">
                <property name="text">
                 <string>Add</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="addDirPushButton">
+              <widget class="QPushButton" name="removeDirPushButton">
                <property name="text">
                 <string>Remove</string>
                </property>
@@ -175,6 +189,12 @@
       </item>
       <item>
        <widget class="QGroupBox" name="consoleOutputGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string>Console output</string>
         </property>
@@ -216,7 +236,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>979</width>
+     <width>1066</width>
      <height>22</height>
     </rect>
    </property>

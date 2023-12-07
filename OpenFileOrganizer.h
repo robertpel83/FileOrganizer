@@ -102,12 +102,26 @@ std::string convertWideToUtf8(const std::wstring& wstr);
 std::wstring convertUtf8ToWide(const std::string& str);
 
 
+class MyDate
+{
+public:
+
+
+
+	MyDate(wstring dateString)
+	{
+
+	}
+
+	
+};
+
 
 class DateData
 {
 public:
 
-	wstring dateString;
+	wstring dateString = L"";
 	int year = 0;
 	int month = 0;
 	int day = 0;
@@ -144,6 +158,14 @@ public:
 			is >> second; }
 		}
 
+		//year = std::stoi(dateString.substr(0, 4));//2023-01-01 01:01:01
+		//month = std::stoi(dateString.substr(5, 2));
+		//day = std::stoi(dateString.substr(8, 2));
+		//hour = std::stoi(dateString.substr(11, 2));
+		//minute = std::stoi(dateString.substr(14, 2));
+		//second = std::stoi(dateString.substr(17, 2));
+		//this->dateString = dateString;
+
 	}
 
 	DateData(int year,
@@ -167,7 +189,77 @@ public:
 		this->dateString = wstring(buffer);
 	}
 
+	wstring wcout()
+	{
+		return L"" + std::to_wstring(year) + L"-" + std::to_wstring(month) + L"-" + std::to_wstring(day) + L" " + std::to_wstring(hour) + L":" + std::to_wstring(minute) + L":" + std::to_wstring(second);
+		//std::wcout << year << L"-" << month << L"-" << day << L" " << hour << L":" << minute << L":" << second << std::endl;
+	}
 
+	static bool compareDates(const DateData* a, const DateData* b)
+	{
+		if (a->year < b->year)return true;
+		if (a->year > b->year)return false;
+		if (a->month < b->month)return true;
+		if (a->month > b->month)return false;
+		if (a->day < b->day)return true;
+		if (a->day > b->day)return false;
+		if (a->hour < b->hour)return true;
+		if (a->hour > b->hour)return false;
+		if (a->minute < b->minute)return true;
+		if (a->minute > b->minute)return false;
+		if (a->second < b->second)return true;
+		if (a->second > b->second)return false;
+		return false;
+		//return (*a < *b); 
+	}
+	//bool operator() (const DateData* i, const DateData* j)
+	//{
+	//	if (i->year <   j->year)return true;
+	//	if (i->year >   j->year)return false;
+	//	if (i->month <  j->month)return true;
+	//	if (i->month >  j->month)return false;
+	//	if (i->day <    j->day)return true;
+	//	if (i->day >    j->day)return false;
+	//	if (i->hour <   j->hour)return true;
+	//	if (i->hour >   j->hour)return false;
+	//	if (i->minute < j->minute)return true;
+	//	if (i->minute > j->minute)return false;
+	//	if (i->second < j->second)return true;
+	//	if (i->second > j->second)return false;
+	//	return false;
+	//}
+	//bool operator< (const DateData* j)
+	//{ 
+	//	if (year <   j->year)return true;
+	//	if (year >   j->year)return false;
+	//	if (month <  j->month)return true;
+	//	if (month >  j->month)return false;
+	//	if (day <    j->day)return true;
+	//	if (day >    j->day)return false;
+	//	if (hour <   j->hour)return true;
+	//	if (hour >   j->hour)return false;
+	//	if (minute < j->minute)return true;
+	//	if (minute > j->minute)return false;
+	//	if (second < j->second)return true;
+	//	if (second > j->second)return false;
+	//	return false;
+	//}
+	//bool operator> (const DateData* j)
+	//{
+	//	if (year <   j->year)return false;
+	//	if (year >   j->year)return true;
+	//	if (month <  j->month)return false;
+	//	if (month >  j->month)return true;
+	//	if (day <    j->day)return false;
+	//	if (day >    j->day)return true;
+	//	if (hour <   j->hour)return false;
+	//	if (hour >   j->hour)return true;
+	//	if (minute < j->minute)return false;
+	//	if (minute > j->minute)return true;
+	//	if (second < j->second)return false;
+	//	if (second > j->second)return true;
+	//	return true;
+	//}
 
 };
 
@@ -212,6 +304,7 @@ public:
 #include "ui_OpenFileOrganizer.h"
 #include <QPlainTextEdit>
 #include <qthread.h>
+#include <QFileDialog>
 
 class QDebugStream : public std::wstreambuf
 {
@@ -384,6 +477,8 @@ public:
 
 	static void QMessageOutput(QtMsgType, const QMessageLogContext&, const QString& msg);
 
+	
+
 private:
 	Ui::OpenFileOrganizerClass ui;
 
@@ -394,7 +489,8 @@ private:
 	const QString errorString = "error";
 
 private slots:
-	void handleButton();
+	void handleStartButton();
+	void handleAddDirButton();
 
 };
 
@@ -416,6 +512,11 @@ public:
 	std::chrono::steady_clock::time_point start;
 	std::chrono::steady_clock::time_point firststart;
 	bool isWindows = false;
+
+	vector<wstring> dirsToSearch;
+
+	//wstring startpath = L"F:\\_games\\";
+
 	//#define DB_LOCATION L"locate.db"
 	//FILE* db;
 	//QPlainTextEdit* plainTextEdit;

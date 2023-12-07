@@ -24,8 +24,10 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 
 
 
+
 	//Connect button signal to appropriate slot
-	connect(ui.startPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleButton);
+	connect(ui.startPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleStartButton);
+	connect(ui.addDirPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleAddDirButton);
 	//connect(ui.startPushButton, &QPushButton::clicked, this, &OpenFileOrganizer::handleButton);
 
 }
@@ -38,11 +40,21 @@ void OpenFileOrganizer::QMessageOutput(QtMsgType, const QMessageLogContext&, con
 	std::wcout << msg.toStdWString() << std::endl;
 }
 
-void OpenFileOrganizer::handleButton()
+void OpenFileOrganizer::handleStartButton()
 {
+
+
 
 	QThread* thread = new QThread;
 	Worker* worker = new Worker();
+
+	worker->dirsToSearch.clear();
+
+	for (int i = 0; i < ui.listWidget->count(); i++)
+	{
+		worker->dirsToSearch.push_back(ui.listWidget->item(i)->text().toStdWString());
+	}
+
 	worker->moveToThread(thread);
 	//connect( worker, &error, this, &OpenFileOrganizer::errorString);
 	connect(thread, &QThread::started, worker, &Worker::process);
@@ -53,7 +65,23 @@ void OpenFileOrganizer::handleButton()
 
 }
 
+void OpenFileOrganizer::handleAddDirButton()
+{
+	//QFileDialog dialog(this);
+	//dialog.setFileMode(QFileDialog::AnyFile);
 
+	QUrl dirUrl = QFileDialog::getExistingDirectoryUrl(this, "Select Target Directory", QUrl("clsid:0AC0837C-BBF8-452A-850D-79D08E667CA7"), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+
+	//wstring dir = dirUrl.toString().replace(QString("file:\\\\\\"), QString("")).replace(QString("/"), QString("\\\\")).toStdWString();
+	QString s = dirUrl.toString().replace(QString("file:///"), QString("")).replace(QString("/"), QString("\\\\"));
+	if (s.endsWith(QString("\\")) == false)s.append(QString("\\\\"));
+
+	ui.listWidget->addItem(s);
+	//QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),"C:\\",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+
+}
 
 
 
@@ -1826,8 +1854,6 @@ void Worker::process()
 //void ok()
 {
 
-
-
 #ifdef WIN32
 	isWindows = true;
 #else
@@ -1846,7 +1872,7 @@ void Worker::process()
 	//}
 
 
-	wstring startpath = L"F:\\_games\\";
+	
 	_int64 filecount = 0;
 	LARGE_INTEGER li;
 
@@ -1902,7 +1928,10 @@ void Worker::process()
 	start = std::chrono::steady_clock::now();
 	filecount = 0;
 
-	listFilesWindowsFindFirstFile(startpath, filecount);
+	for (int i = 0; i < dirsToSearch.size(); i++)
+	{
+		listFilesWindowsFindFirstFile(dirsToSearch.at(i), filecount);
+	}
 
 	std::wcout << L"Files found: " << filecount << std::endl;
 
@@ -2216,18 +2245,18 @@ void Worker::process()
 	{
 		vector<FileDataEntry*>* v = duplicates[b];
 		
-		std::wcout << L"All names for duplicate " << b << std::endl;
+		std::wcout << L"All names for duplicate " << b << L": " << std::endl;
 
 		for (int c = 0; c < v->size(); c++)
 		{
 			std::wcout << (*v)[c]->name << std::endl;
 		}
 
-		std::wcout << L"Size for duplicate " << b << L" " << (*v)[0]->size << std::endl;
+		std::wcout << L"Size for duplicate " << b << L": " << (*v)[0]->size << L" bytes" << std::endl;
 
 		vector<wstring> dateStrings;
 
-		std::wcout << L"All dates for duplicate " << b << std::endl;
+		std::wcout << L"All dates for duplicate " << b << L": " << std::endl;
 		for (int c = 0; c < v->size(); c++)
 		{
 			if ((*v)[c]->createdDateString.length() > 2) 
@@ -2256,21 +2285,73 @@ void Worker::process()
 			}
 		}
 
+		
+		vector<DateData*> dates;
+		
 		for (int i = 0; i < dateStrings.size(); i++)
 		{
-			//count instances of identical dates, with and without timestamp
-			//determine most likely correct date
+			DateData*d = new DateData(dateStrings[i]);
+			dates.push_back(d);
+
 			std::wcout << dateStrings[i] << std::endl;
+			//std::wcout << d->wcout() << std::endl;
 		}
 
+		//count instances of identical dates, with and without timestamp
+		//determine most likely correct date
+
+		std::stable_sort(dates.begin(), dates.end(), DateData::compareDates);
+
+		std::wcout << L"Sorted dates for duplicate " << b << L": " << std::endl;
+
+		for (int i = 0; i < dates.size(); i++)
+		{
+			std::wcout << dates[i]->wcout() << std::endl;
+		}
+
+		std::wcout << L"Earliest date for duplicate " << b << L": " << dates[0]->wcout() << std::endl;
+
 	}
+
+
+
+
+	//connect gui elements, do tooltips and info and options and stuff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 	//todo:
 
 
+	//compare all dates, try to decide correct date
+	//maybe set that date as created for dupes that don't have it
+	//compare dates and filenames for duplicates
 
+
+	//store all info in database
+	//identify files based on filesize and hash?
+
+
+
+
+
+
+
+	//maybe get gtk working
 
 
 	
@@ -2285,7 +2366,7 @@ void Worker::process()
 
 
 
-
+	//check file hashes to online databases
 	
 
 
@@ -2294,13 +2375,7 @@ void Worker::process()
 
 
 
-	//compare all dates, try to decide correct date
-	//maybe set that date as created for dupes that don't have it
-	//compare dates and filenames for duplicates
 
-	//connect gui elements, do tooltips and info and options and stuff
-
-	//maybe get gtk working
 
 
 
