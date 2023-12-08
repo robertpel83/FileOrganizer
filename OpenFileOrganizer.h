@@ -491,6 +491,7 @@ private:
 private slots:
 	void handleStartButton();
 	void handleAddDirButton();
+	void handleRemoveDirButton();
 
 };
 
