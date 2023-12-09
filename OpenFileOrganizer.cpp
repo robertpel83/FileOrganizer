@@ -1870,7 +1870,97 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 
 }
 
+//bool compareFiles(const std::wstring& p1, const std::wstring& p2) {
+//	std::ifstream f1(p1, std::ifstream::binary | std::ifstream::ate);
+//	std::ifstream f2(p2, std::ifstream::binary | std::ifstream::ate);
+//
+//	if (f1.fail() || f2.fail()) {
+//		return false; //file problem
+//	}
+//
+//	if (f1.tellg() != f2.tellg()) {
+//		return false; //size mismatch
+//	}
+//
+//	//seek back to beginning and use std::equal to compare contents
+//	f1.seekg(0, std::ifstream::beg);
+//	f2.seekg(0, std::ifstream::beg);
+//	return std::equal(std::istreambuf_iterator<char>(f1.rdbuf()),
+//		std::istreambuf_iterator<char>(),
+//		std::istreambuf_iterator<char>(f2.rdbuf()));
+//
 
+bool compareFiles(const std::wstring& p1, const std::wstring& p2) {
+	std::ifstream f1(p1, std::ifstream::binary | std::ifstream::ate);
+	std::ifstream f2(p2, std::ifstream::binary | std::ifstream::ate);
+
+	if (f1.fail() || f2.fail()) {
+		return false; //file problem
+	}
+
+	long long size = f1.tellg();
+
+	if (size != f2.tellg()) {
+		return false; //size mismatch
+	}
+
+	//seek back to beginning 
+	f1.seekg(0, std::ifstream::beg);
+	f2.seekg(0, std::ifstream::beg);
+
+	f1.close();
+	f2.close();
+
+	char* buffer1 = new char[size](0);
+	char* buffer2 = new char[size](0);
+	
+	try
+	{
+		if (std::ifstream is{ p1, std::ios::in | std::ios::binary })
+		{
+			is.exceptions(is.failbit);
+			is.read(buffer1, size);
+			is.exceptions(is.failbit);
+			std::size_t numBytesRead = size_t(is.gcount());
+			//std::wcout << L"File size " << f1->size << std::endl;
+			//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+			is.close();
+		}
+	}
+	catch (const std::ios_base::failure& e)
+	{
+		std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
+	}
+	
+	try
+	{
+		if (std::ifstream is{ p2, std::ios::in | std::ios::binary })
+		{
+			is.exceptions(is.failbit);
+			is.read(buffer2, size);
+			is.exceptions(is.failbit);
+			std::size_t numBytesRead = size_t(is.gcount());
+			//std::wcout << L"File size " << f->size << std::endl;
+			//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+			is.close();
+		}
+	}
+	catch (const std::ios_base::failure& e)
+	{
+		std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
+	}
+
+	bool result = memcmp(buffer1, buffer2, size);
+
+	delete[] buffer1;
+	delete[] buffer2;
+
+	if (result == true) 
+	{
+		return false;  // Files are not equal
+	}
+	return true;
+}
 
 void Worker::process()
 //void ok()
@@ -1903,6 +1993,27 @@ void Worker::process()
 
 	QueryPerformanceFrequency(&li);
 	double PCFreq = double(li.QuadPart) / 1000.0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2080,75 +2191,116 @@ void Worker::process()
 
 								bool isDuplicate = false;
 
-								if (f1->modifiedTime == f2->modifiedTime)
+								if (f1->modifiedTime != f2->modifiedTime)
 								{
-									//std::wcout << L"Same modified time " << f1->name << L" and " << f2->name << std::endl; 
-									//std::wcout << L"Same size, same modified time, hashes match, skipping byte comparison for " << f1->name << std::endl;
-								}
-								else
-								{
-									//std::wcout << L"Different modified time for " << f1->name << L" and " << f2->name << std::endl;
 									std::wcout << L"Same size (" << f1->size << "), hashes match, but different modified time, doing byte comparison for " << f1->name << " and " << f2->name << std::endl;
 									doByteComparison = true;
 								}
 
+								if (f1->name != f2->name)
+								{
+									std::wcout << L"Same size (" << f1->size << "), hashes match, but different name, doing byte comparison for " << f1->name << " and " << f2->name << std::endl;
+									doByteComparison = true;
+								}
+
+								//std::wcout << L"Same size (" << f1->size << "), hashes match, doing byte comparison for " << f1->name << " and " << f2->name << std::endl;
+								//doByteComparison = true;
+
 								if (doByteComparison == true)
 								{
+
+
 									if (f1->size == f2->size)
 									{
-										char* buffer1 = new char[f1->size](0);
-										char* buffer2 = new char[f2->size](0);
 
-										try
-										{
-											if (std::ifstream is{ f1->nameAndPath, std::ios::in | std::ios::binary })
-											{
-												is.exceptions(is.failbit);
-												is.read(buffer1, f1->size);
-												is.exceptions(is.failbit);
-												std::size_t numBytesRead = size_t(is.gcount());
-												//std::wcout << L"File size " << f1->size << std::endl;
-												//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
-												is.close();
-											}
-										}
-										catch (const std::ios_base::failure& e)
-										{
-											std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
-										}
 
-										try
-										{
-											if (std::ifstream is{ f2->nameAndPath, std::ios::in | std::ios::binary })
-											{
-												is.exceptions(is.failbit);
-												is.read(buffer2, f2->size);
-												is.exceptions(is.failbit);
-												std::size_t numBytesRead = size_t(is.gcount());
-												//std::wcout << L"File size " << f->size << std::endl;
-												//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
-												is.close();
-											}
-										}
-										catch (const std::ios_base::failure& e)
-										{
-											std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
-										}
+										//mm_file
+										// instruct the kernel that we will read the content
+										// of the file sequentially
+										//int advice = mm::advice::sequential;
+										//
+										//// read the stream as uint16_t integers
+										//mm::file_source<uint16_t> f1in(f1->nameAndPath, advice);
+										//
+										////std::cout << "mapped " << f1in.bytes() << " bytes " << "for " << f1in.size() << " integers" << std::endl;
+										//
+										//auto const* data = f1in.data();
+										//for (uint32_t i = 0; i != f1in.size(); ++i) 
+										//{
+										//	std::cout << "read " << data[i] << std::endl;
+										//}
+										//
+										//f1in.close();
+
+
+										//boost io memory mapping
+										//io::mapped_file_source mf1("test.1");
+										//io::mapped_file_source mf2("test.2");
+										//
+										//if (f1.size() == f2.size()
+										//	&& std::equal(f1.data(), f1.data() + f1.size(), f2.data())
+										//	)
+										//	std::cout << "The files are equal\n";
+										//else
+										//	std::cout << "The files are not equal\n";
+
+
+										//char* buffer1 = new char[f1->size](0);
+										//char* buffer2 = new char[f2->size](0);
+										//
+										//try
+										//{
+										//	if (std::ifstream is{ f1->nameAndPath, std::ios::in | std::ios::binary })
+										//	{
+										//		is.exceptions(is.failbit);
+										//		is.read(buffer1, f1->size);
+										//		is.exceptions(is.failbit);
+										//		std::size_t numBytesRead = size_t(is.gcount());
+										//		//std::wcout << L"File size " << f1->size << std::endl;
+										//		//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+										//		is.close();
+										//	}
+										//}
+										//catch (const std::ios_base::failure& e)
+										//{
+										//	std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
+										//}
+										//
+										//try
+										//{
+										//	if (std::ifstream is{ f2->nameAndPath, std::ios::in | std::ios::binary })
+										//	{
+										//		is.exceptions(is.failbit);
+										//		is.read(buffer2, f2->size);
+										//		is.exceptions(is.failbit);
+										//		std::size_t numBytesRead = size_t(is.gcount());
+										//		//std::wcout << L"File size " << f->size << std::endl;
+										//		//std::wcout << L"numBytesRead " << numBytesRead << std::endl;
+										//		is.close();
+										//	}
+										//}
+										//catch (const std::ios_base::failure& e)
+										//{
+										//	std::wcout << L"Caught an ios_base::failure" << e.what() << std::endl;
+										//}
+										//
+										//bool byteMatch = true;
+										//for (long long a = 0; a < f1->size; a++)
+										//{
+										//	if (buffer1[a] != buffer2[a])
+										//	{
+										//		byteMatch = false;
+										//		std::wcout << L"Byte comparison failed at index " << a << L"/" << f1->size << L" in " << f1->name << L" and " << f2->name << ", not a match!" << std::endl;
+										//		a = f1->size;
+										//		break;
+										//	}
+										//}
+										//
+										//delete[] buffer1;
+										//delete[] buffer2;
 
 										bool byteMatch = true;
-										for (long long a = 0; a < f1->size; a++)
-										{
-											if (buffer1[a] != buffer2[a])
-											{
-												byteMatch = false;
-												std::wcout << L"Byte comparison failed at index " << a << L" in " << f1->name << L" and " << f2->name << ", not a match!" << std::endl;
-												a = f1->size;
-												break;
-											}
-										}
-
-										delete[] buffer1;
-										delete[] buffer2;
+										byteMatch = compareFiles(f1->nameAndPath, f2->nameAndPath);
 
 										if (byteMatch == true)
 										{

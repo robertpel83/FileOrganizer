@@ -41,7 +41,7 @@
              </property>
              <item>
               <property name="text">
-               <string>F:\\_games\\</string>
+               <string>F:\\_games\\_romhacks\\</string>
               </property>
              </item>
             </widget>
@@ -201,17 +201,24 @@
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
           <widget class="QPlainTextEdit" name="consoleOutputPlainTextEdit">
+           <property name="palette">
+            <palette>
+             <active/>
+             <inactive/>
+             <disabled/>
+            </palette>
+           </property>
            <property name="font">
             <font>
              <family>Lucida Sans Unicode</family>
-             <pointsize>10</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color:black;color:white;</string>
+            <string notr="true"/>
            </property>
            <property name="undoRedoEnabled">
             <bool>false</bool>
