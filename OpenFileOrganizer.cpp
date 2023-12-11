@@ -22,7 +22,7 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 	this->msgHandler = new MessageHandler(ui.consoleOutputPlainTextEdit, this);
 	connect(m_qd, &ThreadLogStream::sendLogString, msgHandler, &MessageHandler::catchMessage);
 
-
+	
 
 
 	//Connect button signal to appropriate slot
@@ -60,6 +60,8 @@ void OpenFileOrganizer::handleStartButton()
 	Worker* worker = new Worker();
 
 	worker->dirsToSearch.clear();
+
+	worker->scanSubDirs = ui.scanSubDirsCheckBox->isChecked();
 
 	for (int i = 0; i < ui.listWidget->count(); i++)
 	{
@@ -175,6 +177,12 @@ void data_foreach_func(ExifContent* content, void* callback_data)
 //for whatever reason, recursive_directory_iterator cannot read "All Users" folder, but directory_iterator can. weird.
 void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64& filecount)
 {
+	if (scanSubDirs == false)
+	{
+		directoryIteratorRecursive(startpath, filecount);
+		return;
+	}
+
 	std::error_code ec;
 	std::filesystem::recursive_directory_iterator v = std::filesystem::recursive_directory_iterator(startpath, std::filesystem::directory_options::skip_permission_denied, ec);
 
@@ -259,6 +267,7 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 				try {
 					if (is_directory(itr->status()))
 					{
+						if (scanSubDirs)
 						directories.push(itr->path().wstring());
 					}
 					else if (is_regular_file(itr->status()))//.type() == std::filesystem::file_type::regular) //!= std::filesystem::file_type::not_found)//if (itr->path().filename() == file_name) // see below
@@ -317,6 +326,9 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 				}
 				break;
 				case DT_DIR:
+
+					if (scanSubDirs == false)break;
+
 					// Scan sub-directory recursively
 					if (wcscmp(ent->d_name, L".") != 0
 						&& wcscmp(ent->d_name, L"..") != 0)
@@ -387,6 +399,7 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_RECALL_ON_OPEN) == 0
 						//)
 					{
+						if (scanSubDirs)
 						directories.push(path + L"\\" + ffd.cFileName);
 						//findFirstFilePaths.insert(path + L"\\" + ffd.cFileName);
 					}
@@ -610,7 +623,7 @@ void Worker::getSizeForAllFiles()
 		{
 			std::wcout << L"getFileSizeWindows" << std::endl;
 			start = std::chrono::steady_clock::now();
-			for (long long i = 0; i < fileDataEntries.size(); i++)
+			for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 			{
 				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeWindows(f);
@@ -625,7 +638,7 @@ void Worker::getSizeForAllFiles()
 			std::wcout << L"getFileSizeFromHandleFileInformationWindows" << std::endl;
 			start = std::chrono::steady_clock::now();
 			size = 0;
-			for (long long i = 0; i < fileDataEntries.size(); i++)
+			for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 			{
 				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeFromHandleFileInformationWindows(f);
@@ -640,7 +653,7 @@ void Worker::getSizeForAllFiles()
 			std::wcout << L"getFileSizeFromFileAttributesWindows" << std::endl;
 			start = std::chrono::steady_clock::now();
 			size = 0;
-			for (long long i = 0; i < fileDataEntries.size(); i++)
+			for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 			{
 				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeFromFileAttributesWindows(f);
@@ -661,7 +674,7 @@ void Worker::getSizeForAllFiles()
 			std::wcout << L"getFileSizeWStat" << std::endl;
 			start = std::chrono::steady_clock::now();
 			size = 0;
-			for (long long i = 0; i < fileDataEntries.size(); i++)
+			for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 			{
 				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeWStat(f);
@@ -677,7 +690,7 @@ void Worker::getSizeForAllFiles()
 			std::wcout << L"getFileSizeFilesystem" << std::endl;
 			start = std::chrono::steady_clock::now();
 			size = 0;
-			for (long long i = 0; i < fileDataEntries.size(); i++)
+			for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 			{
 				FileDataEntry* f = fileDataEntries[i];
 				size += getFileSizeFilesystem(f);
@@ -793,7 +806,7 @@ void Worker::getCreatedAndLastModifiedDateForAllFiles()
 		//12s 494k files
 		std::wcout << L"getFileCreatedModifiedDateWindows" << std::endl;
 		start = std::chrono::steady_clock::now();
-		for (long long i = 0; i < fileDataEntries.size(); i++)
+		for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 		{
 			FileDataEntry* f = fileDataEntries[i];
 			getFileCreatedModifiedDateWindows(f);
@@ -807,7 +820,7 @@ void Worker::getCreatedAndLastModifiedDateForAllFiles()
 		//23s 494k files
 		std::wcout << L"getFileCreatedModifiedDateWStat" << std::endl;
 		start = std::chrono::steady_clock::now();
-		for (long long i = 0; i < fileDataEntries.size(); i++)
+		for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 		{
 			FileDataEntry* f = fileDataEntries[i];
 			getFileCreatedModifiedDateWStat(f);
@@ -1001,7 +1014,7 @@ void Worker::getFastHashForAllFiles()
 	//This is very quick for large files, and it helps eliminate the vast majority of potential duplicates very quickly, as
 	//most files will have different samples. Most other duplicate finders omit this step, but it really speeds things up.
 
-	for (long long i = 0; i < fileDataEntries.size(); i++)
+	for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 	{
 		FileDataEntry* f = fileDataEntries[i];
 
@@ -1263,7 +1276,7 @@ void Worker::getDateFromFilenameForAllFiles()
 	};
 
 	//for (auto& s : strs)
-	for (long long i = 0; i < fileDataEntries.size(); i++)
+	for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 	{
 		FileDataEntry* f = fileDataEntries[i];
 		string s(convertWideToUtf8(f->name));
@@ -1731,7 +1744,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	//Time
 	//GPSDateStamp
 	//GPSTimeStamp
-	for (long long i = 0; i < fileDataEntries.size(); i++)
+	for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 	{
 		FileDataEntry* f = fileDataEntries[i];
 		std::wstring lowerName = f->name;
@@ -1772,7 +1785,7 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 	}
 
 	//TinyEXIF
-	for (long long i = 0; i < fileDataEntries.size(); i++)
+	for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 	{
 		FileDataEntry* f = fileDataEntries[i];
 		std::wstring lowerName = f->name;
@@ -2017,8 +2030,6 @@ void Worker::process()
 
 
 
-
-
 	//std::wcout << L"directoryIteratorRecursive" << std::endl;
 	//
 	//QueryPerformanceCounter(&li);
@@ -2116,7 +2127,7 @@ void Worker::process()
 	{
 		std::wcout << L"Check duplicates" << std::endl;
 		start = std::chrono::steady_clock::now();
-		for (long long i = 0; i < fileDataEntries.size(); i++)
+		for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 		{
 
 			FileDataEntry* f1 = fileDataEntries[i];
@@ -2124,13 +2135,13 @@ void Worker::process()
 
 			if (f1->size > 1024 * 1024)//10kb
 			{
-				for (long long j = i + 1; j < fileDataEntries.size(); j++)
+				for (unsigned long long j = i + 1; j < fileDataEntries.size(); j++)
 				{
 					FileDataEntry* f2 = fileDataEntries[j];
 
 					if (f1->size != f2->size)
 					{
-						j = (long long)(fileDataEntries.size());
+						j = (unsigned long long)(fileDataEntries.size());
 						break;
 					}
 					else
@@ -2402,7 +2413,7 @@ void Worker::process()
 	std::wcout << L"Found " << duplicates.size() << L" unique files with duplicates." << std::endl;
 
 	long long totalDupes = 0;
-	for (long long b = 0; b < duplicates.size(); b++)
+	for (unsigned long long b = 0; b < duplicates.size(); b++)
 	{
 		vector<FileDataEntry*>* v = duplicates[b];
 		totalDupes += v->size();
@@ -2415,13 +2426,13 @@ void Worker::process()
 
 
 	
-	for (long long b = 0; b < duplicates.size(); b++)
+	for (unsigned long long b = 0; b < duplicates.size(); b++)
 	{
 		vector<FileDataEntry*>* v = duplicates[b];
 		
 		std::wcout << L"All names for duplicate " << b << L": " << std::endl;
 
-		for (long long c = 0; c < v->size(); c++)
+		for (unsigned long long c = 0; c < v->size(); c++)
 		{
 			std::wcout << (*v)[c]->name << std::endl;
 		}
@@ -2431,7 +2442,7 @@ void Worker::process()
 		vector<wstring> dateStrings;
 
 		std::wcout << L"All dates for duplicate " << b << L": " << std::endl;
-		for (long long c = 0; c < v->size(); c++)
+		for (unsigned long long c = 0; c < v->size(); c++)
 		{
 			if ((*v)[c]->createdDateString.length() > 2) 
 			{ 
@@ -2462,7 +2473,7 @@ void Worker::process()
 		
 		vector<DateData*> dates;
 		
-		for (long long i = 0; i < dateStrings.size(); i++)
+		for (unsigned long long i = 0; i < dateStrings.size(); i++)
 		{
 			DateData*d = new DateData(dateStrings[i]);
 			dates.push_back(d);
@@ -2478,7 +2489,7 @@ void Worker::process()
 
 		std::wcout << L"Sorted dates for duplicate " << b << L": " << std::endl;
 
-		for (long long i = 0; i < dates.size(); i++)
+		for (unsigned long long i = 0; i < dates.size(); i++)
 		{
 			std::wcout << dates[i]->wcout() << std::endl;
 		}

@@ -516,6 +516,8 @@ public:
 
 	vector<wstring> dirsToSearch;
 
+	bool scanSubDirs = true;
+
 	//wstring startpath = L"F:\\_games\\";
 
 	//#define DB_LOCATION L"locate.db"
