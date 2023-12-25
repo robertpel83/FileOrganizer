@@ -22,7 +22,10 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 	this->msgHandler = new MessageHandler(ui.consoleOutputPlainTextEdit, this);
 	connect(m_qd, &ThreadLogStream::sendLogString, msgHandler, &MessageHandler::catchMessage);
 
+
+
 	
+
 
 
 	//Connect button signal to appropriate slot
@@ -67,6 +70,9 @@ void OpenFileOrganizer::handleStartButton()
 	{
 		worker->dirsToSearch.push_back(ui.listWidget->item(i)->text().toStdWString());
 	}
+
+	worker->QfileTypesString = ui.fileTypesLineEdit->text();
+
 
 	worker->moveToThread(thread);
 	//connect( worker, &error, this, &OpenFileOrganizer::errorString);
@@ -206,14 +212,18 @@ void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64
 				// access element as *it
 				if ((*v).is_regular_file())
 				{
-					filecount++;
+					
 
-					FileDataEntry* f = new FileDataEntry();
-					(*f).nameAndPath = (*v).path().wstring();
-					(*f).name = (*v).path().filename().wstring();
-					(*f).path = (*v).path().parent_path().wstring();
-					fileDataEntries.push_back(f);
+					if (doesFilenameMatchFilter((*v).path().filename().wstring()))
+					{
+						filecount++;
 
+						FileDataEntry* f = new FileDataEntry();
+						(*f).nameAndPath = (*v).path().wstring();
+						(*f).name = (*v).path().filename().wstring();
+						(*f).path = (*v).path().parent_path().wstring();
+						fileDataEntries.push_back(f);
+					}
 				}
 				//if ((*v).is_directory())
 				//{
@@ -272,13 +282,16 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 					}
 					else if (is_regular_file(itr->status()))//.type() == std::filesystem::file_type::regular) //!= std::filesystem::file_type::not_found)//if (itr->path().filename() == file_name) // see below
 					{
-						filecount++;
+						if (doesFilenameMatchFilter(itr->path().filename().wstring()))
+						{
+							filecount++;
 
-						FileDataEntry *f = new FileDataEntry();
-						f->nameAndPath = itr->path().wstring();
-						f->name = itr->path().filename().wstring();
-						f->path = path;
-						fileDataEntries.push_back(f);
+							FileDataEntry* f = new FileDataEntry();
+							f->nameAndPath = itr->path().wstring();
+							f->name = itr->path().filename().wstring();
+							f->path = path;
+							fileDataEntries.push_back(f);
+						}
 					}
 				}
 				catch (std::filesystem::filesystem_error& e)
@@ -316,13 +329,16 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 				{
 				case DT_REG:
 				{
-					filecount++;
+					if (doesFilenameMatchFilter(ent->d_name))
+					{
+						filecount++;
 
-					FileDataEntry* f = new FileDataEntry();
-					f->nameAndPath = path + L"\\" + ent->d_name;
-					f->name = ent->d_name;
-					f->path = path;
-					fileDataEntries.push_back(f);
+						FileDataEntry* f = new FileDataEntry();
+						f->nameAndPath = path + L"\\" + ent->d_name;
+						f->name = ent->d_name;
+						f->path = path;
+						fileDataEntries.push_back(f);
+					}
 				}
 				break;
 				case DT_DIR:
@@ -405,12 +421,15 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 					}
 					else
 					{
-						filecount++;
-						FileDataEntry* f = new FileDataEntry();
-						f->nameAndPath = path + L"\\" + ffd.cFileName;
-						f->name = ffd.cFileName;
-						f->path = path;
-						fileDataEntries.push_back(f);
+						if (doesFilenameMatchFilter(ffd.cFileName))
+						{
+							filecount++;
+							FileDataEntry* f = new FileDataEntry();
+							f->nameAndPath = path + L"\\" + ffd.cFileName;
+							f->name = ffd.cFileName;
+							f->path = path;
+							fileDataEntries.push_back(f);
+						}
 					}
 				}
 			} while (FindNextFileW(hFind, &ffd) != 0);
@@ -1975,6 +1994,44 @@ bool compareFiles(const std::wstring& p1, const std::wstring& p2) {
 	return true;
 }
 
+
+bool Worker::doesFilenameMatchFilter(wstring name)
+{
+	//if * find all files
+	//if *.* find all files with any extension
+	//if *.ext find all files with .ext extension
+	//if .ext find all files containing *.ext*
+	//todo: if a123* find all files containing a123*
+	//todo: if a123*b find all files containing a123*b
+	//todo: regex
+
+
+	for (int i = 0; i < fileTypesList.size(); i++)
+	{
+		wstring f = fileTypesList.at(i);
+
+		if (f.compare(L"*") == 0)return true;
+		if (f.compare(L"*.*") == 0)return true;
+
+		//remove *
+
+		if (f.find(L"*.") != string::npos)
+		{
+			int pos = f.find(L"*.")+1;
+			wstring ext = f.substr(pos);
+			if(name.find(ext)!=string::npos)return true;
+		}
+		
+		if (name.find(f) != string::npos)return true;
+
+		return false;
+
+	}
+
+}
+
+
+
 void Worker::process()
 //void ok()
 {
@@ -2071,6 +2128,19 @@ void Worker::process()
 	CounterStart = li.QuadPart;
 	start = std::chrono::steady_clock::now();
 	filecount = 0;
+
+
+	QStringList QfileTypesList = QfileTypesString.split(u';');
+	
+	for (int i = 0; i < QfileTypesList.size(); i++)
+	{
+		fileTypesList.push_back(QfileTypesList.at(i).toStdWString());
+	} 
+
+
+
+
+
 
 	for (int i = 0; i < dirsToSearch.size(); i++)
 	{
@@ -2522,6 +2592,15 @@ void Worker::process()
 	//todo:
 
 
+	//implement database
+	//fill database with all default windows files from every windows version
+	//same with linux and macos
+	//maybe do the same with all common programs from ninite etc
+	
+	//deprioritize program files folders etc
+
+
+
 	//compare all dates, try to decide correct date
 	//maybe set that date as created for dupes that don't have it
 	//compare dates and filenames for duplicates
@@ -2532,7 +2611,8 @@ void Worker::process()
 
 
 
-
+		//regex name search?
+	//regex content search?
 
 
 

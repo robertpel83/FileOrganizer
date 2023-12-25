@@ -518,6 +518,8 @@ public:
 
 	bool scanSubDirs = true;
 
+	QString QfileTypesString;
+	vector<wstring> fileTypesList;
 	//wstring startpath = L"F:\\_games\\";
 
 	//#define DB_LOCATION L"locate.db"
@@ -556,6 +558,7 @@ private:
 	void getDateFromFilenameForAllFiles();
 	bool extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int& y);
 	void getDatesFromEXIFDataForAllFiles();
+	bool doesFilenameMatchFilter(wstring name);
 
 };
 

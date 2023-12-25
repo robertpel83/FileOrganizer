@@ -109,7 +109,7 @@
              <item>
               <widget class="QLabel" name="fileTypesLabel">
                <property name="text">
-                <string>File types (case insensitive, any separator)</string>
+                <string>Filename filter (case insensitive, extensions optional, semicolon separator)</string>
                </property>
               </widget>
              </item>
