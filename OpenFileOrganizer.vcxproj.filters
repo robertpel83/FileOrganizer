@@ -275,6 +275,9 @@
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="libs\sqlite-amalgamation-3440200\sqlite3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\dirent-1.23.2\include\dirent.h">
@@ -569,6 +572,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="getopt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\sqlite-amalgamation-3440200\sqlite3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -91,7 +91,7 @@
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;TRACEDESIGNTIME</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);.\;.\libs;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\heif-master;.\libs\libvips-8.13.2;.\libs\opencv-4.6.0-vc14_vc15\sources;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);.\;.\libs;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\heif-master;.\libs\libvips-8.13.2;.\libs\opencv-4.6.0-vc14_vc15\sources;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;.\libs\sqlite-amalgamation-3440200</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,7 +107,7 @@
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;TRACEDESIGNTIME</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);.\;.\libs;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\heif-master;.\libs\libvips-8.13.2;.\libs\opencv-4.6.0-vc14_vc15\sources;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);.\;.\libs;.\libs\dirent-1.23.2\include;.\libs\hash-library-master;.\libs\fstlib-develop\lib\fst;.\libs\fstlib-develop\lib\fsttable;.\libs\fstlib-develop\ext\lz4;.\libs\fstlib-develop\ext\zstd;.\libs\fstlib-develop\ext\zstd\common;.\libs\fstlib-develop\ext\gtest;.\libs\fstlib-develop\ext\gtest\include;.\libs\libexif-0.6.24;.\libs\TinyEXIF-master;.\libs\tinyxml2-master;.\libs\heif-master;.\libs\libvips-8.13.2;.\libs\opencv-4.6.0-vc14_vc15\sources;.\libs\imageinfo-master;.\libs\libjpeg-turbo-2.1.4-src;.\libs\sqlite-amalgamation-3440200</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,6 +130,7 @@
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-mnote-data.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-tag.c" />
     <ClCompile Include="libs\libexif-0.6.24\libexif\exif-utils.c" />
+    <ClCompile Include="libs\sqlite-amalgamation-3440200\sqlite3.c" />
     <ClCompile Include="OpenFileOrganizer.cpp">
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
@@ -304,6 +305,7 @@
     <ClInclude Include="libs\hash-library-master\sha3.h" />
     <ClInclude Include="libs\imageinfo-master\imageinfo.hpp" />
     <ClInclude Include="libs\libexif-0.6.24\config.h" />
+    <ClInclude Include="libs\sqlite-amalgamation-3440200\sqlite3.h" />
     <ClInclude Include="libs\unistd.h" />
   </ItemGroup>
   <ItemGroup>

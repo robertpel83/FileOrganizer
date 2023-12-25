@@ -30,6 +30,7 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 
 	//Connect button signal to appropriate slot
 	connect(ui.startPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleStartButton);
+	connect(ui.clearPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleClearButton);
 	connect(ui.addDirPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleAddDirButton);
 	connect(ui.removeDirPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleRemoveDirButton);
 	//connect(ui.startPushButton, &QPushButton::clicked, this, &OpenFileOrganizer::handleButton);
@@ -82,6 +83,10 @@ void OpenFileOrganizer::handleStartButton()
 	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 	thread->start();
 
+}
+void OpenFileOrganizer::handleClearButton()
+{
+	ui.consoleOutputPlainTextEdit->clear();
 }
 
 void OpenFileOrganizer::handleAddDirButton()

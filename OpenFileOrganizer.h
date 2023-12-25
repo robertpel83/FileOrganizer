@@ -86,7 +86,7 @@ using std::wstring;
 #include <setjmp.h>
 
 
-
+#include "sqlite3.h"
 
 
 
@@ -490,6 +490,7 @@ private:
 
 private slots:
 	void handleStartButton();
+	void handleClearButton();
 	void handleAddDirButton();
 	void handleRemoveDirButton();
 
