@@ -47,18 +47,23 @@ void OpenFileOrganizer::QMessageOutput(QtMsgType, const QMessageLogContext&, con
 
 void OpenFileOrganizer::handleStartButton()
 {
-	if (ui.listWidget->size().height() == 0)
+	if (ui.listWidget->count() == 0)
 	{
-		QWidget* popup = new QWidget(this, Qt::Popup | Qt::Dialog);
+		//QWidget* popup = new QWidget(this, Qt::Popup | Qt::Dialog);
+		//popup->setWindowModality(Qt::WindowModal);
+		//popup->show();
 
-	
+		QMessageBox msgBox;
+		msgBox.setText("No directories to scan.");
+		msgBox.exec();
 
-		popup->setWindowModality(Qt::WindowModal);
-		popup->show();
+		ui.consoleOutputPlainTextEdit->clear();
+		ui.consoleOutputPlainTextEdit->setPlainText(QString("No directories to scan."));
 
 		return;
 	}
 
+	ui.startPushButton->setDisabled(true);
 
 	QThread* thread = new QThread;
 	Worker* worker = new Worker();
@@ -69,10 +74,17 @@ void OpenFileOrganizer::handleStartButton()
 
 	for (int i = 0; i < ui.listWidget->count(); i++)
 	{
-		worker->dirsToSearch.push_back(ui.listWidget->item(i)->text().toStdWString());
+		worker->dirsToSearch.push_back(new wstring(ui.listWidget->item(i)->text().toStdWString()));
 	}
 
-	worker->QfileTypesString = ui.fileTypesLineEdit->text();
+
+	QStringList QfileTypesList = ui.fileTypesLineEdit->text().split(u';');
+
+	for (int i = 0; i < QfileTypesList.size(); i++)
+	{
+
+		worker->fileTypesList.push_back(new wstring(QfileTypesList.at(i).toStdWString()));
+	}
 
 
 	worker->moveToThread(thread);
@@ -2013,7 +2025,7 @@ bool Worker::doesFilenameMatchFilter(wstring name)
 
 	for (int i = 0; i < fileTypesList.size(); i++)
 	{
-		wstring f = fileTypesList.at(i);
+		wstring f = wstring(*(fileTypesList.at(i)));
 
 		if (f.compare(L"*") == 0)return true;
 		if (f.compare(L"*.*") == 0)return true;
@@ -2022,7 +2034,7 @@ bool Worker::doesFilenameMatchFilter(wstring name)
 
 		if (f.find(L"*.") != string::npos)
 		{
-			int pos = f.find(L"*.")+1;
+			size_t pos = f.find(L"*.")+1;
 			wstring ext = f.substr(pos);
 			if(name.find(ext)!=string::npos)return true;
 		}
@@ -2135,12 +2147,7 @@ void Worker::process()
 	filecount = 0;
 
 
-	QStringList QfileTypesList = QfileTypesString.split(u';');
-	
-	for (int i = 0; i < QfileTypesList.size(); i++)
-	{
-		fileTypesList.push_back(QfileTypesList.at(i).toStdWString());
-	} 
+
 
 
 
@@ -2149,7 +2156,7 @@ void Worker::process()
 
 	for (int i = 0; i < dirsToSearch.size(); i++)
 	{
-		listFilesWindowsFindFirstFile(dirsToSearch.at(i), filecount);
+		listFilesWindowsFindFirstFile(wstring(*dirsToSearch.at(i)), filecount);
 	}
 
 	std::wcout << L"Files found: " << filecount << std::endl;

@@ -305,6 +305,7 @@ public:
 #include <QPlainTextEdit>
 #include <qthread.h>
 #include <QFileDialog>
+#include <QMessageBox>
 
 class QDebugStream : public std::wstreambuf
 {
@@ -509,18 +510,22 @@ public:
 		//std::wcout << L"Hello this is a test" << std::endl;
 		//db = NULL;
 	}
+
+	vector<wstring*> dirsToSearch;
+	vector<wstring*> fileTypesList;
+
 	vector<FileDataEntry*> fileDataEntries;
 	vector<vector<FileDataEntry*>*> duplicates;
+
 	std::chrono::steady_clock::time_point start;
 	std::chrono::steady_clock::time_point firststart;
 	bool isWindows = false;
 
-	vector<wstring> dirsToSearch;
 
 	bool scanSubDirs = true;
 
-	QString QfileTypesString;
-	vector<wstring> fileTypesList;
+
+	
 	//wstring startpath = L"F:\\_games\\";
 
 	//#define DB_LOCATION L"locate.db"
