@@ -19,7 +19,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>   // std::vector
-#include <wchar.h>
+
 
 
 #include "atlbase.h"
@@ -47,6 +47,10 @@ using std::wstring;
 #include <io.h>     // _setmode
 #include <fcntl.h>  // _O_U16TEXT
 
+#include <wchar.h>
+
+//for linux locale?
+#include <locale.h>
 
 
 #include <sys/types.h>
@@ -59,6 +63,7 @@ using std::wstring;
 //#define wstat _wstat
 //#define stat _stat
 //#endif
+
 
 
 
@@ -86,7 +91,19 @@ using std::wstring;
 #include <setjmp.h>
 
 
-#include "sqlite3.h"
+#include <sqlite3.h>
+
+
+
+#include <QtWidgets/QMainWindow>
+#include "ui_OpenFileOrganizer.h"
+#include <QPlainTextEdit>
+#include <qthread.h>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QtWidgets/QApplication>
+
+
 
 
 
@@ -300,12 +317,7 @@ public:
 
 
 
-#include <QtWidgets/QMainWindow>
-#include "ui_OpenFileOrganizer.h"
-#include <QPlainTextEdit>
-#include <qthread.h>
-#include <QFileDialog>
-#include <QMessageBox>
+
 
 class QDebugStream : public std::wstreambuf
 {

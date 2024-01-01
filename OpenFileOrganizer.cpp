@@ -2049,6 +2049,29 @@ bool Worker::doesFilenameMatchFilter(wstring name)
 
 
 
+//Below is a simple C program that demonstrates how to use the C / C++ interface to SQLite.
+//The name of a database is given by the first argument and the second argument is one or more SQL statements to execute against the database.
+//The function calls to pay attention to here are the call to sqlite3_open() on line 22 which opens the database, sqlite3_exec() on line 28 
+//that executes SQL commands against the database, and sqlite3_close() on line 33 that closes the database connection.
+
+//See also the Introduction To The SQLite C / C++ Interface for an introductory overview and roadmap to the dozens of SQLite interface functions.
+
+
+
+static int sqlite3callback(void* NotUsed, int argc, char** argv, char** azColName)
+{
+	int i;
+	for (i = 0; i < argc; i++)
+	{
+		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+
+	}
+	printf("\n");
+	return 0;
+
+}
+
+
 void Worker::process()
 //void ok()
 {
@@ -2058,6 +2081,37 @@ void Worker::process()
 #else
 	isWindows = false;
 #endif
+
+
+	sqlite3* db;
+	char* zErrMsg = 0;
+	int rc;
+	string dbname = "index.db";
+
+	//get current application directory to make portable
+	//different databases for different functions?
+	//ignore.db
+	//ignoreWindows.db
+	//ignoreLinux.db
+	//ignoreMacOS.db
+
+	rc = sqlite3_open(dbname.c_str(), &db);
+	if (rc)
+	{
+		std::wcout << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+		//fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return;
+
+	}
+	rc = sqlite3_exec(db, "sql command", sqlite3callback, 0, &zErrMsg);
+	if (rc != SQLITE_OK)
+	{
+		std::wcout << "SQL error: " << zErrMsg << std::endl;
+		//fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	}
+
 
 	//if (db == NULL)
 	//{
@@ -2583,6 +2637,51 @@ void Worker::process()
 
 
 
+
+	std::wcout << L"Finished." << std::endl;
+	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - firststart) << std::endl;
+
+
+	//emit finished();
+
+
+	sqlite3_close(db);
+
+
+}
+
+
+
+
+
+
+
+
+
+//implement database
+
+
+
+
+//fill database with all default windows files from every windows version
+//same with linux and macos
+//maybe do the same with all common programs from ninite etc
+//filesize, filename, directory path, created dates, modified dates, hashes
+//have 100% certain database based on all info
+//then have heuristic guesses based on similarity
+
+//deprioritize program files folders, os folders, etc
+
+
+
+
+
+
+
+
+
+
+
 	//connect gui elements, do tooltips and info and options and stuff
 
 
@@ -2604,13 +2703,6 @@ void Worker::process()
 	//todo:
 
 
-	//implement database
-	//fill database with all default windows files from every windows version
-	//same with linux and macos
-	//maybe do the same with all common programs from ninite etc
-	
-	//deprioritize program files folders etc
-
 
 
 	//compare all dates, try to decide correct date
@@ -2631,7 +2723,7 @@ void Worker::process()
 	//maybe get gtk working
 
 
-	
+
 
 
 
@@ -2644,7 +2736,7 @@ void Worker::process()
 
 
 	//check file hashes to online databases
-	
+
 
 
 
@@ -2774,23 +2866,6 @@ void Worker::process()
 	//somehow make part of filesystem or explorer extension, run system wide search
 
 	//switch to linux, test program, embed in gnome?
-
-
-
-	std::wcout << L"Finished." << std::endl;
-	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - firststart) << std::endl;
-
-
-	//emit finished();
-
-}
-
-
-
-
-
-
-
 
 
 
