@@ -79,17 +79,7 @@
           <layout class="QVBoxLayout" name="optionsVerticalLayout">
            <item>
             <layout class="QGridLayout" name="optionsGridLayout">
-             <item row="2" column="1">
-              <widget class="QCheckBox" name="scanSubDirsCheckBox">
-               <property name="text">
-                <string>Scan subdirectories</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3">
+             <item row="2" column="2">
               <spacer name="horizontalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -102,10 +92,13 @@
                </property>
               </spacer>
              </item>
-             <item row="2" column="2">
-              <widget class="QCheckBox" name="addAllFilesToIgnoreDatabaseCheckBox">
+             <item row="2" column="1">
+              <widget class="QCheckBox" name="scanSubDirsCheckBox">
                <property name="text">
-                <string>Add all files to ignore database</string>
+                <string>Scan subdirectories</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -167,6 +160,13 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ignoreDirsPushButton">
+             <property name="text">
+              <string>Ignore</string>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="clearPushButton">

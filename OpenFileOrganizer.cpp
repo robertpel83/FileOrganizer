@@ -1,8 +1,11 @@
 #include "OpenFileOrganizer.h"
 
+
+
+//==============================================================================================================================================================
 OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 	: QMainWindow(parent)
-{
+{//==============================================================================================================================================================
 	ui.setupUi(this);
 
 	//QDebugStream qout(std::wcout, ui.scanDirsPlainTextEdit);
@@ -23,16 +26,12 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 	connect(m_qd, &ThreadLogStream::sendLogString, msgHandler, &MessageHandler::catchMessage);
 
 
-
-	
-
-
-
 	//Connect button signal to appropriate slot
 	connect(ui.startPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleStartButton);
 	connect(ui.clearPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleClearButton);
 	connect(ui.addDirPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleAddDirButton);
 	connect(ui.removeDirPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleRemoveDirButton);
+	connect(ui.ignoreDirsPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleIgnoreDirsButton);
 	//connect(ui.startPushButton, &QPushButton::clicked, this, &OpenFileOrganizer::handleButton);
 
 }
@@ -40,33 +39,48 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 OpenFileOrganizer::~OpenFileOrganizer()
 {}
 
+//==============================================================================================================================================================
 void OpenFileOrganizer::QMessageOutput(QtMsgType, const QMessageLogContext&, const QString& msg)
-{
+{//==============================================================================================================================================================
 	std::wcout << msg.toStdWString() << std::endl;
 }
 
-void OpenFileOrganizer::handleStartButton()
-{
-	if (ui.listWidget->count() == 0)
+//==============================================================================================================================================================
+void OpenFileOrganizer::initWorker(Worker* worker)
+{//==============================================================================================================================================================
+
+
+	//get current application directory to make portable
+	//different databases for different functions?
+	//ignore.sql
+
+	worker->rc = sqlite3_open(worker->dbname.c_str(), &worker->db);
+	if (worker->rc)
 	{
-		//QWidget* popup = new QWidget(this, Qt::Popup | Qt::Dialog);
-		//popup->setWindowModality(Qt::WindowModal);
-		//popup->show();
-
-		QMessageBox msgBox;
-		msgBox.setText("No directories to scan.");
-		msgBox.exec();
-
-		ui.consoleOutputPlainTextEdit->clear();
-		ui.consoleOutputPlainTextEdit->setPlainText(QString("No directories to scan."));
-
+		std::wcout << "Can't open database: " << sqlite3_errmsg(worker->db) << std::endl;
+		sqlite3_close(worker->db);
 		return;
 	}
 
-	ui.startPushButton->setDisabled(true);
 
-	QThread* thread = new QThread;
-	Worker* worker = new Worker();
+	worker->ignorerc = sqlite3_open(worker->ignoredbname.c_str(), &worker->ignoredb);
+	if (worker->ignorerc)
+	{
+		std::wcout << "Can't open database: " << sqlite3_errmsg(worker->ignoredb) << std::endl;
+		sqlite3_close(worker->ignoredb);
+		return;
+	}
+
+	//if (db == NULL)
+	//{
+	//    errno_t error;
+	//    error = _wfopen_s(&db, DB_LOCATION, L"wt, ccs=UNICODE");
+	//    if (error)
+	//    {
+	//        wprintf(L"Cannot open %s\n", DB_LOCATION);
+	//        exit(EXIT_FAILURE);
+	//    }
+	//}
 
 	worker->dirsToSearch.clear();
 
@@ -85,8 +99,32 @@ void OpenFileOrganizer::handleStartButton()
 
 		worker->fileTypesList.push_back(new wstring(QfileTypesList.at(i).toStdWString()));
 	}
+}
+
+//==============================================================================================================================================================
+void OpenFileOrganizer::handleStartButton()
+{//==============================================================================================================================================================
+	
+	
+	Worker* worker = new Worker();
+
+	if (ui.listWidget->count() == 0)
+	{
+		QMessageBox msgBox;
+		msgBox.setText("No directories to scan.");
+		msgBox.exec();
+		ui.consoleOutputPlainTextEdit->clear();
+		ui.consoleOutputPlainTextEdit->setPlainText(QString("No directories to scan."));
+		return;
+	}
+
+	ui.startPushButton->setDisabled(true);
 
 
+	initWorker(worker);
+
+
+	QThread* thread = new QThread;
 	worker->moveToThread(thread);
 	//connect( worker, &error, this, &OpenFileOrganizer::errorString);
 	connect(thread, &QThread::started, worker, &Worker::process);
@@ -96,13 +134,49 @@ void OpenFileOrganizer::handleStartButton()
 	thread->start();
 
 }
+//==============================================================================================================================================================
+void OpenFileOrganizer::handleIgnoreDirsButton()
+{//==============================================================================================================================================================
+	
+
+	
+	Worker* worker = new Worker();
+
+	if (ui.listWidget->count() == 0)
+	{
+		QMessageBox msgBox;
+		msgBox.setText("No directories to scan.");
+		msgBox.exec();
+		ui.consoleOutputPlainTextEdit->clear();
+		ui.consoleOutputPlainTextEdit->setPlainText(QString("No directories to scan."));
+		return;
+	}
+
+	ui.ignoreDirsPushButton->setDisabled(true);
+
+	initWorker(worker);
+
+	QThread* thread = new QThread;
+	worker->moveToThread(thread);
+	//connect( worker, &error, this, &OpenFileOrganizer::errorString);
+	connect(thread, &QThread::started, worker, &Worker::processIgnore);
+	connect(worker, &Worker::finished, thread, &QThread::quit);
+	connect(worker, &Worker::finished, worker, &Worker::deleteLater);
+	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+	thread->start();
+
+}
+
+//==============================================================================================================================================================
 void OpenFileOrganizer::handleClearButton()
-{
+{//==============================================================================================================================================================
 	ui.consoleOutputPlainTextEdit->clear();
 }
 
+
+//==============================================================================================================================================================
 void OpenFileOrganizer::handleAddDirButton()
-{
+{//==============================================================================================================================================================
 	//QFileDialog dialog(this);
 	//dialog.setFileMode(QFileDialog::AnyFile);
 
@@ -118,8 +192,10 @@ void OpenFileOrganizer::handleAddDirButton()
 
 }
 
+
+//==============================================================================================================================================================
 void OpenFileOrganizer::handleRemoveDirButton()
-{
+{//==============================================================================================================================================================
 
 	QList<QListWidgetItem*> items = ui.listWidget->selectedItems();
 
@@ -132,50 +208,64 @@ void OpenFileOrganizer::handleRemoveDirButton()
 
 }
 
+
+//==============================================================================================================================================================
 std::string convertWideToANSI(const std::wstring& wstr)
-{
+{//==============================================================================================================================================================
 	int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
 	std::string str(count, 0);
 	WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
 	return str;
 }
 
+
+//==============================================================================================================================================================
 std::wstring convertAnsiToWide(const std::string& str)
-{
+{//==============================================================================================================================================================
 	int count = MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0);
 	std::wstring wstr(count, 0);
 	MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), &wstr[0], count);
 	return wstr;
 }
 
+
+//==============================================================================================================================================================
 std::string convertWideToUtf8(const std::wstring& wstr)
-{
+{//==============================================================================================================================================================
 	int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
 	std::string str(count, 0);
 	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
 	return str;
 }
 
+
+//==============================================================================================================================================================
 std::wstring convertUtf8ToWide(const std::string& str)
-{
+{//==============================================================================================================================================================
 	int count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), NULL, 0);
 	std::wstring wstr(count, 0);
 	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), &wstr[0], count);
 	return wstr;
 }
 
+
+//==============================================================================================================================================================
 std::wstring convertStringToWStringUsingFilesystem(std::string s)
-{
+{//==============================================================================================================================================================
 	return std::filesystem::path(s).wstring();
 }
 
+
+//==============================================================================================================================================================
 std::wstring convertWStringToStringUsingFilesystem(std::wstring w)
-{
+{//==============================================================================================================================================================
 	return std::filesystem::path(w).wstring();
 }
 
+
+//==============================================================================================================================================================
 void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
-{
+{//==============================================================================================================================================================
 	char buf[2000];
 	exif_entry_get_value(entry, buf, sizeof(buf));
 	std::wcout << convertUtf8ToWide(exif_tag_get_name(entry->tag)) << L" " <<
@@ -185,8 +275,10 @@ void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
 		convertUtf8ToWide(exif_entry_get_value(entry, buf, sizeof(buf))) << std::endl;
 }
 
+
+//==============================================================================================================================================================
 void data_foreach_func(ExifContent* content, void* callback_data)
-{
+{//==============================================================================================================================================================
 	static unsigned content_count;
 	std::wcout << exif_content_get_ifd(content) << std::endl;
 	exif_content_foreach_entry(content, content_foreach_func, callback_data);
@@ -194,12 +286,12 @@ void data_foreach_func(ExifContent* content, void* callback_data)
 }
 
 
-
+//==============================================================================================================================================================
 //C++ subdirectory file list using recursiveDirectoryIteratorIncrement
 //std::unordered_set<wstring> recursiveDirectoryIteratorIncrementPaths;
 //for whatever reason, recursive_directory_iterator cannot read "All Users" folder, but directory_iterator can. weird.
 void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64& filecount)
-{
+{//==============================================================================================================================================================
 	if (scanSubDirs == false)
 	{
 		directoryIteratorRecursive(startpath, filecount);
@@ -257,10 +349,10 @@ void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64
 }
 
 
-
+//==============================================================================================================================================================
 //C++ subdirectory file list using directoryIteratorIncrement
 void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _int64& filecount)
-{
+{//==============================================================================================================================================================
 	if (!exists(dir_path))
 	{
 		std::wcout << dir_path.c_str() << L" does not exist" << std::endl;
@@ -322,10 +414,12 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 
 }
 
+
+//==============================================================================================================================================================
 //C subdirectory file list using dirent.h library
 // Find files recursively 
 void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wchar_t* dirname
-{
+{//==============================================================================================================================================================
 	std::stack<wstring> directories;
 	directories.push(startPath);
 
@@ -385,11 +479,11 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 	}
 }
 
-
+//==============================================================================================================================================================
 //C++ subdirectory file list using Windows FindFirstFileExW
 //std::unordered_set<wstring> findFirstFilePaths;
 void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& filecount)
-{
+{//==============================================================================================================================================================
 
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
@@ -464,9 +558,9 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 }
 
 
-
+//==============================================================================================================================================================
 __int64 Worker::getFileSizeWindows(FileDataEntry* f)//wstring fileNameAndPath)
-{
+{//==============================================================================================================================================================
 	HANDLE hFile = CreateFileW(f->nameAndPath.c_str(), GENERIC_READ,
 		FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL, NULL);
@@ -506,8 +600,10 @@ __int64 Worker::getFileSizeWindows(FileDataEntry* f)//wstring fileNameAndPath)
 	return size.QuadPart;
 }
 
+
+//==============================================================================================================================================================
 BY_HANDLE_FILE_INFORMATION Worker::getFileInformationByHandleWindows(wstring fileNameAndPath)
-{
+{//==============================================================================================================================================================
 	{
 		HANDLE hFile = CreateFileW(fileNameAndPath.c_str(), GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
@@ -545,8 +641,10 @@ BY_HANDLE_FILE_INFORMATION Worker::getFileInformationByHandleWindows(wstring fil
 	}
 }
 
+
+//==============================================================================================================================================================
 __int64 Worker::getFileSizeFromHandleFileInformationWindows(FileDataEntry* f)//wstring fileNameAndPath)
-{
+{//==============================================================================================================================================================
 	BY_HANDLE_FILE_INFORMATION info = getFileInformationByHandleWindows(f->nameAndPath);
 	__int64 max = MAXDWORD;
 	max += 1;
@@ -555,8 +653,10 @@ __int64 Worker::getFileSizeFromHandleFileInformationWindows(FileDataEntry* f)//w
 	return size;
 }
 
+
+//==============================================================================================================================================================
 WIN32_FILE_ATTRIBUTE_DATA Worker::getFileAttributesWindows(wstring fileNameAndPath)
-{
+{//==============================================================================================================================================================
 	WIN32_FILE_ATTRIBUTE_DATA fileInfo;
 	if (!GetFileAttributesExW(fileNameAndPath.c_str(), GetFileExInfoStandard, &fileInfo))
 	{
@@ -583,8 +683,11 @@ WIN32_FILE_ATTRIBUTE_DATA Worker::getFileAttributesWindows(wstring fileNameAndPa
 	*/
 	return fileInfo;
 }
+
+
+//==============================================================================================================================================================
 __int64 Worker::getFileSizeFromFileAttributesWindows(FileDataEntry* f)//wstring fileNameAndPath)
-{
+{//==============================================================================================================================================================
 	WIN32_FILE_ATTRIBUTE_DATA info = getFileAttributesWindows(f->nameAndPath);
 	__int64 max = MAXDWORD;
 	max += 1;
@@ -593,8 +696,11 @@ __int64 Worker::getFileSizeFromFileAttributesWindows(FileDataEntry* f)//wstring 
 	return size;
 }
 
+
+
+//==============================================================================================================================================================
 long long Worker::getFileSizeWStat(FileDataEntry* f)//std::wstring filename)
-{
+{//==============================================================================================================================================================
 	struct _stat64 stat_buf;
 	long long rc = _wstat64(f->nameAndPath.c_str(), &stat_buf);
 	long long size = rc == 0 ? stat_buf.st_size : -1;
@@ -602,16 +708,18 @@ long long Worker::getFileSizeWStat(FileDataEntry* f)//std::wstring filename)
 	return size;
 }
 
-
+//==============================================================================================================================================================
 long long Worker::getFileSizeFStat(int _FileHandle)
-{
+{//==============================================================================================================================================================
 	struct _stat64 stat_buf;
 	long long rc = _fstat64(_FileHandle, &stat_buf);
 	return rc == 0 ? stat_buf.st_size : -1;
 }
 
+
+//==============================================================================================================================================================
 uintmax_t Worker::getFileSizeFilesystem(FileDataEntry* f)//std::filesystem::path p)
-{
+{//==============================================================================================================================================================
 	std::error_code ec;
 	uintmax_t size = std::filesystem::file_size(std::filesystem::path(f->nameAndPath), ec);
 	if (ec)
@@ -622,8 +730,10 @@ uintmax_t Worker::getFileSizeFilesystem(FileDataEntry* f)//std::filesystem::path
 	return size;
 }
 
+
+//==============================================================================================================================================================
 uintmax_t Worker::getFileSizeFilesystemDirectoryEntry(FileDataEntry* f)//std::filesystem::directory_entry d)
-{
+{//==============================================================================================================================================================
 	std::error_code ec;
 	uintmax_t size = std::filesystem::directory_entry(f->nameAndPath).file_size(ec);
 	if (ec)
@@ -634,9 +744,9 @@ uintmax_t Worker::getFileSizeFilesystemDirectoryEntry(FileDataEntry* f)//std::fi
 	return size;
 }
 
-
+//==============================================================================================================================================================
 long long Worker::getFileSizeWithIfstream(wstring name)
-{
+{//==============================================================================================================================================================
 	std::ifstream file;
 	file.open(name, std::ios::in | std::ios::binary);
 	file.ignore(LLONG_MAX);// std::numeric_limits<std::streamsize>::max());
@@ -647,9 +757,9 @@ long long Worker::getFileSizeWithIfstream(wstring name)
 	return length;
 }
 
-
+//==============================================================================================================================================================
 void Worker::getSizeForAllFiles()
-{
+{//==============================================================================================================================================================
 	__int64 size = 0;
 
 	if (isWindows)
@@ -740,9 +850,9 @@ void Worker::getSizeForAllFiles()
 }
 
 
-
+//==============================================================================================================================================================
 void Worker::getFileCreatedModifiedDateWindows(FileDataEntry* f)
-{
+{//==============================================================================================================================================================
 	WIN32_FILE_ATTRIBUTE_DATA info = getFileAttributesWindows(f->nameAndPath);
 	FILETIME ct = info.ftCreationTime;
 	FILETIME mt = info.ftLastWriteTime;
@@ -786,13 +896,17 @@ void Worker::getFileCreatedModifiedDateWindows(FileDataEntry* f)
 	//std::wcout << "Modified date:" << modifiedDateString;// << std::endl;
 }
 
+
+//==============================================================================================================================================================
 void Worker::getFileCreatedModifiedDateFilesystem(FileDataEntry* f)
-{
+{//==============================================================================================================================================================
 	//Creation time can't be accessed through std::filesystem
 }
 
+
+//==============================================================================================================================================================
 void Worker::getFileCreatedModifiedDateWStat(FileDataEntry* f)
-{
+{//==============================================================================================================================================================
 	time_t createdTime = 0;
 	time_t modifiedTime = 0;
 	wstring createdDateString;
@@ -833,9 +947,11 @@ void Worker::getFileCreatedModifiedDateWStat(FileDataEntry* f)
 	}
 }
 
+
+//==============================================================================================================================================================
 //create and modify date
 void Worker::getCreatedAndLastModifiedDateForAllFiles()
-{
+{//==============================================================================================================================================================
 
 	if (isWindows)
 	{
@@ -866,8 +982,10 @@ void Worker::getCreatedAndLastModifiedDateForAllFiles()
 
 }
 
+
+//==============================================================================================================================================================
 void Worker::getFastHash(FileDataEntry* f)
-{
+{//==============================================================================================================================================================
 	if (f->crc32.empty() == false)return;
 	if (f->md5.empty() == false)return;
 	if (f->sha1.empty() == false)return;
@@ -1041,9 +1159,9 @@ void Worker::getFastHash(FileDataEntry* f)
 	//}
 }
 
-
+//==============================================================================================================================================================
 void Worker::getFastHashForAllFiles()
-{
+{//==============================================================================================================================================================
 
 	//It makes an extra pass of the file list to create a 'fasthash'. The fasthash uses small samples of the file(16 kilobytes),
 	//taken from the beginning, end, and three places in the middle; then does a duplicate check based on the hash of the samples.
@@ -1060,8 +1178,10 @@ void Worker::getFastHashForAllFiles()
 }
 
 
+
+//==============================================================================================================================================================
 void Worker::getDateFromFilenameForAllFiles()
-{
+{//==============================================================================================================================================================
 
 
 	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
@@ -1627,10 +1747,10 @@ void Worker::getDateFromFilenameForAllFiles()
 
 
 
-
+//==============================================================================================================================================================
 // function expects the string in format dd/mm/yyyy:
 bool Worker::extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int& y)
-{
+{//==============================================================================================================================================================
 	std::istringstream is(s);
 	char delimiter;
 	if (is >> m >> delimiter >> d >> delimiter >> y) {
@@ -1665,9 +1785,9 @@ bool Worker::extractDateMM_DD_YYorYYYY(const std::string& s, int& d, int& m, int
 }
 
 
-
+//==============================================================================================================================================================
 void Worker::getDatesFromEXIFDataForAllFiles()
-{
+{//==============================================================================================================================================================
 
 	//if file is an image get exif data, timestamps
 	//look at all possible timestamp values in exif
@@ -1919,7 +2039,10 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 
 }
 
-//bool compareFiles(const std::wstring& p1, const std::wstring& p2) {
+
+//==============================================================================================================================================================
+//bool compareFiles(const std::wstring& p1, const std::wstring& p2) 
+// {//==============================================================================================================================================================
 //	std::ifstream f1(p1, std::ifstream::binary | std::ifstream::ate);
 //	std::ifstream f2(p2, std::ifstream::binary | std::ifstream::ate);
 //
@@ -1939,7 +2062,9 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 //		std::istreambuf_iterator<char>(f2.rdbuf()));
 //
 
-bool compareFiles(const std::wstring& p1, const std::wstring& p2) {
+//==============================================================================================================================================================
+bool compareFiles(const std::wstring& p1, const std::wstring& p2) 
+{//==============================================================================================================================================================
 	std::ifstream f1(p1, std::ifstream::binary | std::ifstream::ate);
 	std::ifstream f2(p2, std::ifstream::binary | std::ifstream::ate);
 
@@ -2011,9 +2136,9 @@ bool compareFiles(const std::wstring& p1, const std::wstring& p2) {
 	return true;
 }
 
-
+//==============================================================================================================================================================
 bool Worker::doesFilenameMatchFilter(wstring name)
-{
+{//==============================================================================================================================================================
 	//if * find all files
 	//if *.* find all files with any extension
 	//if *.ext find all files with .ext extension
@@ -2057,9 +2182,9 @@ bool Worker::doesFilenameMatchFilter(wstring name)
 //See also the Introduction To The SQLite C / C++ Interface for an introductory overview and roadmap to the dozens of SQLite interface functions.
 
 
-
+//==============================================================================================================================================================
 static int sqlite3callback(void* NotUsed, int argc, char** argv, char** azColName)
-{
+{//==============================================================================================================================================================
 	int i;
 	for (i = 0; i < argc; i++)
 	{
@@ -2071,10 +2196,10 @@ static int sqlite3callback(void* NotUsed, int argc, char** argv, char** azColNam
 
 }
 
-
+//===============================================================================================================================================================
 void Worker::process()
 //void ok()
-{
+{//==============================================================================================================================================================
 
 #ifdef WIN32
 	isWindows = true;
@@ -2083,57 +2208,12 @@ void Worker::process()
 #endif
 
 
-	sqlite3* db;
-	char* zErrMsg = 0;
-	int rc;
-	string dbname = "index.db";
-
-	//get current application directory to make portable
-	//different databases for different functions?
-	//ignore.db
-	//ignoreWindows.db
-	//ignoreLinux.db
-	//ignoreMacOS.db
-
-	rc = sqlite3_open(dbname.c_str(), &db);
-	if (rc)
-	{
-		std::wcout << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
-		//fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-		sqlite3_close(db);
-		return;
-
-	}
-	rc = sqlite3_exec(db, "sql command", sqlite3callback, 0, &zErrMsg);
-	if (rc != SQLITE_OK)
-	{
-		std::wcout << "SQL error: " << zErrMsg << std::endl;
-		//fprintf(stderr, "SQL error: %s\n", zErrMsg);
-		sqlite3_free(zErrMsg);
-	}
-
-
-	//if (db == NULL)
-	//{
-	//    errno_t error;
-	//    error = _wfopen_s(&db, DB_LOCATION, L"wt, ccs=UNICODE");
-	//    if (error)
-	//    {
-	//        wprintf(L"Cannot open %s\n", DB_LOCATION);
-	//        exit(EXIT_FAILURE);
-	//    }
-	//}
-
-
 	
-	_int64 filecount = 0;
-	LARGE_INTEGER li;
 
-	_int64 CounterStart = 0;
-	_int64 msPassed = 0;
+
 
 	QueryPerformanceFrequency(&li);
-	double PCFreq = double(li.QuadPart) / 1000.0;
+	PCFreq = double(li.QuadPart) / 1000.0;
 
 
 
@@ -2583,25 +2663,21 @@ void Worker::process()
 			if ((*v)[c]->createdDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->createdDateString << std::endl;
-
 				dateStrings.push_back(((*v)[c]->createdDateString));
 			}
 			if ((*v)[c]->modifiedDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->modifiedDateString << std::endl;
-
 				dateStrings.push_back(((*v)[c]->modifiedDateString));
 			}
 			if ((*v)[c]->fileNameDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->fileNameDateString << std::endl;
-
 				dateStrings.push_back(((*v)[c]->fileNameDateString));
 			}
 			if ((*v)[c]->exifDateString.length() > 2) 
 			{ 
 				//std::wcout << (*v)[c]->exifDateString << std::endl;
-
 				dateStrings.push_back(((*v)[c]->exifDateString));
 			}
 		}
@@ -2642,14 +2718,264 @@ void Worker::process()
 	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - firststart) << std::endl;
 
 
-	//emit finished();
+	
+
+
+
+	bool addToDB = true;
+	if (addToDB)
+	{
+		char* zErrMsg;
+		FileDataEntry* f;
+
+		string sql1 = "INSERT INTO \"main\".\"FILES\"(\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"fileNameTime\", \"exifTime\", \"otherTime\", \"bestGuessTime\")VALUES(";
+		string sql2 = "'path', ";// +f->path.c_str() + " ', ";
+		string sql3 = "'name', ";
+		string sql4 = "'size', ";
+		string sql5 = "'createdTime', ";
+		string sql6 = "'modifiedTime', ";
+		string sql7 = "'fileNameTime', ";
+		string sql8 = "'exifTime', ";
+		string sql9 = "'otherTime', ";
+		string sql10 = "'bestGuessTime'";
+		string sql11 = "); ";
+
+		string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11;
+
+		rc = sqlite3_exec(db, sqlstatement.c_str(), sqlite3callback, 0, &zErrMsg);
+		if(rc != SQLITE_OK)
+		{
+			std::wcout << "SQL error: " << zErrMsg << std::endl;
+			//fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
+		}
+	}
 
 
 	sqlite3_close(db);
+	sqlite3_close(ignoredb);
+
+	emit finished();
 
 
 }
 
+
+
+//===============================================================================================================================================================
+void Worker::processIgnore()
+//void ok()
+{//==============================================================================================================================================================
+
+#ifdef WIN32
+	isWindows = true;
+#else
+	isWindows = false;
+#endif
+
+	QueryPerformanceFrequency(&li);
+	PCFreq = double(li.QuadPart) / 1000.0;
+
+	//std::wcout << L"directoryIteratorRecursive" << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//CounterStart = li.QuadPart;
+	//start = std::chrono::steady_clock::now();
+	//filecount = 0;
+	//
+	//directoryIteratorRecursive(startpath, filecount);
+	//
+	//std::wcout << L"Files found: " << filecount << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+	//std::wcout << L"direntScanDirectory" << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//CounterStart = li.QuadPart;
+	//start = std::chrono::steady_clock::now();
+	//filecount = 0;
+	//
+	//direntScanDirectory(startpath,filecount);
+	//
+	//std::wcout << L"Files found: " << filecount << std::endl;
+	//
+	//QueryPerformanceCounter(&li);
+	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+
+	firststart = std::chrono::steady_clock::now();
+	std::wcout << L"listFilesWindowsFindFirstFile" << std::endl;
+
+	QueryPerformanceCounter(&li);
+	CounterStart = li.QuadPart;
+	start = std::chrono::steady_clock::now();
+	filecount = 0;
+
+	for (int i = 0; i < dirsToSearch.size(); i++)
+	{
+		listFilesWindowsFindFirstFile(wstring(*dirsToSearch.at(i)), filecount);
+	}
+
+	std::wcout << L"Files found: " << filecount << std::endl;
+
+	QueryPerformanceCounter(&li);
+	msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+	//std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
+	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+
+	getSizeForAllFiles();
+
+	getCreatedAndLastModifiedDateForAllFiles();
+
+	//if (false)
+		getFastHashForAllFiles();
+
+	//if(false)
+	getDateFromFilenameForAllFiles();
+
+	//if(false)
+	getDatesFromEXIFDataForAllFiles();
+
+
+
+
+	//You can use std::swap to swap two values.
+	//And also you may want to compare to std::sort(which is typically an introsort : a quick sort + insertion sort for small sizes),
+	//std::stable_sort(typically a merge sort), and std::make_heap + std::sort_heap(heap sort)
+	{
+		//sort by file size
+
+		std::wcout << L"Start sort by size" << std::endl;
+		start = std::chrono::steady_clock::now();
+
+		//std::sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//56s 494k files
+		std::stable_sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//53s 494k files
+
+		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+	}
+
+	std::wcout << L"Found " << fileDataEntries.size() << L" files." << std::endl;
+	
+
+
+
+	for (unsigned long long b = 0; b < duplicates.size(); b++)
+	{
+		vector<FileDataEntry*>* v = duplicates[b];
+
+		std::wcout << L"All names for duplicate " << b << L": " << std::endl;
+
+		for (unsigned long long c = 0; c < v->size(); c++)
+		{
+			std::wcout << (*v)[c]->name << std::endl;
+		}
+
+		std::wcout << L"Size for duplicate " << b << L": " << (*v)[0]->size << L" bytes" << std::endl;
+
+		vector<wstring> dateStrings;
+
+		std::wcout << L"All dates for duplicate " << b << L": " << std::endl;
+		for (unsigned long long c = 0; c < v->size(); c++)
+		{
+			if ((*v)[c]->createdDateString.length() > 2)
+			{
+				//std::wcout << (*v)[c]->createdDateString << std::endl;
+				dateStrings.push_back(((*v)[c]->createdDateString));
+			}
+			if ((*v)[c]->modifiedDateString.length() > 2)
+			{
+				//std::wcout << (*v)[c]->modifiedDateString << std::endl;
+				dateStrings.push_back(((*v)[c]->modifiedDateString));
+			}
+			if ((*v)[c]->fileNameDateString.length() > 2)
+			{
+				//std::wcout << (*v)[c]->fileNameDateString << std::endl;
+				dateStrings.push_back(((*v)[c]->fileNameDateString));
+			}
+			if ((*v)[c]->exifDateString.length() > 2)
+			{
+				//std::wcout << (*v)[c]->exifDateString << std::endl;
+				dateStrings.push_back(((*v)[c]->exifDateString));
+			}
+		}
+
+
+		vector<DateData*> dates;
+
+		for (unsigned long long i = 0; i < dateStrings.size(); i++)
+		{
+			DateData* d = new DateData(dateStrings[i]);
+			dates.push_back(d);
+
+			std::wcout << dateStrings[i] << std::endl;
+			//std::wcout << d->wcout() << std::endl;
+		}
+
+		//count instances of identical dates, with and without timestamp
+		//determine most likely correct date
+
+		std::stable_sort(dates.begin(), dates.end(), DateData::compareDates);
+
+		std::wcout << L"Sorted dates for duplicate " << b << L": " << std::endl;
+
+		for (unsigned long long i = 0; i < dates.size(); i++)
+		{
+			std::wcout << dates[i]->wcout() << std::endl;
+		}
+
+		std::wcout << L"Earliest date for duplicate " << b << L": " << dates[0]->wcout() << std::endl;
+
+	}
+
+
+	std::wcout << L"Finished." << std::endl;
+	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - firststart) << std::endl;
+
+
+	bool addToIgnoreDB = true;
+	if (addToIgnoreDB)
+	{
+		char* zErrMsg;
+		FileDataEntry* f;
+
+		string sql1 = "INSERT INTO \"main\".\"IGNOREWINDOWS\"(\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"fileNameTime\", \"exifTime\", \"otherTime\", \"bestGuessTime\")VALUES(";
+		string sql2 = "'";// +f->path.c_str() + " ', ";
+		string sql3 = "'name', ";
+		string sql4 = "'size', ";
+		string sql5 = "'createdTime', ";
+		string sql6 = "'modifiedTime', ";
+		string sql7 = "'fileNameTime', ";
+		string sql8 = "'exifTime', ";
+		string sql9 = "'otherTime', ";
+		string sql10 = "'bestGuessTime'";
+		string sql11 = "); ";
+
+		string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11;
+
+		ignorerc = sqlite3_exec(ignoredb, sqlstatement.c_str(), sqlite3callback, 0, &zErrMsg);
+		if (ignorerc != SQLITE_OK)
+		{
+			std::wcout << "SQL error: " << zErrMsg << std::endl;
+			//fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
+		}
+	}
+
+
+	sqlite3_close(db);
+	sqlite3_close(ignoredb);
+
+	emit finished();
+
+
+}
 
 
 

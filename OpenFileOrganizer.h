@@ -118,9 +118,9 @@ std::string convertWideToUtf8(const std::wstring& wstr);
 
 std::wstring convertUtf8ToWide(const std::string& str);
 
-
+//==============================================================================================================================================================
 class MyDate
-{
+{//==============================================================================================================================================================
 public:
 
 
@@ -133,9 +133,9 @@ public:
 	
 };
 
-
+//==============================================================================================================================================================
 class DateData
-{
+{//==============================================================================================================================================================
 public:
 
 	wstring dateString = L"";
@@ -280,20 +280,31 @@ public:
 
 };
 
-
+//==============================================================================================================================================================
 class FileDataEntry
-{
+{//==============================================================================================================================================================
 public:
+	//dont store
 	wstring nameAndPath;
+	wstring createdDateString;
+	wstring modifiedDateString;
+	wstring fileNameDateString;
+	wstring exifDateString;
+	wstring otherDateString;
+	wstring bestGuessDateString;
+
+
+	//store
 	wstring path;
 	wstring name;
 	__int64 size = 0;
 	__int64 createdTime = 0;
 	__int64 modifiedTime = 0;
-	wstring createdDateString;
-	wstring modifiedDateString;
-	wstring fileNameDateString;
-	wstring exifDateString;
+	__int64 fileNameTime = 0;
+	__int64 exifTime = 0;
+	__int64 otherTime = 0;
+	__int64 bestGuessTime = 0;
+
 	wstring crc32;
 	wstring md5;
 	wstring sha1;
@@ -318,9 +329,9 @@ public:
 
 
 
-
+//==============================================================================================================================================================
 class QDebugStream : public std::wstreambuf
-{
+{//==============================================================================================================================================================
 public:
 	QDebugStream(std::wostream& stream, QPlainTextEdit* text_edit)
 		: m_stream(stream)
@@ -401,9 +412,9 @@ private:
 
 	QPlainTextEdit* log_window;
 };
-
+//==============================================================================================================================================================
 class MessageHandler : public QObject
-{
+{//==============================================================================================================================================================
 	Q_OBJECT
 public:
 	MessageHandler(QPlainTextEdit* textEdit, QObject* parent = Q_NULLPTR) : QObject(parent), m_textEdit(textEdit) {}
@@ -417,9 +428,9 @@ public slots:
 private:
 	QPlainTextEdit* m_textEdit;
 };
-
+//==============================================================================================================================================================
 class ThreadLogStream : public QObject, public std::wstreambuf
-{
+{//==============================================================================================================================================================
 	Q_OBJECT
 public:
 	ThreadLogStream(std::wostream& stream, QObject* parent = Q_NULLPTR) :QObject(parent), m_stream(stream)
@@ -479,9 +490,9 @@ private:
 signals:
 	void sendLogString(const QString& str);
 };
-
+//==============================================================================================================================================================
 class OpenFileOrganizer : public QMainWindow
-{
+{//==============================================================================================================================================================
 	Q_OBJECT
 
 public:
@@ -501,16 +512,20 @@ private:
 
 	const QString errorString = "error";
 
+
+
 private slots:
 	void handleStartButton();
 	void handleClearButton();
 	void handleAddDirButton();
 	void handleRemoveDirButton();
+	void handleIgnoreDirsButton();
+	void initWorker(Worker* worker);
 
 };
-
+//==============================================================================================================================================================
 class Worker : public QObject
-{
+{//==============================================================================================================================================================
 	Q_OBJECT
 public:
 
@@ -536,7 +551,21 @@ public:
 
 	bool scanSubDirs = true;
 
+	sqlite3* db;
+	int rc;
+	string dbname = "index.db";
 
+	sqlite3* ignoredb;
+	int ignorerc;
+	string ignoredbname = "ignore.db";
+
+	_int64 filecount = 0;
+	LARGE_INTEGER li;
+
+	_int64 CounterStart = 0;
+	_int64 msPassed = 0;
+
+	double PCFreq = 0;
 	
 	//wstring startpath = L"F:\\_games\\";
 
@@ -544,9 +573,10 @@ public:
 	//FILE* db;
 	//QPlainTextEdit* plainTextEdit;
 	//QDebugStream* qout;
-
+	
 public slots:
 	void process();
+	void processIgnore();
 signals:
 	void finished();
 
