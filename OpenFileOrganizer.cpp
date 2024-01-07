@@ -1,7 +1,5 @@
 #include "OpenFileOrganizer.h"
 
-
-
 //==============================================================================================================================================================
 OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 	: QMainWindow(parent)
@@ -16,7 +14,6 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 	//std::wcout << L"Hello this is a test" << std::endl;
 	//std::wcout << L"Hello this is a test" << std::endl;
 	//std::wcout << L"Hello this is a test" << std::endl;
-
 
 	//Set up ThreadLogStream, which redirect cout to signal sendLogString
 	//Set up MessageHandler, wgucg catch message from sendLogString and Display
@@ -33,7 +30,6 @@ OpenFileOrganizer::OpenFileOrganizer(QWidget* parent)
 	connect(ui.removeDirPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleRemoveDirButton);
 	connect(ui.ignoreDirsPushButton, &QPushButton::released, this, &OpenFileOrganizer::handleIgnoreDirsButton);
 	//connect(ui.startPushButton, &QPushButton::clicked, this, &OpenFileOrganizer::handleButton);
-
 }
 
 OpenFileOrganizer::~OpenFileOrganizer()
@@ -49,7 +45,6 @@ void OpenFileOrganizer::QMessageOutput(QtMsgType, const QMessageLogContext&, con
 void OpenFileOrganizer::initWorker(Worker* worker)
 {//==============================================================================================================================================================
 
-
 	//get current application directory to make portable
 	//different databases for different functions?
 	//ignore.sql
@@ -61,7 +56,6 @@ void OpenFileOrganizer::initWorker(Worker* worker)
 		sqlite3_close(worker->db);
 		return;
 	}
-
 
 	worker->ignorerc = sqlite3_open(worker->ignoredbname.c_str(), &worker->ignoredb);
 	if (worker->ignorerc)
@@ -91,7 +85,6 @@ void OpenFileOrganizer::initWorker(Worker* worker)
 		worker->dirsToSearch.push_back(new wstring(ui.listWidget->item(i)->text().toStdWString()));
 	}
 
-
 	QStringList QfileTypesList = ui.fileTypesLineEdit->text().split(u';');
 
 	for (int i = 0; i < QfileTypesList.size(); i++)
@@ -104,8 +97,7 @@ void OpenFileOrganizer::initWorker(Worker* worker)
 //==============================================================================================================================================================
 void OpenFileOrganizer::handleStartButton()
 {//==============================================================================================================================================================
-	
-	
+
 	Worker* worker = new Worker();
 
 	if (ui.listWidget->count() == 0)
@@ -120,9 +112,7 @@ void OpenFileOrganizer::handleStartButton()
 
 	ui.startPushButton->setDisabled(true);
 
-
 	initWorker(worker);
-
 
 	QThread* thread = new QThread;
 	worker->moveToThread(thread);
@@ -137,8 +127,6 @@ void OpenFileOrganizer::handleStartButton()
 //==============================================================================================================================================================
 void OpenFileOrganizer::handleIgnoreDirsButton()
 {//==============================================================================================================================================================
-	
-
 	
 	Worker* worker = new Worker();
 
@@ -173,7 +161,6 @@ void OpenFileOrganizer::handleClearButton()
 	ui.consoleOutputPlainTextEdit->clear();
 }
 
-
 //==============================================================================================================================================================
 void OpenFileOrganizer::handleAddDirButton()
 {//==============================================================================================================================================================
@@ -192,7 +179,6 @@ void OpenFileOrganizer::handleAddDirButton()
 
 }
 
-
 //==============================================================================================================================================================
 void OpenFileOrganizer::handleRemoveDirButton()
 {//==============================================================================================================================================================
@@ -205,63 +191,55 @@ void OpenFileOrganizer::handleRemoveDirButton()
 		if(items.at(j) == ui.listWidget->item(i))
 		ui.listWidget->takeItem(i);
 	}
-
 }
 
-
 //==============================================================================================================================================================
-std::string convertWideToANSI(const std::wstring& wstr)
+string convertWideToANSI(const wstring& wstr)
 {//==============================================================================================================================================================
 	int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
-	std::string str(count, 0);
+	string str(count, 0);
 	WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
 	return str;
 }
 
-
 //==============================================================================================================================================================
-std::wstring convertAnsiToWide(const std::string& str)
+wstring convertAnsiToWide(const string& str)
 {//==============================================================================================================================================================
 	int count = MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0);
-	std::wstring wstr(count, 0);
+	wstring wstr(count, 0);
 	MultiByteToWideChar(CP_ACP, 0, str.c_str(), (int)str.length(), &wstr[0], count);
 	return wstr;
 }
 
-
 //==============================================================================================================================================================
-std::string convertWideToUtf8(const std::wstring& wstr)
+string convertWideToUtf8(const wstring& wstr)
 {//==============================================================================================================================================================
 	int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.length(), NULL, 0, NULL, NULL);
-	std::string str(count, 0);
+	string str(count, 0);
 	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
 	return str;
 }
 
-
 //==============================================================================================================================================================
-std::wstring convertUtf8ToWide(const std::string& str)
+wstring convertUtf8ToWide(const string& str)
 {//==============================================================================================================================================================
 	int count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), NULL, 0);
-	std::wstring wstr(count, 0);
+	wstring wstr(count, 0);
 	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), &wstr[0], count);
 	return wstr;
 }
 
-
 //==============================================================================================================================================================
-std::wstring convertStringToWStringUsingFilesystem(std::string s)
+wstring convertStringToWStringUsingFilesystem(string s)
 {//==============================================================================================================================================================
 	return std::filesystem::path(s).wstring();
 }
 
-
 //==============================================================================================================================================================
-std::wstring convertWStringToStringUsingFilesystem(std::wstring w)
+wstring convertWStringToStringUsingFilesystem(wstring w)
 {//==============================================================================================================================================================
 	return std::filesystem::path(w).wstring();
 }
-
 
 //==============================================================================================================================================================
 void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
@@ -275,7 +253,6 @@ void content_foreach_func(ExifEntry* entry, void* UNUSED(callback_data))
 		convertUtf8ToWide(exif_entry_get_value(entry, buf, sizeof(buf))) << std::endl;
 }
 
-
 //==============================================================================================================================================================
 void data_foreach_func(ExifContent* content, void* callback_data)
 {//==============================================================================================================================================================
@@ -285,17 +262,14 @@ void data_foreach_func(ExifContent* content, void* callback_data)
 	++content_count;
 }
 
-
 //==============================================================================================================================================================
 wstring changeAnySlashToBackSlash(wstring in)
 {//==============================================================================================================================================================
 	wstring out = wstring(in);
 	while (out.find(L"/") != wstring::npos)
 		out.replace(out.find(L"/"), 1, L"\\");
-
 	return out;
 }
-
 //==============================================================================================================================================================
 wstring changeAnySlashToForwardSlash(wstring in)
 {//==============================================================================================================================================================
@@ -304,32 +278,22 @@ wstring changeAnySlashToForwardSlash(wstring in)
 		out.replace(out.find(L"\\"), 1, L"/");
 	return out;
 }
-
-
-
 //==============================================================================================================================================================
 wstring changeAnyDoubleSlashToSingleBackSlash(wstring in)
 {//==============================================================================================================================================================
-
 	wstring out = changeAnySlashToBackSlash(in);
-
 	while (out.find(L"\\\\") != wstring::npos)
 		out.replace(out.find(L"\\\\"), 2, L"\\");
-
 	return out;
 }
 //==============================================================================================================================================================
 wstring changeAnyDoubleSlashToSingleForwardSlash(wstring in)
 {//==============================================================================================================================================================
-
 	wstring out = changeAnySlashToBackSlash(in);
-
 	while (out.find(L"\\\\") != wstring::npos)
 		out.replace(out.find(L"\\\\"), 2, L"\\");
-
 	return changeAnySlashToForwardSlash(out);
 }
-
 //==============================================================================================================================================================
 wstring changeAnySlashToDoubleBackSlash(wstring in)
 {//==============================================================================================================================================================
@@ -350,6 +314,7 @@ void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64
 		directoryIteratorRecursive(startpath, filecount);
 		return;
 	}
+	//std::wcout << L"startpath:" << startpath << std::endl;
 
 	std::error_code ec;
 	std::filesystem::recursive_directory_iterator v = std::filesystem::recursive_directory_iterator(startpath, std::filesystem::directory_options::skip_permission_denied, ec);
@@ -385,9 +350,18 @@ void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64
 						(*f).name = (*v).path().filename().wstring();
 						(*f).path = (*v).path().parent_path().wstring();
 
-						std::wcout << (*f).path << std::endl;
+						//if (filecount < 10)
+						//{
+						//	std::wcout << f->path << std::endl;
+						//	std::wcout << f->name << std::endl;
+						//	std::wcout << f->nameAndPath << std::endl;
+						//}
 
 						fileDataEntries.push_back(f);
+					}
+					else
+					{
+						std::wcout << L"(*v).path().filename().wstring() does not match filter:" << (*v).path().filename().wstring() << std::endl;
 					}
 				}
 				//if ((*v).is_directory())
@@ -418,12 +392,19 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 	std::stack<wstring> directories;
 
 	directories.push(dir_path);
+	//std::wcout << L"dir_path:" << dir_path.c_str() << std::endl;
 
 	while (!directories.empty())
 	{
 		wstring path = directories.top();
 
 		directories.pop();
+
+		if (path.ends_with(L'\\') == false)
+		{
+			path = path + L"\\";
+		}
+		//std::wcout << L"path:" << path << std::endl;
 
 		std::error_code ec;
 		std::filesystem::directory_iterator itr(path, std::filesystem::directory_options::skip_permission_denied, ec);
@@ -456,9 +437,18 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 							f->name = itr->path().filename().wstring();
 							f->path = path;
 
-							std::wcout << f->path << std::endl;
+							//if (filecount < 50)
+							//{
+							//	std::wcout << f->path << std::endl;
+							//	std::wcout << f->name << std::endl;
+							//	std::wcout << f->nameAndPath << std::endl;
+							//}
 							
 							fileDataEntries.push_back(f);
+						}
+						else
+						{
+							std::wcout << L"itr->path().filename().wstring() does not match filter:" << itr->path().filename().wstring() << std::endl;
 						}
 					}
 				}
@@ -481,10 +471,12 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 {//==============================================================================================================================================================
 	std::stack<wstring> directories;
 	directories.push(startPath);
+	//std::wcout << L"startPath:" << startPath << std::endl;
 
 	while (!directories.empty())
 	{
 		wstring path = directories.top();
+		//std::wcout << L"path:" << path << std::endl;
 		directories.pop();
 
 		_WDIR* dir = _wopendir(path.c_str());
@@ -504,11 +496,22 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 						filecount++;
 
 						FileDataEntry* f = new FileDataEntry();
-						f->nameAndPath = path + L"\\" + ent->d_name;
+						f->nameAndPath = path + ent->d_name;
 						f->name = ent->d_name;
 						f->path = path;
-						std::wcout << f->path << std::endl;
+
+						//if (filecount < 10)
+						//{
+						//	std::wcout << f->path << std::endl;
+						//	std::wcout << f->name << std::endl;
+						//	std::wcout << f->nameAndPath << std::endl;
+						//}
+
 						fileDataEntries.push_back(f);
+					}
+					else
+					{
+						std::wcout << L"ent->d_name does not match filter:" << ent->d_name << std::endl;
 					}
 				}
 				break;
@@ -520,7 +523,8 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 					if (wcscmp(ent->d_name, L".") != 0
 						&& wcscmp(ent->d_name, L"..") != 0)
 					{
-						wstring nextPath = path + wstring(L"/") + wstring(ent->d_name);
+						wstring nextPath = path + wstring(ent->d_name) + L"\\";
+						//std::wcout << L"nextPath:" << nextPath << std::endl;
 						directories.push(nextPath);
 					}
 					break;
@@ -551,12 +555,16 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 	std::stack<wstring> directories;
 
 	directories.push(originalPath);
+	//std::wcout << L"originalPath:" << originalPath << std::endl;
 
 	while (!directories.empty())
 	{
 		wstring path = directories.top();
-		wstring pathWithTrailingDelimiterAndWildcard = path + L"\\*";
+		wstring pathWithTrailingDelimiterAndWildcard = path + L"*";
 		directories.pop();
+
+		//std::wcout << L"path:" << path << std::endl;
+		//std::wcout << L"pathWithTrailingDelimiterAndWildcard:" << pathWithTrailingDelimiterAndWildcard << std::endl;
 
 		hFind = FindFirstFileExW(pathWithTrailingDelimiterAndWildcard.c_str(), FindExInfoBasic, &ffd, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
 		if (hFind == INVALID_HANDLE_VALUE)
@@ -586,8 +594,11 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 						//(ffd.dwFileAttributes & FILE_ATTRIBUTE_RECALL_ON_OPEN) == 0
 						//)
 					{
+						wstring subDirPath = path + ffd.cFileName + L"\\";
+						//std::wcout << L"subDirPath:" << subDirPath << std::endl;
+
 						if (scanSubDirs)
-						directories.push(path + L"\\" + ffd.cFileName);
+						directories.push(subDirPath);
 						//findFirstFilePaths.insert(path + L"\\" + ffd.cFileName);
 					}
 					else
@@ -596,11 +607,22 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 						{
 							filecount++;
 							FileDataEntry* f = new FileDataEntry();
-							f->nameAndPath = path + L"\\" + ffd.cFileName;
+							f->nameAndPath = path + ffd.cFileName;
 							f->name = ffd.cFileName;
 							f->path = path;
-							std::wcout << f->path << std::endl;
+
+							//if (filecount < 10)
+							//{
+							//	std::wcout << f->path << std::endl;
+							//	std::wcout << f->name << std::endl;
+							//	std::wcout << f->nameAndPath << std::endl;
+							//}
+
 							fileDataEntries.push_back(f);
+						}
+						else
+						{
+							std::wcout << L"ffd.cFileName does not match filter:" << ffd.cFileName << std::endl;
 						}
 					}
 				}
@@ -1285,6 +1307,16 @@ void Worker::getDateFromFilenameForAllFiles()
 		"[0123][0-9]"//day only begins with 0 1 2 3
 		;
 
+	std::string regex_yyyy_mm_dd_hh_mm_ss = 
+		regex_yyyy_mm_dd +
+		"[^0-9a-gi-zA-GI-Z]"//not a number, not a letter except for h or H
+		"[0-2][0-9]"//00-29
+		"[^0-9a-ln-zA-LN-Z]"//not a number, not a letter except for m or M
+		"[0-6][0-9]"//00-69
+		"[^0-9a-rt-zA-RT-Z]"//not a number, not a letter except for s or S
+		"[0-6][0-9]"//00-69
+		;
+
 	std::string syyyy_mm_dd =
 		"^"//beginning of file
 		"("
@@ -1296,7 +1328,7 @@ void Worker::getDateFromFilenameForAllFiles()
 		+ regex_yyyy_mm_dd +
 		")"
 		"[^0-9a-ce-gi-zA-CE-GI-Z]"//not a number, not a letter except for d or D or h H
-		"|"
+		"|"//or
 		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
 		"("
 		+ regex_yyyy_mm_dd + //at the end beginning with non number
@@ -1304,7 +1336,27 @@ void Worker::getDateFromFilenameForAllFiles()
 		"$"
 		;
 
+	std::string syyyy_mm_dd_hh_mm_ss =
+		"^"//beginning of file
+		"("
+		+ regex_yyyy_mm_dd_hh_mm_ss +
+		")"
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyy_mm_dd_hh_mm_ss +
+		")"
+		"[^0-9a-rt-zA-RT-Z]"//not a number, not a letter except for s or S
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyy_mm_dd_hh_mm_ss + //at the end beginning with non number
+		")"
+		"$"
+		;
+
 	std::regex yyyy_mm_dd(syyyy_mm_dd);
+	std::regex yyyy_mm_dd_hh_mm_ss(syyyy_mm_dd_hh_mm_ss);
 
 
 	std::string regex_yyyymmdd =
@@ -1320,6 +1372,20 @@ void Worker::getDateFromFilenameForAllFiles()
 		"[0123][0-9]"//day only begins with 0 1 2 3
 		;
 
+	std::string regex_yyyymmddhhmmss =
+		regex_yyyymmdd +
+		"[0-2][0-9]"//00-29
+		"[0-6][0-9]"//00-69
+		"[0-6][0-9]"//00-69
+		;
+
+	std::string regex_yyyymmdd_hhmmss =
+		regex_yyyymmdd +
+		"[^0-9a-zA-Z]"//not a number, not a letter
+		"[0-2][0-9]"//00-29
+		"[0-6][0-9]"//00-69
+		"[0-6][0-9]"//00-69
+		;
 
 	std::string syyyymmdd =
 		"^"//beginning of file
@@ -1332,10 +1398,48 @@ void Worker::getDateFromFilenameForAllFiles()
 		+ regex_yyyymmdd +
 		")"
 		"[^0-9a-ce-gi-zA-CE-GI-Z]"//not a number, not a letter except for d or D or h H
-		"|"
+		"|"//or
 		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
 		"("
 		+ regex_yyyymmdd + //at the end beginning with non number
+		")"
+		"$"
+		;
+
+	std::string syyyymmddhhmmss =
+		"^"//beginning of file
+		"("
+		+ regex_yyyymmddhhmmss +
+		")"
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyymmddhhmmss +
+		")"
+		"[^0-9a-rt-zA-RT-Z]"//not a number, not a letter except for s or S
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyymmddhhmmss + //at the end beginning with non number
+		")"
+		"$"
+		;
+
+	std::string syyyymmdd_hhmmss =
+		"^"//beginning of file
+		"("
+		+ regex_yyyymmdd_hhmmss +
+		")"
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyymmdd_hhmmss +
+		")"
+		"[^0-9a-rt-zA-RT-Z]"//not a number, not a letter except for s or S
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyymmdd_hhmmss + //at the end beginning with non number
 		")"
 		"$"
 		;
@@ -1344,6 +1448,8 @@ void Worker::getDateFromFilenameForAllFiles()
 
 	
 	std::regex yyyymmdd(syyyymmdd);
+	std::regex yyyymmddhhmmss(syyyymmddhhmmss);
+	std::regex yyyymmdd_hhmmss(syyyymmdd_hhmmss);
 
 	//yyyy-mm-d?
 
@@ -1381,7 +1487,7 @@ void Worker::getDateFromFilenameForAllFiles()
 		+ regex_mm_dd_yy +
 		")"
 		"[^0-9a-gi-xzA-GI-XZ]"//not a number, not a letter except for y or Y or h H
-		"|"
+		"|"//or
 		"[^0-9a-ln-zA-LN-Z]"//not a number, not a letter except for m or M
 		"("
 		+ regex_mm_dd_yy + //at the end beginning with non number
@@ -1480,6 +1586,7 @@ void Worker::getDateFromFilenameForAllFiles()
 		"2018_12_20",
 		"2018.02.02",
 		"20180111",
+		"20180111 010932",
 		"01-30-99",
 		"01.30.02",
 		"January 1, 1990",
@@ -1498,306 +1605,582 @@ void Worker::getDateFromFilenameForAllFiles()
 		FileDataEntry* f = fileDataEntries[i];
 		string s(convertWideToUtf8(f->name));
 
-		int y = 0;
-		int m = 0;
-		int d = 0;
+		int year = 0;
+		int month = 0;
+		int day = 0;
+		int hour = 0;
+		int minute = 0;
+		int second = 0;
 		
 		std::smatch matches;
-		std::regex_search(s, matches, yyyy_mm_dd);
+		std::regex_search(s, matches, yyyy_mm_dd_hh_mm_ss);
 
 		if (!matches.empty())
 		{
 			string str;
+			int longest = 0;
 			for (int n = 0; n < matches.size(); n++)
-				str = str + matches[n].str();
+			{
+				if (matches[n].length() > longest)
+				{
+					longest = matches[n].length();
+					str = matches[n].str();
+				}
+			}
 
 			{
+				//find the first number
 				size_t k = str.find_first_of("0123456789");
-
+				//copy 4 numbers
 				std::istringstream is(str.substr(k, 4));
-				if (is >> y)
+				//print the number into year variable
+				if (is >> year)
 				{
-					if (y < 1900)
+					//this should never happen here
+					if (year < 1900)
 					{
-						if (y > 70)y += 1900;
-						if (y < 50)y += 2000;
+						if (year > 70)year += 1900;
+						if (year < 50)year += 2000;
 					}
 				}
 
 				{
 					std::istringstream is(str.substr(k + 5, 2));
-					is >> m;
+					is >> month;
 				}
 				{
 					std::istringstream is(str.substr(k + 8, 2));
-					is >> d;
+					is >> day;
 				}
-				if (y <= currentYear)
 				{
-					std::wcout << L"yyyy_mm_dd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
-					std::wcout << y << L" " << m << L" " << d << std::endl;
+					std::istringstream is(str.substr(k + 11, 2));
+					is >> hour;
+				}
+				{
+					std::istringstream is(str.substr(k + 14, 2));
+					is >> minute;
+				}
+				{
+					std::istringstream is(str.substr(k + 17, 2));
+					is >> second;
+				}
+
+				if (year <= currentYear)
+				{
+					std::wcout << L"yyyy_mm_dd_hh_mm_ss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+					std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
 				}
 				else
 				{
-					y = 0;
-					m = 0;
-					d = 0;
+					year = 0;
+					month = 0;
+					day = 0;
+					hour = 0;
+					minute = 0;
+					second = 0;
 				}
 			}
 		}
 		else
 		{
-
-			std::regex_search(s, matches, yyyymmdd);
+			std::regex_search(s, matches, yyyy_mm_dd);
 			if (!matches.empty())
 			{
 				string str;
+				int longest = 0;
 				for (int n = 0; n < matches.size(); n++)
-					str = str + matches[n].str();
+				{
+					if (matches[n].length() > longest)
+					{
+						longest = matches[n].length();
+						str = matches[n].str();
+					}
+				}
 
 				{
+					//find the first number
 					size_t k = str.find_first_of("0123456789");
-
+					//copy 4 numbers
 					std::istringstream is(str.substr(k, 4));
-					if (is >> y)
+					//print the number into y variable
+					if (is >> year)
 					{
-						if (y < 1900)
+						//this should never happen here
+						if (year < 1900)
 						{
-							if (y > 70)y += 1900;
-							if (y < 50)y += 2000;
+							if (year > 70)year += 1900;
+							if (year < 50)year += 2000;
 						}
 					}
 
 					{
-						std::istringstream is(str.substr(k + 4, 2));
-						is >> m;
+						std::istringstream is(str.substr(k + 5, 2));
+						is >> month;
 					}
 					{
-						std::istringstream is(str.substr(k + 6, 2));
-						is >> d;
+						std::istringstream is(str.substr(k + 8, 2));
+						is >> day;
 					}
-
-					if (y <= currentYear)
+					if (year <= currentYear)
 					{
-						std::wcout << L"yyyymmdd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
-						std::wcout << y << L" " << m << L" " << d << std::endl;
+						std::wcout << L"yyyy_mm_dd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+						std::wcout << year << L" " << month << L" " << day << std::endl;
 					}
 					else
 					{
-						y = 0;
-						m = 0;
-						d = 0;
+						year = 0;
+						month = 0;
+						day = 0;
+						hour = 0;
+						minute = 0;
+						second = 0;
 					}
 				}
-
 			}
 			else
 			{
-				std::regex_search(s, matches, mm_dd_yy);
+				std::regex_search(s, matches, yyyymmdd_hhmmss);
 				if (!matches.empty())
 				{
 					string str;
+					int longest = 0;
 					for (int n = 0; n < matches.size(); n++)
-						str = str + matches[n].str();
-
 					{
-
-						size_t k = str.find_first_of("0123456789");
-
+						if (matches[n].length() > longest)
 						{
-							std::istringstream is(str.substr(k, 2));
-							is >> m;
-						}
-
-						{
-							std::istringstream is(str.substr(k + 3, 2));
-							is >> d;
-						}
-
-						if (str.substr(k + 6, 2) == "19" || str.substr(k + 6, 2) == "20")
-						{
-							std::istringstream is(str.substr(k + 6, 4));
-							is >> y;
-						}
-						else
-						{
-							std::istringstream is(str.substr(k + 6, 2));
-							if (is >> y)
-							{
-								if (y < 1900)
-								{
-									if (y > 70)y += 1900;
-									if (y < 50)y += 2000;
-								}
-							}
-
-							//TODO: this is the sketchiest detected date and i need to see how common it actually is
-
-						}
-
-						if (y <= currentYear)
-						{
-							std::wcout << L"mm dd [yy]yy " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
-							std::wcout << y << L" " << m << L" " << d << std::endl;
-						}
-						else
-						{
-							y = 0;
-							m = 0;
-							d = 0;
+							longest = matches[n].length();
+							str = matches[n].str();
 						}
 					}
+
+					{
+						size_t k = str.find_first_of("0123456789");
+
+						std::istringstream is(str.substr(k, 4));
+						if (is >> year)
+						{
+							if (year < 1900)
+							{
+								if (year > 70)year += 1900;
+								if (year < 50)year += 2000;
+							}
+						}
+
+						{
+							std::istringstream is(str.substr(k + 4, 2));
+							is >> month;
+						}
+						{
+							std::istringstream is(str.substr(k + 6, 2));
+							is >> day;
+						}
+						{
+							std::istringstream is(str.substr(k + 9, 2));
+							is >> hour;
+						}
+						{
+							std::istringstream is(str.substr(k + 12, 2));
+							is >> minute;
+						}
+						{
+							std::istringstream is(str.substr(k + 15, 2));
+							is >> second;
+						}
+
+						if (year <= currentYear)
+						{
+							std::wcout << L"yyyymmdd_hhmmss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+							std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
+						}
+						else
+						{
+							year = 0;
+							month = 0;
+							day = 0;
+							hour = 0;
+							minute = 0;
+							second = 0;
+						}
+					}
+
 				}
 				else
 				{
-					bool foundyyyy = false;
-					std::regex_search(s, matches, yyyy);
+					std::regex_search(s, matches, yyyymmddhhmmss);
 					if (!matches.empty())
 					{
 						string str;
+						int longest = 0;
 						for (int n = 0; n < matches.size(); n++)
-							str = str + matches[n].str();
+						{
+							if (matches[n].length() > longest)
+							{
+								longest = matches[n].length();
+								str = matches[n].str();
+							}
+						}
 
 						{
-							//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(str) << std::endl;
+							size_t k = str.find_first_of("0123456789");
 
-							size_t k = str.find_first_of("12");//yyyy must start with 1 or 2
-
-							if (str.substr(k, 1) != "1" && str.substr(k, 1) != "2")
+							std::istringstream is(str.substr(k, 4));
+							if (is >> year)
 							{
-								//can't parse? this should never happen because the regex
+								if (year < 1900)
+								{
+									if (year > 70)year += 1900;
+									if (year < 50)year += 2000;
+								}
+							}
+
+							{
+								std::istringstream is(str.substr(k + 4, 2));
+								is >> month;
+							}
+							{
+								std::istringstream is(str.substr(k + 6, 2));
+								is >> day;
+							}
+							{
+								std::istringstream is(str.substr(k + 8, 2));
+								is >> hour;
+							}
+							{
+								std::istringstream is(str.substr(k + 10, 2));
+								is >> minute;
+							}
+							{
+								std::istringstream is(str.substr(k + 12, 2));
+								is >> second;
+							}
+
+							if (year <= currentYear)
+							{
+								std::wcout << L"yyyymmddhhmmss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+								std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
+
 							}
 							else
 							{
-								std::istringstream is(str.substr(k, 4));
-								is >> y;
-
-								if (y <= currentYear)
-								{
-									foundyyyy = true;
-								}
-								else
-								{
-									y = 0;
-								}
+								year = 0;
+								month = 0;
+								day = 0;
+								hour = 0;
+								minute = 0;
+								second = 0;
 							}
 						}
+
 					}
-
-					if (foundyyyy == true)
+					else
 					{
-
-						std::regex_search(s, matches, monthmondaythday);
+						std::regex_search(s, matches, yyyymmdd);
 						if (!matches.empty())
 						{
 							string str;
+							int longest = 0;
 							for (int n = 0; n < matches.size(); n++)
-								str = str + matches[n].str();
+							{
+								if (matches[n].length() > longest)
+								{
+									longest = matches[n].length();
+									str = matches[n].str();
+								}
+							}
 
 							{
-
-								if (str.find("Jan") != string::npos)m = 1;
-								if (str.find("Feb") != string::npos)m = 2;
-								if (str.find("Mar") != string::npos)m = 3;
-								if (str.find("Apr") != string::npos)m = 4;
-								if (str.find("May") != string::npos)m = 5;
-								if (str.find("Jun") != string::npos)m = 6;
-								if (str.find("Jul") != string::npos)m = 7;
-								if (str.find("Aug") != string::npos)m = 8;
-								if (str.find("Sep") != string::npos)m = 9;
-								if (str.find("Oct") != string::npos)m = 10;
-								if (str.find("Nov") != string::npos)m = 11;
-								if (str.find("Dec") != string::npos)m = 12;
-
 								size_t k = str.find_first_of("0123456789");
+
+								std::istringstream is(str.substr(k, 4));
+								if (is >> year)
 								{
-									if (str.find_first_of("0123456789", k + 1) == k + 1)
+									if (year < 1900)
 									{
-										std::istringstream is(str.substr(k, 2));
-										is >> d;
-									}
-									else
-									{
-										std::istringstream is(str.substr(k, 1));
-										is >> d;
+										if (year > 70)year += 1900;
+										if (year < 50)year += 2000;
 									}
 								}
 
-								if (y <= currentYear)
 								{
-									std::wcout << L"monthmondaythday " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
-									std::wcout << y << L" " << m << L" " << d << std::endl;
+									std::istringstream is(str.substr(k + 4, 2));
+									is >> month;
+								}
+								{
+									std::istringstream is(str.substr(k + 6, 2));
+									is >> day;
+								}
+
+								if (year <= currentYear)
+								{
+									std::wcout << L"yyyymmdd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+									std::wcout << year << L" " << month << L" " << day << std::endl;
 								}
 								else
 								{
-									y = 0;
-									m = 0;
-									d = 0;
+									year = 0;
+									month = 0;
+									day = 0;
+									hour = 0;
+									minute = 0;
+									second = 0;
 								}
 							}
+
 						}
 						else
 						{
-
-							std::regex_search(s, matches, daythdaymonthmon);
+							std::regex_search(s, matches, mm_dd_yy);
 							if (!matches.empty())
 							{
 								string str;
-
+								int longest = 0;
 								for (int n = 0; n < matches.size(); n++)
-									str = str + matches[n].str();
+								{
+									if (matches[n].length() > longest)
+									{
+										longest = matches[n].length();
+										str = matches[n].str();
+									}
+								}
 
 								{
+
 									size_t k = str.find_first_of("0123456789");
 
-									if (str.find_first_of("0123456789", k + 1) == k + 1)
 									{
 										std::istringstream is(str.substr(k, 2));
-										is >> d;
+										is >> month;
+									}
+
+									{
+										std::istringstream is(str.substr(k + 3, 2));
+										is >> day;
+									}
+
+									if (str.substr(k + 6, 2) == "19" || str.substr(k + 6, 2) == "20")
+									{
+										std::istringstream is(str.substr(k + 6, 4));
+										is >> year;
 									}
 									else
 									{
-										std::istringstream is(str.substr(k, 1));
-										is >> d;
+										std::istringstream is(str.substr(k + 6, 2));
+										if (is >> year)
+										{
+											if (year < 1900)
+											{
+												if (year > 70)year += 1900;
+												if (year < 50)year += 2000;
+											}
+										}
+
+										//TODO: this is the sketchiest detected date and i need to see how common it actually is
+
 									}
 
-									if (str.find("Jan") != string::npos)m = 1;
-									if (str.find("Feb") != string::npos)m = 2;
-									if (str.find("Mar") != string::npos)m = 3;
-									if (str.find("Apr") != string::npos)m = 4;
-									if (str.find("May") != string::npos)m = 5;
-									if (str.find("Jun") != string::npos)m = 6;
-									if (str.find("Jul") != string::npos)m = 7;
-									if (str.find("Aug") != string::npos)m = 8;
-									if (str.find("Sep") != string::npos)m = 9;
-									if (str.find("Oct") != string::npos)m = 10;
-									if (str.find("Nov") != string::npos)m = 11;
-									if (str.find("Dec") != string::npos)m = 12;
-
-									if (y <= currentYear)
+									if (year <= currentYear)
 									{
-										std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
-										std::wcout << y << L" " << m << L" " << d << std::endl;
+										std::wcout << L"mm dd [yy]yy " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+										std::wcout << year << L" " << month << L" " << day << std::endl;
 									}
 									else
 									{
-										y = 0;
-										m = 0;
-										d = 0;
+										year = 0;
+										month = 0;
+										day = 0;
+										hour = 0;
+										minute = 0;
+										second = 0;
 									}
 								}
 							}
+							else
+							{
+								bool foundyyyy = false;
+								std::regex_search(s, matches, yyyy);
+								if (!matches.empty())
+								{
+									string str;
+									int longest = 0;
+									for (int n = 0; n < matches.size(); n++)
+									{
+										if (matches[n].length() > longest)
+										{
+											longest = matches[n].length();
+											str = matches[n].str();
+										}
+									}
+
+									{
+										//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(str) << std::endl;
+
+										size_t k = str.find_first_of("12");//yyyy must start with 1 or 2
+
+										if (str.substr(k, 1) != "1" && str.substr(k, 1) != "2")
+										{
+											//can't parse? this should never happen because the regex
+										}
+										else
+										{
+											std::istringstream is(str.substr(k, 4));
+											is >> year;
+
+											if (year <= currentYear)
+											{
+												foundyyyy = true;
+											}
+											else
+											{
+												year = 0;
+											}
+										}
+									}
+								}
+
+								if (foundyyyy == true)
+								{
+
+									std::regex_search(s, matches, monthmondaythday);
+									if (!matches.empty())
+									{
+										string str;
+										int longest = 0;
+										for (int n = 0; n < matches.size(); n++)
+										{
+											if (matches[n].length() > longest)
+											{
+												longest = matches[n].length();
+												str = matches[n].str();
+											}
+										}
+
+										{
+
+											if (str.find("Jan") != string::npos)month = 1;
+											if (str.find("Feb") != string::npos)month = 2;
+											if (str.find("Mar") != string::npos)month = 3;
+											if (str.find("Apr") != string::npos)month = 4;
+											if (str.find("May") != string::npos)month = 5;
+											if (str.find("Jun") != string::npos)month = 6;
+											if (str.find("Jul") != string::npos)month = 7;
+											if (str.find("Aug") != string::npos)month = 8;
+											if (str.find("Sep") != string::npos)month = 9;
+											if (str.find("Oct") != string::npos)month = 10;
+											if (str.find("Nov") != string::npos)month = 11;
+											if (str.find("Dec") != string::npos)month = 12;
+
+											size_t k = str.find_first_of("0123456789");
+											{
+												if (str.find_first_of("0123456789", k + 1) == k + 1)
+												{
+													std::istringstream is(str.substr(k, 2));
+													is >> day;
+												}
+												else
+												{
+													std::istringstream is(str.substr(k, 1));
+													is >> day;
+												}
+											}
+
+											if (year <= currentYear)
+											{
+												std::wcout << L"monthmondaythday " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+												std::wcout << year << L" " << month << L" " << day << std::endl;
+											}
+											else
+											{
+												year = 0;
+												month = 0;
+												day = 0;
+												hour = 0;
+												minute = 0;
+												second = 0;
+											}
+										}
+									}
+									else
+									{
+
+										std::regex_search(s, matches, daythdaymonthmon);
+										if (!matches.empty())
+										{
+											string str;
+											int longest = 0;
+											for (int n = 0; n < matches.size(); n++)
+											{
+												if (matches[n].length() > longest)
+												{
+													longest = matches[n].length();
+													str = matches[n].str();
+												}
+											}
+
+											{
+												size_t k = str.find_first_of("0123456789");
+
+												if (str.find_first_of("0123456789", k + 1) == k + 1)
+												{
+													std::istringstream is(str.substr(k, 2));
+													is >> day;
+												}
+												else
+												{
+													std::istringstream is(str.substr(k, 1));
+													is >> day;
+												}
+
+												if (str.find("Jan") != string::npos)month = 1;
+												if (str.find("Feb") != string::npos)month = 2;
+												if (str.find("Mar") != string::npos)month = 3;
+												if (str.find("Apr") != string::npos)month = 4;
+												if (str.find("May") != string::npos)month = 5;
+												if (str.find("Jun") != string::npos)month = 6;
+												if (str.find("Jul") != string::npos)month = 7;
+												if (str.find("Aug") != string::npos)month = 8;
+												if (str.find("Sep") != string::npos)month = 9;
+												if (str.find("Oct") != string::npos)month = 10;
+												if (str.find("Nov") != string::npos)month = 11;
+												if (str.find("Dec") != string::npos)month = 12;
+
+												if (year <= currentYear)
+												{
+													std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+													std::wcout << year << L" " << month << L" " << day << std::endl;
+												}
+												else
+												{
+													year = 0;
+													month = 0;
+													day = 0;
+													hour = 0;
+													minute = 0;
+													second = 0;
+												}
+											}
+										}
+									}
+								}
+
+							}
 						}
 					}
-						
 				}
 			}
 		}
 		
-		if (y != 0 && m != 0 && d != 0)
+		if (year != 0 && month != 0 && day != 0)
 		{
 			wchar_t buffer[100];
-			swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", y, m, d, 0, 0, 0);
+
+			if (hour != 0 && minute != 0 && second != 0)
+			{
+				swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+			}
+			else
+			{
+				swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", year, month, day, 0, 0, 0);
+			}
 			f->fileNameDateString = wstring(buffer);
 			
 		}
@@ -2257,6 +2640,21 @@ static int sqlite3callback(void* NotUsed, int argc, char** argv, char** azColNam
 }
 
 //===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
+//===============================================================================================================================================================
 void Worker::process()
 //void ok()
 {//==============================================================================================================================================================
@@ -2267,104 +2665,59 @@ void Worker::process()
 	isWindows = false;
 #endif
 
-
-	
-
-
-
 	QueryPerformanceFrequency(&li);
 	PCFreq = double(li.QuadPart) / 1000.0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//std::wcout << L"directoryIteratorRecursive" << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//CounterStart = li.QuadPart;
-	//start = std::chrono::steady_clock::now();
-	//filecount = 0;
-	//
-	//directoryIteratorRecursive(startpath, filecount);
-	//
-	//std::wcout << L"Files found: " << filecount << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-	//std::wcout << L"direntScanDirectory" << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//CounterStart = li.QuadPart;
-	//start = std::chrono::steady_clock::now();
-	//filecount = 0;
-	//
-	//direntScanDirectory(startpath,filecount);
-	//
-	//std::wcout << L"Files found: " << filecount << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
 	firststart = std::chrono::steady_clock::now();
-	std::wcout << L"listFilesWindowsFindFirstFile" << std::endl;
 
-	QueryPerformanceCounter(&li);
-	CounterStart = li.QuadPart;
+	std::wcout << L"recursiveDirectoryIteratorIncrement ============================================================================" << std::endl;
+	//QueryPerformanceCounter(&li);
+	//CounterStart = li.QuadPart;
 	start = std::chrono::steady_clock::now();
 	filecount = 0;
+	for (int i = 0; i < dirsToSearch.size(); i++)
+	{
+		recursiveDirectoryIteratorIncrement(wstring(*dirsToSearch.at(i)), filecount);
+	}
+	std::wcout << L"Files found: " << filecount << std::endl;
+	//QueryPerformanceCounter(&li);
+	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
+	//std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
 
 
+	std::wcout << L"directoryIteratorRecursive ============================================================================" << std::endl;
+	start = std::chrono::steady_clock::now();
+	filecount = 0;
+	for (int i = 0; i < dirsToSearch.size(); i++)
+	{
+		directoryIteratorRecursive(wstring(*dirsToSearch.at(i)), filecount);
+	}
+	std::wcout << L"Files found: " << filecount << std::endl;
+	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 
 
+	std::wcout << L"direntScanDirectory ============================================================================" << std::endl;
+	start = std::chrono::steady_clock::now();
+	filecount = 0;
+	for (int i = 0; i < dirsToSearch.size(); i++)
+	{
+		direntScanDirectory(wstring(*dirsToSearch.at(i)), filecount);
+	}
+	std::wcout << L"Files found: " << filecount << std::endl;
+	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 
 
-
-
-
+	std::wcout << L"listFilesWindowsFindFirstFile ============================================================================" << std::endl;
+	start = std::chrono::steady_clock::now();
+	filecount = 0;
 	for (int i = 0; i < dirsToSearch.size(); i++)
 	{
 		listFilesWindowsFindFirstFile(wstring(*dirsToSearch.at(i)), filecount);
 	}
-
 	std::wcout << L"Files found: " << filecount << std::endl;
-
-	QueryPerformanceCounter(&li);
-	msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-	//std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
 	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 
 
-
-
-
-
+	std::wcout << L"getSizeForAllFiles ============================================================================" << std::endl;
 	getSizeForAllFiles();
 
 	getCreatedAndLastModifiedDateForAllFiles();
@@ -2770,16 +3123,8 @@ void Worker::process()
 
 	}
 
-
-
-
-
 	std::wcout << L"Finished." << std::endl;
 	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - firststart) << std::endl;
-
-
-	
-
 
 
 	bool addToDB = true;
@@ -2835,60 +3180,17 @@ void Worker::processIgnore()
 
 	QueryPerformanceFrequency(&li);
 	PCFreq = double(li.QuadPart) / 1000.0;
-
-	//std::wcout << L"directoryIteratorRecursive" << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//CounterStart = li.QuadPart;
-	//start = std::chrono::steady_clock::now();
-	//filecount = 0;
-	//
-	//directoryIteratorRecursive(startpath, filecount);
-	//
-	//std::wcout << L"Files found: " << filecount << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
-	//std::wcout << L"direntScanDirectory" << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//CounterStart = li.QuadPart;
-	//start = std::chrono::steady_clock::now();
-	//filecount = 0;
-	//
-	//direntScanDirectory(startpath,filecount);
-	//
-	//std::wcout << L"Files found: " << filecount << std::endl;
-	//
-	//QueryPerformanceCounter(&li);
-	//msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-	////std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-	//std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-
-
 	firststart = std::chrono::steady_clock::now();
-	std::wcout << L"listFilesWindowsFindFirstFile" << std::endl;
 
-	QueryPerformanceCounter(&li);
-	CounterStart = li.QuadPart;
+	std::wcout << L"listFilesWindowsFindFirstFile" << std::endl;
 	start = std::chrono::steady_clock::now();
 	filecount = 0;
-
 	for (int i = 0; i < dirsToSearch.size(); i++)
 	{
 		listFilesWindowsFindFirstFile(wstring(*dirsToSearch.at(i)), filecount);
 	}
-
 	std::wcout << L"Files found: " << filecount << std::endl;
 
-	QueryPerformanceCounter(&li);
-	msPassed = (_int64)(double(li.QuadPart - CounterStart) / PCFreq);
-	//std::wcout << L"Time passed QueryPerformanceCounter: " << msPassed << std::endl;
-	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
 
 	getSizeForAllFiles();
 
@@ -2909,17 +3211,17 @@ void Worker::processIgnore()
 	//You can use std::swap to swap two values.
 	//And also you may want to compare to std::sort(which is typically an introsort : a quick sort + insertion sort for small sizes),
 	//std::stable_sort(typically a merge sort), and std::make_heap + std::sort_heap(heap sort)
-	{
-		//sort by file size
-
-		std::wcout << L"Start sort by size" << std::endl;
-		start = std::chrono::steady_clock::now();
-
-		//std::sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//56s 494k files
-		std::stable_sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//53s 494k files
-
-		std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
-	}
+	//{
+	//	//sort by file size
+	//
+	//	std::wcout << L"Start sort by size" << std::endl;
+	//	start = std::chrono::steady_clock::now();
+	//
+	//	//std::sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//56s 494k files
+	//	std::stable_sort(fileDataEntries.begin(), fileDataEntries.end(), FileDataEntry::comparePtrToFileDataEntry);//53s 494k files
+	//
+	//	std::wcout << L"Took " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start) << std::endl;
+	//}
 
 	std::wcout << L"Found " << fileDataEntries.size() << L" files." << std::endl;
 	
@@ -3015,25 +3317,23 @@ void Worker::processIgnore()
 			wstring keccak;
 			wstring sha3;
 
-			string sql1 = "INSERT INTO \"main\".\"IGNOREWINDOWS\"(\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"fileNameTime\", \"exifTime\", \"otherTime\", \"bestGuessTime\", \"crc32\", \"md5\", \"sha1\", \"sha2\", \"keccak\", \"sha3\")VALUES(";
+			string sql1 = "INSERT INTO \"main\".\"IGNOREWINDOWS\"(\
+\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"crc32\", \"md5\", \"sha1\", \"sha2\", \"keccak\", \"sha3\"\
+)VALUES(";
 			string sql2 = "'" + convertWideToUtf8(f->path) + " ', ";
 			string sql3 = "'" + convertWideToUtf8(f->name) + " ', ";
 			string sql4 = "'" + std::to_string(f->size) + " ', ";
 			string sql5 = "'" + std::to_string(f->createdTime) + " ', ";
 			string sql6 = "'" + std::to_string(f->modifiedTime) + " ', ";
-			string sql7 = "'" + std::to_string(f->fileNameTime) + " ', ";
-			string sql8 = "'" + std::to_string(f->exifTime) + " ', ";
-			string sql9 = "'" + std::to_string(f->otherTime) + " ', ";
-			string sql10 = "'" + std::to_string(f->bestGuessTime) + " ', ";
-			string sql11 = "'" + convertWideToUtf8(f->crc32) + " ', ";
-			string sql12 = "'" + convertWideToUtf8(f->md5) + " ', ";
-			string sql13 = "'" + convertWideToUtf8(f->sha1) + " ', ";
-			string sql14 = "'" + convertWideToUtf8(f->sha2) + " ', ";
-			string sql15 = "'" + convertWideToUtf8(f->keccak) + " ', ";
-			string sql16 = "'" + convertWideToUtf8(f->sha3) + " '";
-			string sql17 = "); ";
+			string sql7 = "'" + convertWideToUtf8(f->crc32) + " ', ";
+			string sql8 = "'" + convertWideToUtf8(f->md5) + " ', ";
+			string sql9 = "'" + convertWideToUtf8(f->sha1) + " ', ";
+			string sql10 = "'" + convertWideToUtf8(f->sha2) + " ', ";
+			string sql11 = "'" + convertWideToUtf8(f->keccak) + " ', ";
+			string sql12 = "'" + convertWideToUtf8(f->sha3) + " '";
+			string sql13 = "); ";
 
-			string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11 + sql12 + sql13 + sql14 + sql15 + sql16 + sql17;
+			string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11 + sql12 + sql13;
 
 			ignorerc = sqlite3_exec(ignoredb, sqlstatement.c_str(), sqlite3callback, 0, &zErrMsg);
 			if (ignorerc != SQLITE_OK)
@@ -3054,16 +3354,6 @@ void Worker::processIgnore()
 
 
 }
-
-
-
-
-
-
-
-
-//implement database
-
 
 
 

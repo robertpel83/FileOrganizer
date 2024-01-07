@@ -20,23 +20,18 @@
 #include <unordered_set>
 #include <vector>   // std::vector
 
-
-
 #include "atlbase.h"
 #include "atlstr.h"
 #include "comutil.h"
 
 #include <cwctype>
 
-
 //void ok();
-
 
 using std::runtime_error;
 using std::string;
 using std::vector;
 using std::wstring;
-
 
 //#define WIN32_LEAN_AND_MEAN
 
@@ -64,9 +59,6 @@ using std::wstring;
 //#define stat _stat
 //#endif
 
-
-
-
 #define _CRT_SECURE_NO_WARNINGS 1
 
 #include <dirent.h>
@@ -90,10 +82,7 @@ using std::wstring;
 #include "jpeglib.h"
 #include <setjmp.h>
 
-
 #include <sqlite3.h>
-
-
 
 #include <QtWidgets/QMainWindow>
 #include "ui_OpenFileOrganizer.h"
@@ -103,51 +92,24 @@ using std::wstring;
 #include <QMessageBox>
 #include <QtWidgets/QApplication>
 
-
-
-
-
-std::string convertWideToANSI(const std::wstring& wstr);
-
-
-std::wstring convertAnsiToWide(const std::string& str);
-
-
-std::string convertWideToUtf8(const std::wstring& wstr);
-
-
-std::wstring convertUtf8ToWide(const std::string& str);
-
-
+string convertWideToANSI(const wstring& wstr);
+wstring convertAnsiToWide(const string& str);
+string convertWideToUtf8(const wstring& wstr);
+wstring convertUtf8ToWide(const string& str);
 
 wstring changeAnySlashToBackSlash(wstring in);
-
 wstring changeAnySlashToForwardSlash(wstring in);
-
-
-
-
 wstring changeAnyDoubleSlashToSingleBackSlash(wstring in);
-
 wstring changeAnyDoubleSlashToSingleForwardSlash(wstring in);
-
-
 wstring changeAnySlashToDoubleBackSlash(wstring in);
-
 
 //==============================================================================================================================================================
 class MyDate
 {//==============================================================================================================================================================
 public:
-
-
-
 	MyDate(wstring dateString)
 	{
-
 	}
-
-	
 };
 
 //==============================================================================================================================================================
