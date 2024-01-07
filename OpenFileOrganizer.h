@@ -118,6 +118,23 @@ std::string convertWideToUtf8(const std::wstring& wstr);
 
 std::wstring convertUtf8ToWide(const std::string& str);
 
+
+
+wstring changeAnySlashToBackSlash(wstring in);
+
+wstring changeAnySlashToForwardSlash(wstring in);
+
+
+
+
+wstring changeAnyDoubleSlashToSingleBackSlash(wstring in);
+
+wstring changeAnyDoubleSlashToSingleForwardSlash(wstring in);
+
+
+wstring changeAnySlashToDoubleBackSlash(wstring in);
+
+
 //==============================================================================================================================================================
 class MyDate
 {//==============================================================================================================================================================
@@ -490,39 +507,7 @@ private:
 signals:
 	void sendLogString(const QString& str);
 };
-//==============================================================================================================================================================
-class OpenFileOrganizer : public QMainWindow
-{//==============================================================================================================================================================
-	Q_OBJECT
 
-public:
-	OpenFileOrganizer(QWidget* parent = nullptr);
-	~OpenFileOrganizer();
-
-	static void QMessageOutput(QtMsgType, const QMessageLogContext&, const QString& msg);
-
-	
-
-private:
-	Ui::OpenFileOrganizerClass ui;
-
-	// MessageHandler for display and ThreadLogStream for redirecting cout
-	MessageHandler* msgHandler = Q_NULLPTR;
-	ThreadLogStream* m_qd;
-
-	const QString errorString = "error";
-
-
-
-private slots:
-	void handleStartButton();
-	void handleClearButton();
-	void handleAddDirButton();
-	void handleRemoveDirButton();
-	void handleIgnoreDirsButton();
-	void initWorker(Worker* worker);
-
-};
 //==============================================================================================================================================================
 class Worker : public QObject
 {//==============================================================================================================================================================
@@ -611,7 +596,38 @@ private:
 };
 
 
+//==============================================================================================================================================================
+class OpenFileOrganizer : public QMainWindow
+{//==============================================================================================================================================================
+	Q_OBJECT
 
+public:
+	OpenFileOrganizer(QWidget* parent = nullptr);
+	~OpenFileOrganizer();
+
+	static void QMessageOutput(QtMsgType, const QMessageLogContext&, const QString& msg);
+
+	void initWorker(Worker* worker);
+
+private:
+	Ui::OpenFileOrganizerClass ui;
+
+	// MessageHandler for display and ThreadLogStream for redirecting cout
+	MessageHandler* msgHandler = Q_NULLPTR;
+	ThreadLogStream* m_qd;
+
+	const QString errorString = "error";
+
+
+
+private slots:
+	void handleStartButton();
+	void handleClearButton();
+	void handleAddDirButton();
+	void handleRemoveDirButton();
+	void handleIgnoreDirsButton();
+
+};
 
 
 

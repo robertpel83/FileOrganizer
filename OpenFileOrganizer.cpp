@@ -287,6 +287,59 @@ void data_foreach_func(ExifContent* content, void* callback_data)
 
 
 //==============================================================================================================================================================
+wstring changeAnySlashToBackSlash(wstring in)
+{//==============================================================================================================================================================
+	wstring out = wstring(in);
+	while (out.find(L"/") != wstring::npos)
+		out.replace(out.find(L"/"), 1, L"\\");
+
+	return out;
+}
+
+//==============================================================================================================================================================
+wstring changeAnySlashToForwardSlash(wstring in)
+{//==============================================================================================================================================================
+	wstring out = wstring(in);
+	while (out.find(L"\\") != wstring::npos)
+		out.replace(out.find(L"\\"), 1, L"/");
+	return out;
+}
+
+
+
+//==============================================================================================================================================================
+wstring changeAnyDoubleSlashToSingleBackSlash(wstring in)
+{//==============================================================================================================================================================
+
+	wstring out = changeAnySlashToBackSlash(in);
+
+	while (out.find(L"\\\\") != wstring::npos)
+		out.replace(out.find(L"\\\\"), 2, L"\\");
+
+	return out;
+}
+//==============================================================================================================================================================
+wstring changeAnyDoubleSlashToSingleForwardSlash(wstring in)
+{//==============================================================================================================================================================
+
+	wstring out = changeAnySlashToBackSlash(in);
+
+	while (out.find(L"\\\\") != wstring::npos)
+		out.replace(out.find(L"\\\\"), 2, L"\\");
+
+	return changeAnySlashToForwardSlash(out);
+}
+
+//==============================================================================================================================================================
+wstring changeAnySlashToDoubleBackSlash(wstring in)
+{//==============================================================================================================================================================
+	wstring out = changeAnyDoubleSlashToSingleForwardSlash(in);
+	while (out.find('/') != wstring::npos)
+		out.replace(out.find(L"/"), 1, L"\\\\");
+	return out;
+}
+
+//==============================================================================================================================================================
 //C++ subdirectory file list using recursiveDirectoryIteratorIncrement
 //std::unordered_set<wstring> recursiveDirectoryIteratorIncrementPaths;
 //for whatever reason, recursive_directory_iterator cannot read "All Users" folder, but directory_iterator can. weird.
@@ -447,7 +500,8 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 						FileDataEntry* f = new FileDataEntry();
 						f->nameAndPath = path + L"\\" + ent->d_name;
 						f->name = ent->d_name;
-						f->path = path;
+						f->path = path + L"\\";
+						std::wcout << f->path << f->name << std::endl;
 						fileDataEntries.push_back(f);
 					}
 				}
@@ -2166,10 +2220,9 @@ bool Worker::doesFilenameMatchFilter(wstring name)
 		
 		if (name.find(f) != string::npos)return true;
 
-		return false;
-
 	}
 
+	return false;
 }
 
 
@@ -2725,30 +2778,30 @@ void Worker::process()
 	bool addToDB = true;
 	if (addToDB)
 	{
-		char* zErrMsg;
-		FileDataEntry* f;
-
-		string sql1 = "INSERT INTO \"main\".\"FILES\"(\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"fileNameTime\", \"exifTime\", \"otherTime\", \"bestGuessTime\")VALUES(";
-		string sql2 = "'path', ";// +f->path.c_str() + " ', ";
-		string sql3 = "'name', ";
-		string sql4 = "'size', ";
-		string sql5 = "'createdTime', ";
-		string sql6 = "'modifiedTime', ";
-		string sql7 = "'fileNameTime', ";
-		string sql8 = "'exifTime', ";
-		string sql9 = "'otherTime', ";
-		string sql10 = "'bestGuessTime'";
-		string sql11 = "); ";
-
-		string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11;
-
-		rc = sqlite3_exec(db, sqlstatement.c_str(), sqlite3callback, 0, &zErrMsg);
-		if(rc != SQLITE_OK)
-		{
-			std::wcout << "SQL error: " << zErrMsg << std::endl;
-			//fprintf(stderr, "SQL error: %s\n", zErrMsg);
-			sqlite3_free(zErrMsg);
-		}
+		//char* zErrMsg;
+		//FileDataEntry* f;
+		//
+		//string sql1 = "INSERT INTO \"main\".\"FILES\"(\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"fileNameTime\", \"exifTime\", \"otherTime\", \"bestGuessTime\")VALUES(";
+		//string sql2 = "'path', ";// +f->path.c_str() + " ', ";
+		//string sql3 = "'name', ";
+		//string sql4 = "'size', ";
+		//string sql5 = "'createdTime', ";
+		//string sql6 = "'modifiedTime', ";
+		//string sql7 = "'fileNameTime', ";
+		//string sql8 = "'exifTime', ";
+		//string sql9 = "'otherTime', ";
+		//string sql10 = "'bestGuessTime'";
+		//string sql11 = "); ";
+		//
+		//string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11;
+		//
+		//rc = sqlite3_exec(db, sqlstatement.c_str(), sqlite3callback, 0, &zErrMsg);
+		//if(rc != SQLITE_OK)
+		//{
+		//	std::wcout << "SQL error: " << zErrMsg << std::endl;
+		//	//fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		//	sqlite3_free(zErrMsg);
+		//}
 	}
 
 
@@ -2866,73 +2919,73 @@ void Worker::processIgnore()
 
 
 
-	for (unsigned long long b = 0; b < duplicates.size(); b++)
-	{
-		vector<FileDataEntry*>* v = duplicates[b];
-
-		std::wcout << L"All names for duplicate " << b << L": " << std::endl;
-
-		for (unsigned long long c = 0; c < v->size(); c++)
-		{
-			std::wcout << (*v)[c]->name << std::endl;
-		}
-
-		std::wcout << L"Size for duplicate " << b << L": " << (*v)[0]->size << L" bytes" << std::endl;
-
-		vector<wstring> dateStrings;
-
-		std::wcout << L"All dates for duplicate " << b << L": " << std::endl;
-		for (unsigned long long c = 0; c < v->size(); c++)
-		{
-			if ((*v)[c]->createdDateString.length() > 2)
-			{
-				//std::wcout << (*v)[c]->createdDateString << std::endl;
-				dateStrings.push_back(((*v)[c]->createdDateString));
-			}
-			if ((*v)[c]->modifiedDateString.length() > 2)
-			{
-				//std::wcout << (*v)[c]->modifiedDateString << std::endl;
-				dateStrings.push_back(((*v)[c]->modifiedDateString));
-			}
-			if ((*v)[c]->fileNameDateString.length() > 2)
-			{
-				//std::wcout << (*v)[c]->fileNameDateString << std::endl;
-				dateStrings.push_back(((*v)[c]->fileNameDateString));
-			}
-			if ((*v)[c]->exifDateString.length() > 2)
-			{
-				//std::wcout << (*v)[c]->exifDateString << std::endl;
-				dateStrings.push_back(((*v)[c]->exifDateString));
-			}
-		}
-
-
-		vector<DateData*> dates;
-
-		for (unsigned long long i = 0; i < dateStrings.size(); i++)
-		{
-			DateData* d = new DateData(dateStrings[i]);
-			dates.push_back(d);
-
-			std::wcout << dateStrings[i] << std::endl;
-			//std::wcout << d->wcout() << std::endl;
-		}
-
-		//count instances of identical dates, with and without timestamp
-		//determine most likely correct date
-
-		std::stable_sort(dates.begin(), dates.end(), DateData::compareDates);
-
-		std::wcout << L"Sorted dates for duplicate " << b << L": " << std::endl;
-
-		for (unsigned long long i = 0; i < dates.size(); i++)
-		{
-			std::wcout << dates[i]->wcout() << std::endl;
-		}
-
-		std::wcout << L"Earliest date for duplicate " << b << L": " << dates[0]->wcout() << std::endl;
-
-	}
+	//for (unsigned long long b = 0; b < duplicates.size(); b++)
+	//{
+	//	vector<FileDataEntry*>* v = duplicates[b];
+	//
+	//	std::wcout << L"All names for duplicate " << b << L": " << std::endl;
+	//
+	//	for (unsigned long long c = 0; c < v->size(); c++)
+	//	{
+	//		std::wcout << (*v)[c]->name << std::endl;
+	//	}
+	//
+	//	std::wcout << L"Size for duplicate " << b << L": " << (*v)[0]->size << L" bytes" << std::endl;
+	//
+	//	vector<wstring> dateStrings;
+	//
+	//	std::wcout << L"All dates for duplicate " << b << L": " << std::endl;
+	//	for (unsigned long long c = 0; c < v->size(); c++)
+	//	{
+	//		if ((*v)[c]->createdDateString.length() > 2)
+	//		{
+	//			//std::wcout << (*v)[c]->createdDateString << std::endl;
+	//			dateStrings.push_back(((*v)[c]->createdDateString));
+	//		}
+	//		if ((*v)[c]->modifiedDateString.length() > 2)
+	//		{
+	//			//std::wcout << (*v)[c]->modifiedDateString << std::endl;
+	//			dateStrings.push_back(((*v)[c]->modifiedDateString));
+	//		}
+	//		if ((*v)[c]->fileNameDateString.length() > 2)
+	//		{
+	//			//std::wcout << (*v)[c]->fileNameDateString << std::endl;
+	//			dateStrings.push_back(((*v)[c]->fileNameDateString));
+	//		}
+	//		if ((*v)[c]->exifDateString.length() > 2)
+	//		{
+	//			//std::wcout << (*v)[c]->exifDateString << std::endl;
+	//			dateStrings.push_back(((*v)[c]->exifDateString));
+	//		}
+	//	}
+	//
+	//
+	//	vector<DateData*> dates;
+	//
+	//	for (unsigned long long i = 0; i < dateStrings.size(); i++)
+	//	{
+	//		DateData* d = new DateData(dateStrings[i]);
+	//		dates.push_back(d);
+	//
+	//		std::wcout << dateStrings[i] << std::endl;
+	//		//std::wcout << d->wcout() << std::endl;
+	//	}
+	//
+	//	//count instances of identical dates, with and without timestamp
+	//	//determine most likely correct date
+	//
+	//	std::stable_sort(dates.begin(), dates.end(), DateData::compareDates);
+	//
+	//	std::wcout << L"Sorted dates for duplicate " << b << L": " << std::endl;
+	//
+	//	for (unsigned long long i = 0; i < dates.size(); i++)
+	//	{
+	//		std::wcout << dates[i]->wcout() << std::endl;
+	//	}
+	//
+	//	std::wcout << L"Earliest date for duplicate " << b << L": " << dates[0]->wcout() << std::endl;
+	//
+	//}
 
 
 	std::wcout << L"Finished." << std::endl;
@@ -2943,30 +2996,48 @@ void Worker::processIgnore()
 	if (addToIgnoreDB)
 	{
 		char* zErrMsg;
-		FileDataEntry* f;
 
-		string sql1 = "INSERT INTO \"main\".\"IGNOREWINDOWS\"(\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"fileNameTime\", \"exifTime\", \"otherTime\", \"bestGuessTime\")VALUES(";
-		string sql2 = "'";// +f->path.c_str() + " ', ";
-		string sql3 = "'name', ";
-		string sql4 = "'size', ";
-		string sql5 = "'createdTime', ";
-		string sql6 = "'modifiedTime', ";
-		string sql7 = "'fileNameTime', ";
-		string sql8 = "'exifTime', ";
-		string sql9 = "'otherTime', ";
-		string sql10 = "'bestGuessTime'";
-		string sql11 = "); ";
-
-		string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11;
-
-		ignorerc = sqlite3_exec(ignoredb, sqlstatement.c_str(), sqlite3callback, 0, &zErrMsg);
-		if (ignorerc != SQLITE_OK)
+		for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 		{
-			std::wcout << "SQL error: " << zErrMsg << std::endl;
-			//fprintf(stderr, "SQL error: %s\n", zErrMsg);
-			sqlite3_free(zErrMsg);
+			FileDataEntry* f = fileDataEntries[i];
+
+			wstring crc32;
+			wstring md5;
+			wstring sha1;
+			wstring sha2;
+			wstring keccak;
+			wstring sha3;
+
+			string sql1 = "INSERT INTO \"main\".\"IGNOREWINDOWS\"(\"path\", \"name\", \"size\", \"createdTime\", \"modifiedTime\", \"fileNameTime\", \"exifTime\", \"otherTime\", \"bestGuessTime\", \"crc32\", \"md5\", \"sha1\", \"sha2\", \"keccak\", \"sha3\")VALUES(";
+			string sql2 = "'" + convertWideToUtf8(f->path) + " ', ";
+			string sql3 = "'" + convertWideToUtf8(f->name) + " ', ";
+			string sql4 = "'" + std::to_string(f->size) + " ', ";
+			string sql5 = "'" + std::to_string(f->createdTime) + " ', ";
+			string sql6 = "'" + std::to_string(f->modifiedTime) + " ', ";
+			string sql7 = "'" + std::to_string(f->fileNameTime) + " ', ";
+			string sql8 = "'" + std::to_string(f->exifTime) + " ', ";
+			string sql9 = "'" + std::to_string(f->otherTime) + " ', ";
+			string sql10 = "'" + std::to_string(f->bestGuessTime) + " ', ";
+			string sql11 = "'" + convertWideToUtf8(f->crc32) + " ', ";
+			string sql12 = "'" + convertWideToUtf8(f->md5) + " ', ";
+			string sql13 = "'" + convertWideToUtf8(f->sha1) + " ', ";
+			string sql14 = "'" + convertWideToUtf8(f->sha2) + " ', ";
+			string sql15 = "'" + convertWideToUtf8(f->keccak) + " ', ";
+			string sql16 = "'" + convertWideToUtf8(f->sha3) + " '";
+			string sql17 = "); ";
+
+			string sqlstatement = sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8 + sql9 + sql10 + sql11 + sql12 + sql13 + sql14 + sql15 + sql16 + sql17;
+
+			ignorerc = sqlite3_exec(ignoredb, sqlstatement.c_str(), sqlite3callback, 0, &zErrMsg);
+			if (ignorerc != SQLITE_OK)
+			{
+				std::wcout << "SQL error: " << zErrMsg << std::endl;
+				//fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				sqlite3_free(zErrMsg);
+			}
 		}
 	}
+	std::wcout << L"Finished DB insert." << std::endl;
 
 
 	sqlite3_close(db);
