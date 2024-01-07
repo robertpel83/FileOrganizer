@@ -184,8 +184,8 @@ void OpenFileOrganizer::handleAddDirButton()
 
 
 	//wstring dir = dirUrl.toString().replace(QString("file:\\\\\\"), QString("")).replace(QString("/"), QString("\\\\")).toStdWString();
-	QString s = dirUrl.toString().replace(QString("file:///"), QString("")).replace(QString("/"), QString("\\\\"));
-	if (s.endsWith(QString("\\")) == false)s.append(QString("\\\\"));
+	QString s = dirUrl.toString().replace(QString("file:///"), QString("")).replace(QString("/"), QString("\\"));
+	if (s.endsWith(QString("\\")) == false)s.append(QString("\\"));
 
 	ui.listWidget->addItem(s);
 	//QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),"C:\\",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
@@ -384,6 +384,9 @@ void Worker::recursiveDirectoryIteratorIncrement(const wstring startpath, _int64
 						(*f).nameAndPath = (*v).path().wstring();
 						(*f).name = (*v).path().filename().wstring();
 						(*f).path = (*v).path().parent_path().wstring();
+
+						std::wcout << (*f).path << std::endl;
+
 						fileDataEntries.push_back(f);
 					}
 				}
@@ -452,6 +455,9 @@ void Worker::directoryIteratorRecursive(const std::filesystem::path& dir_path, _
 							f->nameAndPath = itr->path().wstring();
 							f->name = itr->path().filename().wstring();
 							f->path = path;
+
+							std::wcout << f->path << std::endl;
+							
 							fileDataEntries.push_back(f);
 						}
 					}
@@ -500,8 +506,8 @@ void Worker::direntScanDirectory(const wstring startPath, _int64& filecount)//wc
 						FileDataEntry* f = new FileDataEntry();
 						f->nameAndPath = path + L"\\" + ent->d_name;
 						f->name = ent->d_name;
-						f->path = path + L"\\";
-						std::wcout << f->path << f->name << std::endl;
+						f->path = path;
+						std::wcout << f->path << std::endl;
 						fileDataEntries.push_back(f);
 					}
 				}
@@ -593,6 +599,7 @@ void Worker::listFilesWindowsFindFirstFile(const wstring originalPath, _int64& f
 							f->nameAndPath = path + L"\\" + ffd.cFileName;
 							f->name = ffd.cFileName;
 							f->path = path;
+							std::wcout << f->path << std::endl;
 							fileDataEntries.push_back(f);
 						}
 					}
