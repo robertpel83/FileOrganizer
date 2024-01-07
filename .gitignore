@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+ignore.db
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -363,3 +364,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 libs/_unsorted/
+/ignore.db
