@@ -1280,11 +1280,15 @@ void Worker::getDateFromFilenameForAllFiles()
 	//get date from filename, detect year, detect date format, extract and convert
 
 
+	//yyyy-mm-dd-hh-mm-ss
 	//yyyy-mm-dd
 	//yyyy mm dd
 	//yyyy_mm_dd
 	//yyyy.mm.dd  
 	//yyyymmdd
+	//yyyymmdd-hhmmss
+	//yyyymmddhhmmss
+	//yyyymmdd-hh-mm-ss
 
 	//yyyy cannot be 3xxx 1xxx 23xx 29xx 17xx
 	//mm cannot be 00 13 2x
@@ -1386,6 +1390,15 @@ void Worker::getDateFromFilenameForAllFiles()
 		"[0-6][0-9]"//00-69
 		"[0-6][0-9]"//00-69
 		;
+	std::string regex_yyyymmdd_hh_mm_ss =
+		regex_yyyymmdd +
+		"[^0-9a-zA-Z]"//not a number, not a letter
+		"[0-2][0-9]"//00-29
+		"[^0-9a-zA-Z]"//not a number, not a letter
+		"[0-6][0-9]"//00-69
+		"[^0-9a-zA-Z]"//not a number, not a letter
+		"[0-6][0-9]"//00-69
+		;
 
 	std::string syyyymmdd =
 		"^"//beginning of file
@@ -1443,6 +1456,24 @@ void Worker::getDateFromFilenameForAllFiles()
 		")"
 		"$"
 		;
+	std::string syyyymmdd_hh_mm_ss =
+		"^"//beginning of file
+		"("
+		+ regex_yyyymmdd_hh_mm_ss +
+		")"
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyymmdd_hh_mm_ss +
+		")"
+		"[^0-9a-rt-zA-RT-Z]"//not a number, not a letter except for s or S
+		"|"//or
+		"[^0-9a-xzA-XZ]"//not a number, not a letter except for y or Y
+		"("
+		+ regex_yyyymmdd_hh_mm_ss + //at the end beginning with non number
+		")"
+		"$"
+		;
 
 
 
@@ -1450,6 +1481,7 @@ void Worker::getDateFromFilenameForAllFiles()
 	std::regex yyyymmdd(syyyymmdd);
 	std::regex yyyymmddhhmmss(syyyymmddhhmmss);
 	std::regex yyyymmdd_hhmmss(syyyymmdd_hhmmss);
+	std::regex yyyymmdd_hh_mm_ss(syyyymmdd_hh_mm_ss);
 
 	//yyyy-mm-d?
 
@@ -1779,11 +1811,11 @@ void Worker::getDateFromFilenameForAllFiles()
 							is >> hour;
 						}
 						{
-							std::istringstream is(str.substr(k + 12, 2));
+							std::istringstream is(str.substr(k + 11, 2));
 							is >> minute;
 						}
 						{
-							std::istringstream is(str.substr(k + 15, 2));
+							std::istringstream is(str.substr(k + 13, 2));
 							is >> second;
 						}
 
@@ -1806,7 +1838,7 @@ void Worker::getDateFromFilenameForAllFiles()
 				}
 				else
 				{
-					std::regex_search(s, matches, yyyymmddhhmmss);
+					std::regex_search(s, matches, yyyymmdd_hh_mm_ss);
 					if (!matches.empty())
 					{
 						string str;
@@ -1842,23 +1874,22 @@ void Worker::getDateFromFilenameForAllFiles()
 								is >> day;
 							}
 							{
-								std::istringstream is(str.substr(k + 8, 2));
+								std::istringstream is(str.substr(k + 9, 2));
 								is >> hour;
 							}
 							{
-								std::istringstream is(str.substr(k + 10, 2));
+								std::istringstream is(str.substr(k + 12, 2));
 								is >> minute;
 							}
 							{
-								std::istringstream is(str.substr(k + 12, 2));
+								std::istringstream is(str.substr(k + 15, 2));
 								is >> second;
 							}
 
 							if (year <= currentYear)
 							{
-								std::wcout << L"yyyymmddhhmmss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+								std::wcout << L"yyyymmdd_hh_mm_ss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
 								std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
-
 							}
 							else
 							{
@@ -1874,7 +1905,7 @@ void Worker::getDateFromFilenameForAllFiles()
 					}
 					else
 					{
-						std::regex_search(s, matches, yyyymmdd);
+						std::regex_search(s, matches, yyyymmddhhmmss);
 						if (!matches.empty())
 						{
 							string str;
@@ -1909,11 +1940,24 @@ void Worker::getDateFromFilenameForAllFiles()
 									std::istringstream is(str.substr(k + 6, 2));
 									is >> day;
 								}
+								{
+									std::istringstream is(str.substr(k + 8, 2));
+									is >> hour;
+								}
+								{
+									std::istringstream is(str.substr(k + 10, 2));
+									is >> minute;
+								}
+								{
+									std::istringstream is(str.substr(k + 12, 2));
+									is >> second;
+								}
 
 								if (year <= currentYear)
 								{
-									std::wcout << L"yyyymmdd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
-									std::wcout << year << L" " << month << L" " << day << std::endl;
+									std::wcout << L"yyyymmddhhmmss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+									std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
+
 								}
 								else
 								{
@@ -1929,7 +1973,7 @@ void Worker::getDateFromFilenameForAllFiles()
 						}
 						else
 						{
-							std::regex_search(s, matches, mm_dd_yy);
+							std::regex_search(s, matches, yyyymmdd);
 							if (!matches.empty())
 							{
 								string str;
@@ -1944,43 +1988,30 @@ void Worker::getDateFromFilenameForAllFiles()
 								}
 
 								{
-
 									size_t k = str.find_first_of("0123456789");
 
+									std::istringstream is(str.substr(k, 4));
+									if (is >> year)
 									{
-										std::istringstream is(str.substr(k, 2));
+										if (year < 1900)
+										{
+											if (year > 70)year += 1900;
+											if (year < 50)year += 2000;
+										}
+									}
+
+									{
+										std::istringstream is(str.substr(k + 4, 2));
 										is >> month;
 									}
-
-									{
-										std::istringstream is(str.substr(k + 3, 2));
-										is >> day;
-									}
-
-									if (str.substr(k + 6, 2) == "19" || str.substr(k + 6, 2) == "20")
-									{
-										std::istringstream is(str.substr(k + 6, 4));
-										is >> year;
-									}
-									else
 									{
 										std::istringstream is(str.substr(k + 6, 2));
-										if (is >> year)
-										{
-											if (year < 1900)
-											{
-												if (year > 70)year += 1900;
-												if (year < 50)year += 2000;
-											}
-										}
-
-										//TODO: this is the sketchiest detected date and i need to see how common it actually is
-
+										is >> day;
 									}
 
 									if (year <= currentYear)
 									{
-										std::wcout << L"mm dd [yy]yy " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+										std::wcout << L"yyyymmdd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
 										std::wcout << year << L" " << month << L" " << day << std::endl;
 									}
 									else
@@ -1993,11 +2024,11 @@ void Worker::getDateFromFilenameForAllFiles()
 										second = 0;
 									}
 								}
+
 							}
 							else
 							{
-								bool foundyyyy = false;
-								std::regex_search(s, matches, yyyy);
+								std::regex_search(s, matches, mm_dd_yy);
 								if (!matches.empty())
 								{
 									string str;
@@ -2012,35 +2043,60 @@ void Worker::getDateFromFilenameForAllFiles()
 									}
 
 									{
-										//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(str) << std::endl;
 
-										size_t k = str.find_first_of("12");//yyyy must start with 1 or 2
+										size_t k = str.find_first_of("0123456789");
 
-										if (str.substr(k, 1) != "1" && str.substr(k, 1) != "2")
 										{
-											//can't parse? this should never happen because the regex
+											std::istringstream is(str.substr(k, 2));
+											is >> month;
+										}
+
+										{
+											std::istringstream is(str.substr(k + 3, 2));
+											is >> day;
+										}
+
+										if (str.substr(k + 6, 2) == "19" || str.substr(k + 6, 2) == "20")
+										{
+											std::istringstream is(str.substr(k + 6, 4));
+											is >> year;
 										}
 										else
 										{
-											std::istringstream is(str.substr(k, 4));
-											is >> year;
+											std::istringstream is(str.substr(k + 6, 2));
+											if (is >> year)
+											{
+												if (year < 1900)
+												{
+													if (year > 70)year += 1900;
+													if (year < 50)year += 2000;
+												}
+											}
 
-											if (year <= currentYear)
-											{
-												foundyyyy = true;
-											}
-											else
-											{
-												year = 0;
-											}
+											//TODO: this is the sketchiest detected date and i need to see how common it actually is
+
+										}
+
+										if (year <= currentYear)
+										{
+											std::wcout << L"mm dd [yy]yy " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+											std::wcout << year << L" " << month << L" " << day << std::endl;
+										}
+										else
+										{
+											year = 0;
+											month = 0;
+											day = 0;
+											hour = 0;
+											minute = 0;
+											second = 0;
 										}
 									}
 								}
-
-								if (foundyyyy == true)
+								else
 								{
-
-									std::regex_search(s, matches, monthmondaythday);
+									bool foundyyyy = false;
+									std::regex_search(s, matches, yyyy);
 									if (!matches.empty())
 									{
 										string str;
@@ -2055,54 +2111,35 @@ void Worker::getDateFromFilenameForAllFiles()
 										}
 
 										{
+											//std::wcout << L"yyyy " << n << L" " << convertUtf8ToWide(str) << std::endl;
 
-											if (str.find("Jan") != string::npos)month = 1;
-											if (str.find("Feb") != string::npos)month = 2;
-											if (str.find("Mar") != string::npos)month = 3;
-											if (str.find("Apr") != string::npos)month = 4;
-											if (str.find("May") != string::npos)month = 5;
-											if (str.find("Jun") != string::npos)month = 6;
-											if (str.find("Jul") != string::npos)month = 7;
-											if (str.find("Aug") != string::npos)month = 8;
-											if (str.find("Sep") != string::npos)month = 9;
-											if (str.find("Oct") != string::npos)month = 10;
-											if (str.find("Nov") != string::npos)month = 11;
-											if (str.find("Dec") != string::npos)month = 12;
+											size_t k = str.find_first_of("12");//yyyy must start with 1 or 2
 
-											size_t k = str.find_first_of("0123456789");
+											if (str.substr(k, 1) != "1" && str.substr(k, 1) != "2")
 											{
-												if (str.find_first_of("0123456789", k + 1) == k + 1)
-												{
-													std::istringstream is(str.substr(k, 2));
-													is >> day;
-												}
-												else
-												{
-													std::istringstream is(str.substr(k, 1));
-													is >> day;
-												}
-											}
-
-											if (year <= currentYear)
-											{
-												std::wcout << L"monthmondaythday " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
-												std::wcout << year << L" " << month << L" " << day << std::endl;
+												//can't parse? this should never happen because the regex
 											}
 											else
 											{
-												year = 0;
-												month = 0;
-												day = 0;
-												hour = 0;
-												minute = 0;
-												second = 0;
+												std::istringstream is(str.substr(k, 4));
+												is >> year;
+
+												if (year <= currentYear)
+												{
+													foundyyyy = true;
+												}
+												else
+												{
+													year = 0;
+												}
 											}
 										}
 									}
-									else
+
+									if (foundyyyy == true)
 									{
 
-										std::regex_search(s, matches, daythdaymonthmon);
+										std::regex_search(s, matches, monthmondaythday);
 										if (!matches.empty())
 										{
 											string str;
@@ -2117,18 +2154,6 @@ void Worker::getDateFromFilenameForAllFiles()
 											}
 
 											{
-												size_t k = str.find_first_of("0123456789");
-
-												if (str.find_first_of("0123456789", k + 1) == k + 1)
-												{
-													std::istringstream is(str.substr(k, 2));
-													is >> day;
-												}
-												else
-												{
-													std::istringstream is(str.substr(k, 1));
-													is >> day;
-												}
 
 												if (str.find("Jan") != string::npos)month = 1;
 												if (str.find("Feb") != string::npos)month = 2;
@@ -2143,9 +2168,23 @@ void Worker::getDateFromFilenameForAllFiles()
 												if (str.find("Nov") != string::npos)month = 11;
 												if (str.find("Dec") != string::npos)month = 12;
 
+												size_t k = str.find_first_of("0123456789");
+												{
+													if (str.find_first_of("0123456789", k + 1) == k + 1)
+													{
+														std::istringstream is(str.substr(k, 2));
+														is >> day;
+													}
+													else
+													{
+														std::istringstream is(str.substr(k, 1));
+														is >> day;
+													}
+												}
+
 												if (year <= currentYear)
 												{
-													std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+													std::wcout << L"monthmondaythday " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
 													std::wcout << year << L" " << month << L" " << day << std::endl;
 												}
 												else
@@ -2156,6 +2195,67 @@ void Worker::getDateFromFilenameForAllFiles()
 													hour = 0;
 													minute = 0;
 													second = 0;
+												}
+											}
+										}
+										else
+										{
+
+											std::regex_search(s, matches, daythdaymonthmon);
+											if (!matches.empty())
+											{
+												string str;
+												int longest = 0;
+												for (int n = 0; n < matches.size(); n++)
+												{
+													if (matches[n].length() > longest)
+													{
+														longest = matches[n].length();
+														str = matches[n].str();
+													}
+												}
+
+												{
+													size_t k = str.find_first_of("0123456789");
+
+													if (str.find_first_of("0123456789", k + 1) == k + 1)
+													{
+														std::istringstream is(str.substr(k, 2));
+														is >> day;
+													}
+													else
+													{
+														std::istringstream is(str.substr(k, 1));
+														is >> day;
+													}
+
+													if (str.find("Jan") != string::npos)month = 1;
+													if (str.find("Feb") != string::npos)month = 2;
+													if (str.find("Mar") != string::npos)month = 3;
+													if (str.find("Apr") != string::npos)month = 4;
+													if (str.find("May") != string::npos)month = 5;
+													if (str.find("Jun") != string::npos)month = 6;
+													if (str.find("Jul") != string::npos)month = 7;
+													if (str.find("Aug") != string::npos)month = 8;
+													if (str.find("Sep") != string::npos)month = 9;
+													if (str.find("Oct") != string::npos)month = 10;
+													if (str.find("Nov") != string::npos)month = 11;
+													if (str.find("Dec") != string::npos)month = 12;
+
+													if (year <= currentYear)
+													{
+														std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+														std::wcout << year << L" " << month << L" " << day << std::endl;
+													}
+													else
+													{
+														year = 0;
+														month = 0;
+														day = 0;
+														hour = 0;
+														minute = 0;
+														second = 0;
+													}
 												}
 											}
 										}
