@@ -102,6 +102,9 @@ wstring changeAnySlashToForwardSlash(wstring in);
 wstring changeAnyDoubleSlashToSingleBackSlash(wstring in);
 wstring changeAnyDoubleSlashToSingleForwardSlash(wstring in);
 wstring changeAnySlashToDoubleBackSlash(wstring in);
+wstring convertYearMonthDayHourMinuteSecondToWString(int year, int month, int day, int hour, int minute, int second);
+string convertYearMonthDayHourMinuteSecondToString(int year, int month, int day, int hour, int minute, int second);
+
 
 //==============================================================================================================================================================
 class MyDate

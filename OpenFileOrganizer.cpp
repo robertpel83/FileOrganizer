@@ -1532,7 +1532,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 
 
-	//mm-d-yy?
+	//mm-d-yy? nah
 
 
 
@@ -1634,6 +1634,7 @@ void Worker::getDateFromFilenameForAllFiles()
 	//for (auto& s : strs)
 	for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 	{
+		//wstring ws = convertStringToWStringUsingFilesystem(s);
 		FileDataEntry* f = fileDataEntries[i];
 		string s(convertWideToUtf8(f->name));
 
@@ -1699,7 +1700,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 				if (year <= currentYear)
 				{
-					std::wcout << L"yyyy_mm_dd_hh_mm_ss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+					std::wcout << L"yyyy_mm_dd_hh_mm_ss " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 					std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
 				}
 				else
@@ -1755,7 +1756,7 @@ void Worker::getDateFromFilenameForAllFiles()
 					}
 					if (year <= currentYear)
 					{
-						std::wcout << L"yyyy_mm_dd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+						std::wcout << L"yyyy_mm_dd " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 						std::wcout << year << L" " << month << L" " << day << std::endl;
 					}
 					else
@@ -1791,6 +1792,7 @@ void Worker::getDateFromFilenameForAllFiles()
 						std::istringstream is(str.substr(k, 4));
 						if (is >> year)
 						{
+							//this should never happen here
 							if (year < 1900)
 							{
 								if (year > 70)year += 1900;
@@ -1821,7 +1823,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 						if (year <= currentYear)
 						{
-							std::wcout << L"yyyymmdd_hhmmss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+							std::wcout << L"yyyymmdd_hhmmss " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 							std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
 						}
 						else
@@ -1858,6 +1860,7 @@ void Worker::getDateFromFilenameForAllFiles()
 							std::istringstream is(str.substr(k, 4));
 							if (is >> year)
 							{
+								//this should never happen here
 								if (year < 1900)
 								{
 									if (year > 70)year += 1900;
@@ -1888,7 +1891,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 							if (year <= currentYear)
 							{
-								std::wcout << L"yyyymmdd_hh_mm_ss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+								std::wcout << L"yyyymmdd_hh_mm_ss " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 								std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
 							}
 							else
@@ -1925,6 +1928,7 @@ void Worker::getDateFromFilenameForAllFiles()
 								std::istringstream is(str.substr(k, 4));
 								if (is >> year)
 								{
+									//this should never happen here
 									if (year < 1900)
 									{
 										if (year > 70)year += 1900;
@@ -1955,7 +1959,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 								if (year <= currentYear)
 								{
-									std::wcout << L"yyyymmddhhmmss " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+									std::wcout << L"yyyymmddhhmmss " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 									std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
 
 								}
@@ -1993,6 +1997,7 @@ void Worker::getDateFromFilenameForAllFiles()
 									std::istringstream is(str.substr(k, 4));
 									if (is >> year)
 									{
+										//this should never happen here
 										if (year < 1900)
 										{
 											if (year > 70)year += 1900;
@@ -2011,7 +2016,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 									if (year <= currentYear)
 									{
-										std::wcout << L"yyyymmdd " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+										std::wcout << L"yyyymmdd " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 										std::wcout << year << L" " << month << L" " << day << std::endl;
 									}
 									else
@@ -2079,7 +2084,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 										if (year <= currentYear)
 										{
-											std::wcout << L"mm dd [yy]yy " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+											std::wcout << L"mm dd [yy]yy " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 											std::wcout << year << L" " << month << L" " << day << std::endl;
 										}
 										else
@@ -2184,7 +2189,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 												if (year <= currentYear)
 												{
-													std::wcout << L"monthmondaythday " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+													std::wcout << L"monthmondaythday " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 													std::wcout << year << L" " << month << L" " << day << std::endl;
 												}
 												else
@@ -2244,7 +2249,7 @@ void Worker::getDateFromFilenameForAllFiles()
 
 													if (year <= currentYear)
 													{
-														std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(str) << L" found in " << f->name << std::endl;
+														std::wcout << L"daythdaymonthmon " << convertUtf8ToWide(str) << L" found in " << ws << std::endl;
 														std::wcout << year << L" " << month << L" " << day << std::endl;
 													}
 													else
@@ -2269,24 +2274,51 @@ void Worker::getDateFromFilenameForAllFiles()
 			}
 		}
 		
-		if (year != 0 && month != 0 && day != 0)
-		{
-			wchar_t buffer[100];
 
-			if (hour != 0 && minute != 0 && second != 0)
-			{
-				swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
-			}
-			else
-			{
-				swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", year, month, day, 0, 0, 0);
-			}
-			f->fileNameDateString = wstring(buffer);
-			
-		}
+		f->fileNameDateString = convertYearMonthDayHourMinuteSecondToWString(year, month, day, hour, minute, second);
+
 	}
 }
 
+//==============================================================================================================================================================
+string convertYearMonthDayHourMinuteSecondToString(int year, int month, int day, int hour, int minute, int second)
+{//==============================================================================================================================================================
+
+	if (year != 0 && month != 0 && day != 0)
+	{
+		char buffer[100];
+
+		if (hour != 0 && minute != 0 && second != 0)
+		{
+			snprintf(buffer, 100, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+		}
+		else
+		{
+			snprintf(buffer, 100, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, 0, 0, 0);
+		}
+		return string(buffer);
+	}
+	return "";
+}
+wstring convertYearMonthDayHourMinuteSecondToWString(int year, int month, int day, int hour, int minute, int second)
+{//==============================================================================================================================================================
+	//if (year != 0 && month != 0 && day != 0)
+	//{
+	//	wchar_t buffer[100];
+	//
+	//	if (hour != 0 && minute != 0 && second != 0)
+	//	{
+	//		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+	//	}
+	//	else
+	//	{
+	//		swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d", year, month, day, 0, 0, 0);
+	//	}
+	//	f->fileNameDateString = wstring(buffer);
+	//
+	//}
+	return convertStringToWStringUsingFilesystem(convertYearMonthDayHourMinuteSecondToString(year, month, day, hour, minute, second));
+}
 
 
 
