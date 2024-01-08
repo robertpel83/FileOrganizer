@@ -1634,9 +1634,10 @@ void Worker::getDateFromFilenameForAllFiles()
 	//for (auto& s : strs)
 	for (unsigned long long i = 0; i < fileDataEntries.size(); i++)
 	{
-		//wstring ws = convertStringToWStringUsingFilesystem(s);
+		
 		FileDataEntry* f = fileDataEntries[i];
 		string s(convertWideToUtf8(f->name));
+		wstring ws = convertStringToWStringUsingFilesystem(s);
 
 		int year = 0;
 		int month = 0;
@@ -2300,6 +2301,7 @@ string convertYearMonthDayHourMinuteSecondToString(int year, int month, int day,
 	}
 	return "";
 }
+//==============================================================================================================================================================
 wstring convertYearMonthDayHourMinuteSecondToWString(int year, int month, int day, int hour, int minute, int second)
 {//==============================================================================================================================================================
 	//if (year != 0 && month != 0 && day != 0)
@@ -2320,7 +2322,95 @@ wstring convertYearMonthDayHourMinuteSecondToWString(int year, int month, int da
 	return convertStringToWStringUsingFilesystem(convertYearMonthDayHourMinuteSecondToString(year, month, day, hour, minute, second));
 }
 
+//==============================================================================================================================================================
+bool convertDateStringToYearMonthDayHourMinuteSecond(string yyyy_mm_dd_hh_mm_ss, int& year, int& month, int& day, int& hour, int& minute, int& second)
+{//==============================================================================================================================================================
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+	time_t tt = std::chrono::system_clock::to_time_t(now);
+	tm utc_tm = *gmtime(&tt);
+	tm local_tm = *localtime(&tt);
+	int currentYear = utc_tm.tm_year + 1900;
 
+	//find the first number
+	size_t k = yyyy_mm_dd_hh_mm_ss.find_first_of("0123456789");
+	//copy 4 numbers
+	std::istringstream is(yyyy_mm_dd_hh_mm_ss.substr(k, 4));
+	//print the number into year variable
+	if (is >> year)
+	{
+		//this should never happen here
+		if (year < 1900)
+		{
+			if (year > 70)year += 1900;
+			if (year < 50)year += 2000;
+		}
+	}
+
+	{
+		std::istringstream is(yyyy_mm_dd_hh_mm_ss.substr(k + 5, 2));
+		is >> month;
+	}
+	{
+		std::istringstream is(yyyy_mm_dd_hh_mm_ss.substr(k + 8, 2));
+		is >> day;
+	}
+	{
+		std::istringstream is(yyyy_mm_dd_hh_mm_ss.substr(k + 11, 2));
+		is >> hour;
+	}
+	{
+		std::istringstream is(yyyy_mm_dd_hh_mm_ss.substr(k + 14, 2));
+		is >> minute;
+	}
+	{
+		std::istringstream is(yyyy_mm_dd_hh_mm_ss.substr(k + 17, 2));
+		is >> second;
+	}
+
+	if (year <= currentYear)
+	{
+		std::wcout << L"yyyy_mm_dd_hh_mm_ss " << convertUtf8ToWide(yyyy_mm_dd_hh_mm_ss) << std::endl;
+		std::wcout << year << L" " << month << L" " << day << L" " << hour << L" " << minute << L" " << second << std::endl;
+	}
+	else
+	{
+		year = 0;
+		month = 0;
+		day = 0;
+		hour = 0;
+		minute = 0;
+		second = 0;
+		return false;
+	}
+	return true;
+}
+//==============================================================================================================================================================
+long long convertYearMonthDayHourMinuteSecondToTime(int year, int month, int day, int hour, int minute, int second)
+{//==============================================================================================================================================================
+
+}
+//==============================================================================================================================================================
+long long convertDateStringToTime(string yyyy_mm_dd_hh_mm_ss)
+{//==============================================================================================================================================================
+	int year = 0;
+	int month = 0;
+	int day = 0;
+	int hour = 0;
+	int minute = 0;
+	int second = 0;
+	convertDateStringToYearMonthDayHourMinuteSecond(yyyy_mm_dd_hh_mm_ss, year, month, day, hour, minute, second);
+	return convertYearMonthDayHourMinuteSecondToTime(year, month, day, hour, minute, second);
+}
+//==============================================================================================================================================================
+string convertTimeToDateString(long long time)
+{//==============================================================================================================================================================
+
+}
+//==============================================================================================================================================================
+wstring convertTimeToDateWString(long long time)
+{//==============================================================================================================================================================
+	return convertStringToWStringUsingFilesystem(convertTimeToDateString(time));
+}
 
 
 //==============================================================================================================================================================
@@ -2566,11 +2656,11 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 
 				if (dateString.length() > 4)
 				{
-					int y = 0;
-					int m = 0;
-					int d = 0;
+					int year = 0;
+					int month = 0;
+					int day = 0;
 					int hour = 0;
-					int min = 0;
+					int minute = 0;
 					int sec = 0;
 
 
@@ -2579,27 +2669,27 @@ void Worker::getDatesFromEXIFDataForAllFiles()
 						size_t k = str.find_first_of("0123456789");
 
 						{std::istringstream is(str.substr(k, 4));
-						is >> y; }
+						is >> year; }
 
 						{std::istringstream is(str.substr(k + 5, 2));
-						is >> m; }
+						is >> month; }
 							
 						{std::istringstream is(str.substr(k + 8, 2));
-						is >> d; }
+						is >> day; }
 
 						{std::istringstream is(str.substr(k + 11, 2));
 						is >> hour; }
 
 						{std::istringstream is(str.substr(k + 14, 2));
-						is >> min; }
+						is >> minute; }
 
 						{std::istringstream is(str.substr(k + 17, 2));
 						is >> sec; }
 							
-						if (y != 0 && m != 0 && d != 0)
+						if (year != 0 && month != 0 && day != 0)
 						{
 							wchar_t buffer[100];
-							swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", y, m, d, hour, min, sec);
+							swprintf(buffer, 100, L"%04d-%02d-%02d %02d:%02d:%02d\n", year, month, day, hour, minute, sec);
 							f->exifDateString = wstring(buffer);
 						}
 
