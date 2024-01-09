@@ -975,65 +975,74 @@ void Worker::getFileCreatedModifiedDateWindows(FileDataEntry* f)
 
 
 
-	std::wcout << "createdTime:" << createdTime << std::endl;//133121703659753928
+	//std::wcout << "createdTime:" << createdTime << std::endl;//133121703659753928
 	//std::wcout << "Modified time:" << modifiedTime << std::endl;
-	std::wcout << "createdDateString:" << createdDateString << std::endl;//2022-11-06 01:06:05
+	//std::wcout << "createdDateString:" << createdDateString << std::endl;//2022-11-06 01:06:05
 	//std::wcout << "Modified date:" << modifiedDateString;// << std::endl;
 
-	//SHOULD NOT USE WINDOWS FUNCTION FOR TIME
-	//epoch time is much different result than c++ functions
+	//SHOULD NOT STORE TIME INTEGER
+	//windows function differs from c++ function
 	//133121703659753928
 	//vs
 	//1667696765
-	//however date string matches?
+	//however date string matches
+
+	//so store only text date string to be cross platform?
 
 
-	time_t createdTimeT = 0;
-
-	struct _stat64 result;
-	if (_wstat64(f->nameAndPath.c_str(), &result) == 0)
-	{
-		//long long size = result.st_size;
-		createdTimeT = result.st_ctime;
-		{
-			wchar_t buffer[100];
-			wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S", gmtime(&result.st_ctime));
-			createdDateString = wstring(buffer);
-		}
-	}
-
-	std::wcout << "createdTimeT:" << createdTimeT << std::endl;//1667696765
-	std::wcout << "createdDateStringT:" << createdDateString << std::endl;//2022-11-06 01:06:05
-
-	int year = 0;
-	int month = 0;
-	int day = 0;
-	int hour = 0;
-	int minute = 0;
-	int second = 0;
-	
-	wstring yyyy_mm_dd_hh_mm_ss = convertStringToWStringUsingFilesystem(convertWStringToStringUsingFilesystem(createdDateString));
-	std::wcout << "yyyy_mm_dd_hh_mm_ss:" << yyyy_mm_dd_hh_mm_ss << std::endl;
-	convertDateWStringToYearMonthDayHourMinuteSecond(yyyy_mm_dd_hh_mm_ss, year, month, day, hour, minute, second);
-	std::wcout << "year:" << year << std::endl;
-	std::wcout << "month:" << month << std::endl;
-	std::wcout << "day:" << day << std::endl;
-	std::wcout << "hour:" << hour << std::endl;
-	std::wcout << "minute:" << minute << std::endl;
-	std::wcout << "second:" << second << std::endl;
-	wstring dateWString = convertYearMonthDayHourMinuteSecondToWString(year, month, day, hour, minute, second);
-	std::wcout << "dateWString:" << dateWString << std::endl;
-	long long time = convertYearMonthDayHourMinuteSecondToEpochTimeMS(year, month, day, hour, minute, second);
-	std::wcout << "time:" << time << std::endl;//1667714765 this time is slightly different from createdTimeT, why??? 5 hours off
-
-	time = convertDateWStringToEpochTimeMS(yyyy_mm_dd_hh_mm_ss);
-	std::wcout << "Created time:" << time << std::endl;//this is correct
-	wstring epochDateString = convertEpochTimeMSToDateWString(time);//this loses 5 hours
-	std::wcout << "Created epochDateString:" << epochDateString << std::endl;
-
-	std::wcout << "----" << std::endl;
-	std::wcout << "----" << std::endl;
-	std::wcout << "----" << std::endl;
+	//time_t createdTimeT = 0;
+	//
+	//struct _stat64 result;
+	//if (_wstat64(f->nameAndPath.c_str(), &result) == 0)
+	//{
+	//	//long long size = result.st_size;
+	//	createdTimeT = result.st_ctime;
+	//	{
+	//		wchar_t buffer[100];
+	//		wcsftime(buffer, 100, L"%Y-%m-%d %H:%M:%S", gmtime(&result.st_ctime));
+	//		createdDateString = wstring(buffer);
+	//	}
+	//}
+	////tm* gmtime_tm_p = gmtime(&result.st_ctime);
+	////time_t mktime_time_t_gmtime_tm_p = std::mktime(gmtime_tm_p);
+	////gmtime_tm_p->tm_isdst = -1;
+	////std::wcout << L"mktime_time_t_gmtime_tm_p " << mktime_time_t_gmtime_tm_p << std::endl;
+	////std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(mktime_time_t_gmtime_tm_p);
+	////std::chrono::system_clock::duration tse = tp.time_since_epoch();
+	//
+	//
+	//std::wcout << "createdTimeT:" << createdTimeT << std::endl;//1667696765
+	////std::wcout << "createdDateStringT:" << createdDateString << std::endl;//2022-11-06 01:06:05
+	//
+	//int year = 0;
+	//int month = 0;
+	//int day = 0;
+	//int hour = 0;
+	//int minute = 0;
+	//int second = 0;
+	//
+	//wstring yyyy_mm_dd_hh_mm_ss = convertStringToWStringUsingFilesystem(convertWStringToStringUsingFilesystem(createdDateString));
+	////std::wcout << "yyyy_mm_dd_hh_mm_ss:" << yyyy_mm_dd_hh_mm_ss << std::endl;
+	//convertDateWStringToYearMonthDayHourMinuteSecond(yyyy_mm_dd_hh_mm_ss, year, month, day, hour, minute, second);
+	////std::wcout << "year:" << year << std::endl;
+	////std::wcout << "month:" << month << std::endl;
+	////std::wcout << "day:" << day << std::endl;
+	////std::wcout << "hour:" << hour << std::endl;
+	////std::wcout << "minute:" << minute << std::endl;
+	////std::wcout << "second:" << second << std::endl;
+	//wstring dateWString = convertYearMonthDayHourMinuteSecondToWString(year, month, day, hour, minute, second);
+	////std::wcout << "dateWString:" << dateWString << std::endl;
+	//long long time = convertYearMonthDayHourMinuteSecondToEpochTimeMS(year, month, day, hour, minute, second);
+	//std::wcout << "time:" << time << std::endl;//1667714765 this time is slightly different from createdTimeT, why??? 5 hours off
+	//
+	//time = convertDateWStringToEpochTimeMS(yyyy_mm_dd_hh_mm_ss);
+	//std::wcout << "Created time:" << time << std::endl;//this is correct
+	//wstring epochDateString = convertEpochTimeMSToDateWString(time);//this loses 5 hours
+	//std::wcout << "Created epochDateString:" << epochDateString << std::endl;
+	//
+	//std::wcout << "----" << std::endl;
+	//std::wcout << "----" << std::endl;
+	//std::wcout << "----" << std::endl;
 }
 
 
@@ -2462,17 +2471,19 @@ long long convertYearMonthDayHourMinuteSecondToEpochTimeMS(int year, int month, 
 	t.tm_sec = second;
 
 	time_t mktime_time_t = std::mktime(&t);
-	std::wcout << L"mktime_time_t " << mktime_time_t << std::endl;
-	//std::tm *gmtime_tm_p = gmtime(&mktime_time_t);
+	//std::wcout << L"mktime_time_t " << mktime_time_t << std::endl;
+	std::tm *lctime_tm_p = localtime(&mktime_time_t);
 	//gmtime_tm_p->tm_isdst = -1;
-	//time_t mktime_time_t_gmtime_tm_p = std::mktime(gmtime_tm_p);
-	//std::wcout << L"mktime_time_t_gmtime_tm_p " << mktime_time_t_gmtime_tm_p << std::endl;
-	std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(mktime_time_t);// _gmtime_tm_p);
+	time_t timegm;
 
+	{
+		time_t diffgmlocaltime = mktime(lctime_tm_p);
+		timegm = diffgmlocaltime + (mktime(localtime(&diffgmlocaltime)) - mktime(gmtime(&diffgmlocaltime)));
+	}
+
+	std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(timegm);
 	std::chrono::system_clock::duration tse = tp.time_since_epoch();
-	//std::cout << tse.count() << '\n';                     // 161524235046900
-	//std::wcout << L"tse.count()/10000000 " << tse.count() / 10000000 << std::endl;
-	
+
 	return tse.count()/10000000;
 }
 
