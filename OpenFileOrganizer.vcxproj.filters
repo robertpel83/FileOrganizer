@@ -278,9 +278,6 @@
     <ClCompile Include="libs\sqlite-amalgamation-3440200\sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\date-3.0.1\src\tz.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\dirent-1.23.2\include\dirent.h">
@@ -578,36 +575,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\sqlite-amalgamation-3440200\sqlite3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\tz_private.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\chrono_io.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\date.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\ios.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\islamic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\iso_week.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\julian.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\ptz.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\solar_hijri.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\date-3.0.1\include\date\tz.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

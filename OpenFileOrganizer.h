@@ -1,6 +1,4 @@
-#include <chrono>
 #include <cstdint>
-#include <ctime>
 #include <filesystem>
 #include <fstream>  // std::ifstream
 #include <functional>
@@ -26,6 +24,8 @@
 
 #include <cwctype>
 
+#include <ctime>
+#include <chrono>
 //void ok();
 
 using std::runtime_error;
@@ -96,7 +96,8 @@ string convertWideToANSI(const wstring& wstr);
 wstring convertAnsiToWide(const string& str);
 string convertWideToUtf8(const wstring& wstr);
 wstring convertUtf8ToWide(const string& str);
-
+wstring convertStringToWStringUsingFilesystem(string s);
+string convertWStringToStringUsingFilesystem(wstring w);
 wstring changeAnySlashToBackSlash(wstring in);
 wstring changeAnySlashToForwardSlash(wstring in);
 wstring changeAnyDoubleSlashToSingleBackSlash(wstring in);
@@ -104,6 +105,14 @@ wstring changeAnyDoubleSlashToSingleForwardSlash(wstring in);
 wstring changeAnySlashToDoubleBackSlash(wstring in);
 wstring convertYearMonthDayHourMinuteSecondToWString(int year, int month, int day, int hour, int minute, int second);
 string convertYearMonthDayHourMinuteSecondToString(int year, int month, int day, int hour, int minute, int second);
+bool convertDateStringToYearMonthDayHourMinuteSecond(string yyyy_mm_dd_hh_mm_ss, int& year, int& month, int& day, int& hour, int& minute, int& second);
+bool convertDateWStringToYearMonthDayHourMinuteSecond(wstring yyyy_mm_dd_hh_mm_ss, int& year, int& month, int& day, int& hour, int& minute, int& second);
+long long convertYearMonthDayHourMinuteSecondToEpochTimeMS(int year, int month, int day, int hour, int minute, int second);
+long long convertDateStringToEpochTimeMS(string yyyy_mm_dd_hh_mm_ss);
+long long convertDateWStringToEpochTimeMS(wstring yyyy_mm_dd_hh_mm_ss);
+string convertEpochTimeMSToDateString(long long time);
+wstring convertEpochTimeMSToDateWString(long long time);
+
 
 
 //==============================================================================================================================================================
